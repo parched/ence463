@@ -35,16 +35,14 @@
 /**
  * \brief A state of the simulator.
  */
-typedef struct {
-	int wheelSpeed;	/**< The wheel rotation speed */
-	int zR;        	/**< The road vertical displacement */
-	int vR;        	/**< The road vertical velocity */
-	int zU;        	/**< The unsprung mass vertical dispalcement */
-	int vU;        	/**< The unsprung mass vertical velocity */
-	int zS;        	/**< The sprung mass vertical dispalcement */
-	int vS;        	/**< The sprung mass vertical velocity */
-	char status;   	/**< The status of the car */
-} SimState;
+typedef struct SimState SimState;
+
+/**
+ * \brief Resets the simulation.
+ *
+ * \param simState
+ */
+void resetSimulation(SimState *simState);
 
 /**
  * \brief Simulates and updates the outputs.
@@ -53,11 +51,56 @@ typedef struct {
  * \param accel The forward acceleration from the driver.
  * \param dampingFactor The set damping factor.
  * \param roadType The road type.
- * \param lastState The last state of the simulator.
+ * \param simState A pointer to the state of the simulator.
  * \param dTime The time since the last state.
  *
- * \return The new simulator state.
+ * \return The status of the car.
  */
-SimState simulate(int force, int accel, int dampingFactor, char roadType, SimState lastState, int dTime);
+char simulate(int force, int accel, int dampingFactor, char roadType, SimState *simState, int dTime);
+
+/**
+ * \brief Gets the car's current speed.
+ *
+ * \param simState A pointer the state of the simulator.
+ *
+ * \return The car's speed.
+ */
+int getCarSpeed(const SimState *simState);
+
+/**
+ * \brief Gets the wheel rotation speed.
+ *
+ * \param simState A pointer the state of the simulator.
+ *
+ * \return The wheel's rotation speed.
+ */
+int getWheelSpeed(const SimState *simState);
+
+/**
+ * \brief Gets the sprung mass' acceleration.
+ *
+ * \param simState A pointer the state of the simulator.
+ *
+ * \return The sprung mass' acceleration.
+ */
+int getSprungAcc(const SimState *simState);
+
+/**
+ * \brief Gets the unsprung mass' acceleration.
+ *
+ * \param simState A pointer the state of the simulator.
+ *
+ * \return The unsprung mass' acceleration.
+ */
+int getUnsprungAcc(const SimState *simState);
+
+/**
+ * \brief Gets the coil's extension.
+ *
+ * \param simState A pointer the state of the simulator.
+ *
+ * \return The coil's extension.
+ */
+int getCoilExtension(const SimState *simState);
 
 #endif
