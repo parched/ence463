@@ -42,16 +42,16 @@ void resetState(ControlState *controlState);
 /**
  * \brief Updates the controller state and gets the required actuator force.
  *
+ * \param controlState A pointer to the controller state.
  * \param accSprung The sprung mass' acceleration.
  * \param accUnsprung The unsprung mass' acceleration.
  * \param coilExtension The coil extension.
  * \param wheelSpeed The wheel's rotation speed.
  * \param damping The damping coeffiecient.
- * \param controlState A pointer to the controller state.
  * \param dTime The time passed since the last update.
  *
  * \return The required actuator force.
  */
-int getAcutatorForce(int accSprung, int accUnsprung, int coilExtension, int wheelSpeed, int damping, ControlState *controlState, int dTime);
+int getAcutatorForce(ControlState *controlState, int accSprung, int accUnsprung, int coilExtension, int wheelSpeed, int damping, int dTime);
 
 #endif

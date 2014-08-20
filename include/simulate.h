@@ -47,16 +47,16 @@ void resetSimulation(SimState *simState);
 /**
  * \brief Simulates and updates the outputs.
  *
+ * \param simState A pointer to the state of the simulator.
  * \param force The applied force from the controller.
  * \param accel The forward acceleration from the driver.
  * \param dampingFactor The set damping factor.
  * \param roadType The road type.
- * \param simState A pointer to the state of the simulator.
  * \param dTime The time since the last state.
  *
  * \return The status of the car.
  */
-char simulate(int force, int accel, int dampingFactor, char roadType, SimState *simState, int dTime);
+char simulate(SimState *simState, int force, int accel, int dampingFactor, char roadType, int dTime);
 
 /**
  * \brief Gets the car's current speed.
