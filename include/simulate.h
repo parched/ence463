@@ -27,6 +27,11 @@
 #ifndef SIMULATE_H
 #define SIMULATE_H
 
+#define ACC_SPRUNG_EXCEEDED 0x10
+#define ACC_UNSPRUNG_EXCEEDED 0x20
+#define COIL_EXTENSION_EXCEEDED 0x40
+#define CAR_SPEED_EXCEEDED 0x80
+
 /**
  * \brief A state of the simulator.
  */
@@ -38,6 +43,7 @@ typedef struct {
 	int vU;        	/**< The unsprung mass vertical velocity */
 	int zS;        	/**< The sprung mass vertical dispalcement */
 	int vS;        	/**< The sprung mass vertical velocity */
+	char status;   	/**< The status of the car */
 } SimState;
 
 /**
