@@ -35,8 +35,10 @@
 
 /**
  * \brief Initailises the PWM module.
+ *
+ * \param pwmOuts The PWM output of which to init, OR of some XXXX_PWM.
  */
-void initPwmModule();
+void initPwmModule(char pwmOuts);
 
 /**
  * \brief Sets the PWM duty.
