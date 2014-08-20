@@ -1,0 +1,2 @@
+#Stellaris Evaluation Board
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="bcd9", TAG+="uaccess"
