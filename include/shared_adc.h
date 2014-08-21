@@ -27,23 +27,23 @@
 #ifndef SHARED_ADC_H
 #define SHARED_ADC_H
 
-#define ACC_SPRUNG_ADC 0x01
-#define ACC_UNSPRUNG_ADC 0x02
-#define COIL_EXTENSION_ADC 0x04
-#define ACTUATOR_FORCE_ADC 0x01
-#define DAMPING_COEFF_ADC 0x02
+#define ACC_SPRUNG_ADC 0x01       /**< The sprung acceleration ADC. */
+#define ACC_UNSPRUNG_ADC 0x02     /**< The unsprung acceleration ADC. */
+#define COIL_EXTENSION_ADC 0x04   /**< The coil extension ADC. */
+#define ACTUATOR_FORCE_ADC 0x01   /**< The actuator force ADC. */
+#define DAMPING_COEFF_ADC 0x02    /**< The damping coefficient ADC. */
 
 /**
  * \brief Initialises the ADC module.
  *
- * \param adcs The ADCs of which to init, OR of some XXXXX_ADC.
+ * \param adcs The bitwise OR of the ADCs to init.
  */
 void initAdcModule(char adcs);
 
 /**
  * \brief Gets a smoothed ADC value.
  *
- * \param adc The ADC to read, one of XXXX_ADC.
+ * \param adc The ADC to read.
  *
  * \return The smoothed value from the ADC.
  */
