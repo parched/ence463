@@ -38,6 +38,11 @@
 typedef struct SimState SimState;
 
 /**
+ * \brief Initialise the simulation ouputs.
+ */
+void initSimulation();
+
+/**
  * \brief Resets the simulation.
  *
  * \param simState
