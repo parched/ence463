@@ -41,24 +41,24 @@
 #include "ui_task.h"
 
 /* The task function. */
-void vTaskFunction( void *pvParameters );
+void vTaskFunction(void *pvParameters);
 
 const char *placeholder = "test";
 
 /*-----------------------------------------------------------*/
 
-int main( void )
+int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
 	whereas some older eval boards used 6MHz. */
-	SysCtlClockSet( SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ );
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
     /*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
-	xTaskCreate( vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL );
+	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate( vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL );
+	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
 	/*Inits the user input and display screen, continously reads user input and refreshes display*/
-	xTaskCreate( vUiTask, "UI task", 240, (void*) placeholder, 1, NULL );
+	xTaskCreate(vUiTask, "UI task", 240, (void*) placeholder, 1, NULL);
 
 
 	/* Start the scheduler so our tasks start executing. */
@@ -67,35 +67,35 @@ int main( void )
 	/* If all is well we will never reach here as the scheduler will now be
 	running.  If we do reach here then it is likely that there was insufficient
 	heap available for the idle task to be created. */
-	for( ;; );
+	for(;;);
 }
 
 
 
-void vApplicationMallocFailedHook( void )
+void vApplicationMallocFailedHook(void)
 {
 	/* This function will only be called if an API call to create a task, queue
 	or semaphore fails because there is too little heap RAM remaining. */
-	for( ;; );
+	for(;;);
 }
 /*-----------------------------------------------------------*/
 
-void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName )
+void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
 {
 	/* This function will only be called if a task overflows its stack.  Note
 	that stack overflow checking does slow down the context switch
 	implementation. */
-	for( ;; );
+	for(;;);
 }
 /*-----------------------------------------------------------*/
 
-void vApplicationIdleHook( void )
+void vApplicationIdleHook(void)
 {
 	/* idle hook*/
 }
 /*-----------------------------------------------------------*/
 
-void vApplicationTickHook( void )
+void vApplicationTickHook(void)
 {
 	/* Tick hook */
 }

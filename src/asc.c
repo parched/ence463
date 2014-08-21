@@ -64,7 +64,7 @@ int main(void)
 	/* If all is well we will never reach here as the scheduler will now be
 	running.  If we do reach here then it is likely that there was insufficient
 	heap available for the idle task to be created. */
-	for( ;; );
+	for(;;);
 }
 
 
@@ -73,7 +73,7 @@ void vApplicationMallocFailedHook(void)
 {
 	/* This function will only be called if an API call to create a task, queue
 	or semaphore fails because there is too little heap RAM remaining. */
-	for( ;; );
+	for(;;);
 }
 /*-----------------------------------------------------------*/
 
@@ -82,7 +82,7 @@ void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
 	/* This function will only be called if a task overflows its stack.  Note
 	that stack overflow checking does slow down the context switch
 	implementation. */
-	for( ;; );
+	for(;;);
 }
 /*-----------------------------------------------------------*/
 
