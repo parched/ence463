@@ -91,13 +91,13 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName
 
 void vApplicationIdleHook( void )
 {
-	/* This example does not use the idle hook to perform any processing. */
+	/* idle hook*/
 }
 /*-----------------------------------------------------------*/
 
 void vApplicationTickHook( void )
 {
-	/* This example does not use the tick hook to perform any processing. */
+	/* Tick hook */
 }
 
 

@@ -29,7 +29,12 @@
 #define UI_TASK_H_
 
 
-typedef enum {CONTENT_TYPE_LISTVIEW, CONTENT_TYPE_TRACE} ContentType;
+typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
+
+/**
+ * \ViewType enum
+ */
+typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
 /**
  * \brief content state for each list
@@ -54,17 +59,29 @@ typedef struct  {
  */
 typedef struct  {
 	void* menus[10];
+	ViewType menuTypes[10]
 	int page;
 	int cursor;
 } Activity;
+
 
 /**
  * \brief Traceview state used to draw road surface
  */
 typedef struct {
-	int y:
+	int y[20]:
 	int timestep:
 }TraceView;
 
+/**
+ * \brief Adds a content to the listView passed to it
+ *
+ * \param content The menue state being added
+ * \param menueList The ListView that the Content is being added too.
+ */
+void addContent(Content content, ListView menueList);
+
+
 
 #endif /* UI_TASK_H_ */
+
