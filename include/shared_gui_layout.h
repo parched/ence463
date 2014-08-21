@@ -29,7 +29,7 @@
 #define UI_TASK_H_
 
 
-typedef enum {CONTENT_TYPE_VIEW,CONTENT_TYPE_TRACE} ContentType;
+typedef enum {CONTENT_TYPE_LISTVIEW, CONTENT_TYPE_TRACE} ContentType;
 
 /**
  * \brief content state for each list
@@ -50,13 +50,21 @@ typedef struct  {
 } ListView;
 
 /**
- * \brief GUI state
+ * \brief activity state
  */
 typedef struct  {
 	void* menus
 	int page;
 	int curser;
-} GUI;
+} Activity;
+
+/**
+ * \brief Traceview state used to draw road surface
+ */
+typedef struct {
+	int y:
+	int timestep:
+}TraceView;
 
 
 
