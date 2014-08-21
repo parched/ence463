@@ -9,6 +9,9 @@
 #define CONTROLTASK_H_
 
 
+void controlTask(void *pvParameters) {
+
+}
 
 
 
