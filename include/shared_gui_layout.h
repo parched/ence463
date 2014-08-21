@@ -1,5 +1,5 @@
 /**
- * \file wus_graphics.h
+ * \file shared_gui_layout.h
  * \brief Active suspension simulator user interface module.
  * \author Hugh Bisset
  * \version 1.0
@@ -29,14 +29,11 @@
 #define UI_TASK_H_
 
 
+typedef enum {CONTENT_TYPE_VIEW,CONTENT_TYPE_TRACE} ContentType;
+
 /**
- * \brief Sets up the user input task and continously updates display
- *
- * \param params unused
+ * \brief content state for each list
  */
-
-typedef enum {CONTENT_TYPE_INT, } ContentType;
-
 typedef struct {
 	char name[10];
 	ContentType type;
@@ -45,12 +42,16 @@ typedef struct {
 	char values[10];
 } Content;
 
+/**
+ * \brief container of contents
+ */
 typedef struct  {
 	Content contents[5];
-
 } ListView;
 
-
+/**
+ * \brief GUI state
+ */
 typedef struct  {
 	void* menus
 	int page;

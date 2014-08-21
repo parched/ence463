@@ -1,5 +1,5 @@
 /**
- * \file wus_graphics.c
+ * \file shared_gui_layout.c
  * \brief graphics libray.
  * \author Hugh Bisset
  * \version 1.0
