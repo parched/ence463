@@ -30,6 +30,7 @@
 #define UART_FRAME_SIZE 9
 
 /**
+ * \union UartFrame
  * \brief Structure of a UART message
  */
 typedef union
