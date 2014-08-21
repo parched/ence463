@@ -27,10 +27,10 @@
 #ifndef WUS_SIMULATE_H
 #define WUS_SIMULATE_H
 
-#define ACC_SPRUNG_EXCEEDED 0x10
-#define ACC_UNSPRUNG_EXCEEDED 0x20
-#define COIL_EXTENSION_EXCEEDED 0x40
-#define CAR_SPEED_EXCEEDED 0x80
+#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
+#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
+#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
+#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
 /**
  * \brief A state of the simulator.
@@ -59,7 +59,7 @@ void resetSimulation(SimState *simState);
  * \param roadType The road type.
  * \param dTime The time since the last state.
  *
- * \return The status of the car.
+ * \return The error statuses of the car.
  */
 char simulate(SimState *simState, int force, int accel, int dampingFactor, char roadType, int dTime);
 
