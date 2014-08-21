@@ -29,10 +29,13 @@
 #define UI_TASK_H_
 
 
+/**
+ * \brief ContentType enum
+ */
 typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
 
 /**
- * \ViewType enum
+ * \brief ViewType enum
  */
 typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
@@ -40,28 +43,28 @@ typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
  * \brief content state for each list
  */
 typedef struct {
-	char name[10];
-	ContentType type;
-	int index;
-	bool selectable;
-	char values[10];
+	char name[10]; /**<name of menu*/
+	ContentType type; /**<determines the type of content to display*/
+	int index; /**<index of menu*/
+	bool selectable; /**<determines if a menue can have variables changed*/
+	char values[10]; /**<user input variable*/
 } Content;
 
 /**
  * \brief container of contents
  */
 typedef struct  {
-	Content contents[5];
+	Content contents[5]; /**<array of contents*/
 } ListView;
 
 /**
  * \brief activity state used to define menus
  */
 typedef struct  {
-	void* menus[10];
-	ViewType menuTypes[10]
-	int page;
-	int cursor;
+	void* menus[10]; /**<Menus that can be displayed*/
+	ViewType menuTypes[10]; /**<type of menu to display*/
+	int page; /**<current page, the current page is used to determine the menu to displays*/
+	int cursor; /**<the position of the cursor, the cursor is used to select the varialbe you want changed or to scroll down a menu to display different part of the menues*/
 } Activity;
 
 
@@ -69,17 +72,10 @@ typedef struct  {
  * \brief Traceview state used to draw road surface
  */
 typedef struct {
-	int y[20]:
-	int timestep:
+	int y[20]: /**<road height*/
+	int timestep: /**<timestep that the simulation runs at*/
 }TraceView;
 
-/**
- * \brief Adds a content to the listView passed to it
- *
- * \param content The menue state being added
- * \param menueList The ListView that the Content is being added too.
- */
-void addContent(Content content, ListView menueList);
 
 
 
