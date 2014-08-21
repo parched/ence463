@@ -1,6 +1,6 @@
 /**
  * \file ui_task.h
- * \brief Active suspension control pulse train reader module.
+ * \brief Active suspension simulator user interface module.
  * \author Hugh Bisset
  * \version 1.0
  * \date 2014-08-21
