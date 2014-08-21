@@ -36,9 +36,10 @@
 
 
 /*Task Modules*/
-#include "simulate_task.h"
-#include "uart_task.h"
-#include "ui_task.h"
+#include "wus_simulate_task.h"
+#include "wus_gui_task.h"
+#include "shared_uart_task.h"
+#include "shared_button_task.h"
 
 /* The task function. */
 void vTaskFunction(void *pvParameters);
@@ -57,8 +58,11 @@ int main(void)
 	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
 	/*Inits UART, continously reads and writes UART messages*/
 	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
-	/*Inits the user input and display screen, continously reads user input and refreshes display*/
-	xTaskCreate(vUiTask, "UI task", 240, (void*) placeholder, 1, NULL);
+	/*Inits the display and refreshes display*/
+	xTaskCreate(vWusUiTask, "UI task", 240, (void*) placeholder, 1, NULL);
+	/*Inits button polling and checks for button pushes*/
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);
+
 
 
 	/* Start the scheduler so our tasks start executing. */

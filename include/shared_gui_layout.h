@@ -54,7 +54,7 @@ typedef struct {
 	int index; /**<index of menu*/
 	bool selectable; /**<determines if a menue can have variables changed*/
 	char values[10]; /**<user input variable*/
-	int *data; /**<data to display on menu*/
+	int *binding; /**<data to display on menu*/
 } Content;
 
 /**
