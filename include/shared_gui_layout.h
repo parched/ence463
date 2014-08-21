@@ -50,12 +50,12 @@ typedef struct  {
 } ListView;
 
 /**
- * \brief activity state
+ * \brief activity state used to define menus
  */
 typedef struct  {
-	void* menus
+	void* menus[10];
 	int page;
-	int curser;
+	int cursor;
 } Activity;
 
 /**
@@ -65,7 +65,6 @@ typedef struct {
 	int y:
 	int timestep:
 }TraceView;
-
 
 
 #endif /* UI_TASK_H_ */
