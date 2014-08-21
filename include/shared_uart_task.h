@@ -1,5 +1,5 @@
 /**
- * \file shared_uartmgmt.h
+ * \file shared_uart_task.h
  * \brief Active suspension UART module.
  * \author George Xian
  * \version 1.0
@@ -53,7 +53,7 @@ typedef void (*uartCallback)(UartFrame);
  *
  * \param pvParameters		Unused
  */
-void vUARTTask (void* pvParameters);
+void vUARTTask(void* pvParameters);
 
 /**
  * \brief Attach callback to be executed on a UART message receive event
@@ -68,14 +68,14 @@ void attachOnReceiveCallback(void (*callback)(UartFrame));
  * \param uartFrame			Frame to send 
  * \return Flag indicating whether queuing was successful
  */
-int queueMsgToSend (UartFrame uartFrame);
+int queueMsgToSend(UartFrame uartFrame);
 
 /**
  * \brief Returns no. of slots left on the queue
  *
  * \return Number of spaces left on queue
  */
-int sendQueueAvailSpaces (void);
+int sendQueueAvailSpaces(void);
 
 
 #endif

@@ -33,15 +33,15 @@ typedef enum {BUTTON_EVENT_RISING_EDGE} ButtonEvent;
 /**
  * \brief Configures chosen button to listen for selected input event
  *
- * \param button			Button to configure
- * \param eventType		Event type of listen for
+ * \param button Button to configure
+ * \param eventType	Event type of listen for
  */
 void configureButtonEvent(Button button, ButtonEvent eventType);
 
 /**
  * \brief Function of button polling task to be called by the FreeRTOS kernel
  *
- * \param pvParameters		Unused
+ * \param pvParameters Unused
  */
 void vButtonPollingTask(void* pvParameters);
 
