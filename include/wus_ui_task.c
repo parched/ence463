@@ -36,12 +36,14 @@ void vUiTask( void *params ) {
  * \brief initializes the screen
  */
 void initScreen() {
+	//To Do
 }
 
 /**
  * \brief updates any changes that need to be updated to the screen
  */
 void updateScreen() {
+	//To Do
 }
 
 
