@@ -1,5 +1,5 @@
 /**
- * \file wus.c
+ * \file asc.c
  * \brief file that first runs in the wheel unit simulator
  * \author Hugh Bisset
  * \version 1.0
@@ -36,8 +36,8 @@
 
 
 /*Task Modules*/
-#include "wus_simulate_task.h"
-#include "wus_gui_task.h"
+#include "asc_control_task.h"
+#include "asc_gui_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
@@ -51,14 +51,14 @@ int main(void)
 	whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-    /*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
-	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
-	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
+    /*Continously determines the actuator force needed*/
+	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
 	/*Inits the display and refreshes display*/
-	xTaskCreate(vWusUiTask, "UI task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vAscUiTask, "UI task", 240,(void*) placeholder , 1, NULL);
+	/*Inits UART, continously reads and writes UART messages*/
+	xTaskCreate(vSharedUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vSharedButtonTask.h, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
 
 

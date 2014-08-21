@@ -30,27 +30,38 @@
 
 
 /**
+ * \enum ContentType
+ *
  * \brief ContentType enum
  */
 typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
 
 /**
+ * \enum ViewType
+ *
  * \brief ViewType enum
  */
 typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
+typedef enum {DISPLAY_VIEW, INPUT_VIEW} DisplayType;
+
 /**
+ * \struct Content
+ *
  * \brief content state for each list
  */
 typedef struct {
 	char name[10]; /**<name of menu*/
 	ContentType type; /**<determines the type of content to display*/
 	int index; /**<index of menu*/
-	bool selectable; /**<determines if a menue can have variables changed*/
+	DisplayType displayMode; /**<display mode, user input or display only*/
 	char values[10]; /**<user input variable*/
+	int *binding; /**<data to display on menu*/
 } Content;
 
 /**
+ * \struct ListView
+ *
  * \brief container of contents
  */
 typedef struct  {
@@ -58,6 +69,8 @@ typedef struct  {
 } ListView;
 
 /**
+ * \struct Activity
+ *
  * \brief activity state used to define menus
  */
 typedef struct  {
@@ -69,6 +82,8 @@ typedef struct  {
 
 
 /**
+ * \struct TraceView
+ *
  * \brief Traceview state used to draw road surface
  */
 typedef struct {
