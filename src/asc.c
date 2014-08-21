@@ -36,9 +36,7 @@
 
 
 /*Task Modules*/
-#include "simulate_task.h"
-#include "uart_task.h"
-#include "ui_task.h"
+#include "asc_control.h"
 
 /* The task function. */
 void vTaskFunction(void *pvParameters);
