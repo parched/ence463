@@ -56,16 +56,16 @@ int getAccel(char *msg);
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-void readMessage(UartFrame *uartFrame) {
-	switch (uartFrame->msgType) {
+void readMessage(UartFrame uartFrame) {
+	switch (uartFrame.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame->msg);
+			roadType = getRoadType(uartFrame.msg);
 			break;
 		case 'S':
 			resetSimulation(&simState);
 			break;
 		case 'A':
-			accel = getAccel(uartFrame->msg);
+			accel = getAccel(uartFrame.msg);
 			break;
 		case 'M':
 			/* TODO */
