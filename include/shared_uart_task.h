@@ -40,12 +40,12 @@ typedef union
 		char msg[UART_FRAME_SIZE];		/**< Contents of the message */
 	}
 	char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
-} UARTFrame;
+} UartFrame;
 
 /**
  * \brief Function type of callbacks for this module
  */
-typedef void (*uartCallback)(UARTFrame*);
+typedef void (*uartCallback)(UartFrame);
 
 /**
  * \brief Function of the UART Task to be called by the FreeRTOS kernel
@@ -59,7 +59,7 @@ void vUARTTask (void* pvParameters);
  *
  * \param callback			Callback to execute for receive event
  */
-void attachOnReceiveCallback(void (*callback)(UARTFrame*));
+void attachOnReceiveCallback(void (*callback)(UartFrame));
 
 /**
  * \brief Queues message to be sent out via UART
@@ -67,7 +67,7 @@ void attachOnReceiveCallback(void (*callback)(UARTFrame*));
  * \param uartFrame			Frame to send 
  * \return Flag indicating whether queuing was successful
  */
-int queueMsgToSend (UARTFrame* uartFrame);
+int queueMsgToSend (UartFrame uartFrame);
 
 /**
  * \brief Returns no. of slots left on the queue

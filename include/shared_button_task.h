@@ -1,6 +1,6 @@
 /**
- * \file shared_guidraw.h
- * \brief Active suspension GUI drawing module
+ * \file shared_button_task.h
+ * \brief Active suspension button configuration and task module
  * \author George Xian
  * \version 1.0
  * \date 2014-08-21
@@ -24,23 +24,25 @@
  * 
  */
 
-#ifndef SHARED_GUIDRAW_H
-#define SHARED_GUIDRAW_H
+#ifndef SHARED_BUTTON_TASK_H
+#define SHARED_BUTTON_TASK_H
 
-#include "shared_guilayout.h"
-
-/**
- * \brief Attaches the activity to the draw thread
- * 
- * \param activity			Pointer to the activity layout to draw						
- */
-void attachActivity(Activity* activity);
+typedef enum {BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
+typedef enum {BUTTON_EVENT_RISING_EDGE} ButtonEvent;
 
 /**
- * \brief Function of the GUI draw to be called by the FreeRTOS kernel
+ * \brief Configures chosen button to listen for selected input event
  *
- * \param pvParameters		Unused
+ * \params button			Button to configure
+ * \params eventType		Event type of listen for
  */
-void vGUIRefreshTask(void *pvParameters);
+void configureButtonEvent(Button button, ButtonEvent eventType);
+
+/**
+ * \brief Function of button polling task to be called by the FreeRTOS kernel
+ *
+ * \params pvParameters		Unused
+ */
+void vButtonPollingTask(void* pvParameters);
 
 #endif
