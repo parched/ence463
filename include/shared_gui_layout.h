@@ -30,16 +30,22 @@
 
 
 /**
+ * \enum ContentType
+ *
  * \brief ContentType enum
  */
 typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
 
 /**
+ * \enum ViewType
+ *
  * \brief ViewType enum
  */
 typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
 /**
+ * \struct Content
+ *
  * \brief content state for each list
  */
 typedef struct {
@@ -51,6 +57,8 @@ typedef struct {
 } Content;
 
 /**
+ * \struct ListView
+ *
  * \brief container of contents
  */
 typedef struct  {
@@ -58,6 +66,8 @@ typedef struct  {
 } ListView;
 
 /**
+ * \struct Activity
+ *
  * \brief activity state used to define menus
  */
 typedef struct  {
@@ -69,6 +79,8 @@ typedef struct  {
 
 
 /**
+ * \struct TraceView
+ *
  * \brief Traceview state used to draw road surface
  */
 typedef struct {
