@@ -25,6 +25,10 @@
  */
 
 #include "wus_simulate_task.h"
+
+#include "wus_simulator.h"
+#include "wus_pulse.h"
+#include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 
@@ -79,7 +83,9 @@ void vSimulateTask(void *params) {
 	char errorCode = 0;
 
 	initSimulation();
+	initPulse();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
+	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
 
 	for (;;) {
@@ -88,6 +94,11 @@ void vSimulateTask(void *params) {
 
 		/* TODO: find dTime */
 		errorCode = simulate(&simState, force, accel, dampingFactor, roadType, dTime);
+		setSpeed(getCarSpeed(&simState));
+		
+		setPulseWidth(ACC_SPRUNG_PWM, getSprungAcc(&simState));
+		setPulseWidth(ACC_UNSPRUNG_PWM, getUnsprungAcc(&simState));
+		setPulseWidth(COIL_EXTENSION_PWM, getCoilExtension(&simState));
 		
 		if (errorCode != 0) {
 			/* TODO */

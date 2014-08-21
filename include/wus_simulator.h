@@ -1,5 +1,5 @@
 /**
- * \file wus_simulate.h
+ * \file wus_simulator.h
  * \brief A wheel unit simulator.
  * \author James Duley
  * \version 1.0
@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef WUS_SIMULATE_H
-#define WUS_SIMULATE_H
+#ifndef WUS_SIMULATOR_H
+#define WUS_SIMULATOR_H
 
 #define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
@@ -50,7 +50,7 @@ void initSimulation();
 void resetSimulation(SimState *simState);
 
 /**
- * \brief Simulates and updates the outputs.
+ * \brief Simulates and updates the state.
  *
  * \param simState A pointer to the state of the simulator.
  * \param force The applied force from the controller.
