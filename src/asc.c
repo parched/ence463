@@ -41,9 +41,6 @@
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
-/* The task function. */
-void vTaskFunction(void *pvParameters);
-
 const char *placeholder = "test";
 
 /*-----------------------------------------------------------*/
