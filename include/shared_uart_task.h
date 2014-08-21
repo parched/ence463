@@ -39,7 +39,7 @@ typedef union
 	{
 		char msgType;					/**< Character representing what the message describes */
 		char msg[UART_FRAME_SIZE];		/**< Contents of the message */
-	}
+	};
 	char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
 } UartFrame;
 
