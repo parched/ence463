@@ -33,10 +33,10 @@
 void pulseInit();
 
 /**
- * \brief Sets the wheel speed.
+ * \brief Sets the car speed.
  *
  * \param speed The speed in 0.1 kph.
  */
-void setPulseSpeed(int speed);
+void setSpeed(int speed);
 
 #endif
