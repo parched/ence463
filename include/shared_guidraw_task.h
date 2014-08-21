@@ -1,5 +1,5 @@
 /**
- * \file shared_guidraw.h
+ * \file shared_guidraw_task.h
  * \brief Active suspension GUI drawing module
  * \author George Xian
  * \version 1.0
@@ -32,14 +32,14 @@
 /**
  * \brief Attaches the activity to the draw thread
  * 
- * \param activity			Pointer to the activity layout to draw						
+ * \param activity Pointer to the activity layout to draw						
  */
 void attachActivity(Activity* activity);
 
 /**
  * \brief Function of the GUI draw to be called by the FreeRTOS kernel
  *
- * \param pvParameters		Unused
+ * \param pvParameters Unused
  */
 void vGUIRefreshTask(void *pvParameters);
 
