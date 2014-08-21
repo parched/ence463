@@ -24,7 +24,6 @@
  *
  */
 
-fdf
 
 void vUiTask( void *params ) {
 	initScreen();
