@@ -1,6 +1,6 @@
 /**
- * \file asuart.h
- * \brief Active suspension UART module.
+ * \file wus_pulse.h
+ * \brief Wheel unit simulator pulse train module.
  * \author James Duley
  * \version 1.0
  * \date 2014-08-20
@@ -24,29 +24,19 @@
  * 
  */
 
-#ifndef ASUART_H
-#define ASUART_H
+#ifndef WUS_PULSE_H
+#define WUS_PULSE_H
 
 /**
- * \brief Initalise the active suspension UART.
+ * \brief Initialises the pulse train generator.
  */
-void initUart();
+void pulseInit();
 
 /**
- * \brief Send a message.
+ * \brief Sets the wheel speed.
  *
- * \param message A null terminated message string to be sent.
+ * \param speed The speed in 0.1 kph.
  */
-void sendMessage(const char *message);
-
-/**
- * \brief Get a message.
- *
- * \param message Buffer to store message.
- * \param messageSize Size of the buffer.
- *
- * \return 0 for success, 1 for no message, 2 for buffer too small.
- */
-char getMessage(char *message, size_t messageSize);
+void setPulseSpeed(int speed);
 
 #endif

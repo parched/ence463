@@ -1,6 +1,6 @@
 /**
- * \file asadc.h
- * \brief Active suspension ADC module.
+ * \file wus_simulate_task.h
+ * \brief Wheel unit simulation task.
  * \author James Duley
  * \version 1.0
  * \date 2014-08-21
@@ -24,30 +24,15 @@
  * 
  */
 
-#ifndef ASADC_H
-#define ASADC_H
-
-#define ACC_SPRUNG_ADC 0x01
-#define ACC_UNSPRUNG_ADC 0x02
-#define COIL_EXTENSION_ADC 0x04
-#define ACTUATOR_FORCE_ADC 0x01
-#define DAMPING_COEFF_ADC 0x02
+#ifndef WUS_SIMULATE_TASK_H
+#define WUS_SIMULATE_TASK_H
 
 /**
- * \brief Initialises the ADC module.
+ * \brief The simulation task.
  *
- * \param adcs The ADCs of which to init, OR of some XXXXX_ADC.
+ * \param params Unused parameters.
  */
-void initAdcModule(char adcs);
-
-/**
- * \brief Gets a smoothed ADC value.
- *
- * \param adc The ADC to read, one of XXXX_ADC.
- *
- * \return The smoothed value from the ADC.
- */
-int getSmoothAdc(char adc);
+void vSimulateTask(void *params);
 
 #endif
 

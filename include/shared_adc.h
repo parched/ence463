@@ -1,9 +1,9 @@
 /**
- * \file aspwm.h
- * \brief Active suspension PWM module.
+ * \file shared_adc.h
+ * \brief Active suspension ADC module.
  * \author James Duley
  * \version 1.0
- * \date 2014-08-20
+ * \date 2014-08-21
  */
 
 /* Copyright (C) 
@@ -24,28 +24,30 @@
  * 
  */
 
-#ifndef ASPWM_H
-#define ASPWM_H
+#ifndef SHARED_ADC_H
+#define SHARED_ADC_H
 
-#define ACC_SPRUNG_PWM 0x01
-#define ACC_UNSPRUNG_PWM 0x02
-#define COIL_EXTENSION_PWM 0x04
-#define ACTUATOR_FORCE_PWM 0x01
-#define DAMPING_COEFF_PWM 0x02
-
-/**
- * \brief Initailises the PWM module.
- *
- * \param pwmOuts The PWM output of which to init, OR of some XXXX_PWM.
- */
-void initPwmModule(char pwmOuts);
+#define ACC_SPRUNG_ADC 0x01
+#define ACC_UNSPRUNG_ADC 0x02
+#define COIL_EXTENSION_ADC 0x04
+#define ACTUATOR_FORCE_ADC 0x01
+#define DAMPING_COEFF_ADC 0x02
 
 /**
- * \brief Sets the PWM duty.
+ * \brief Initialises the ADC module.
  *
- * \param pwmOut The PWM output of which to set, one of XXXX_PWM.
- * \param duty The PWM duty cycle times 1000.
+ * \param adcs The ADCs of which to init, OR of some XXXXX_ADC.
  */
-void setPulseWidth(char pwmOut, int duty);
+void initAdcModule(char adcs);
+
+/**
+ * \brief Gets a smoothed ADC value.
+ *
+ * \param adc The ADC to read, one of XXXX_ADC.
+ *
+ * \return The smoothed value from the ADC.
+ */
+int getSmoothAdc(char adc);
 
 #endif
+

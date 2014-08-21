@@ -1,5 +1,5 @@
 /**
- * \file simulate.h
+ * \file wus_simulate.h
  * \brief A wheel unit simulator.
  * \author James Duley
  * \version 1.0
@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef SIMULATE_H
-#define SIMULATE_H
+#ifndef WUS_SIMULATE_H
+#define WUS_SIMULATE_H
 
 #define ACC_SPRUNG_EXCEEDED 0x10
 #define ACC_UNSPRUNG_EXCEEDED 0x20

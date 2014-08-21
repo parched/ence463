@@ -1,5 +1,5 @@
 /**
- * \file ascpulse.h
+ * \file asc_pulse.h
  * \brief Active suspension control pulse train reader module.
  * \author James Duley
  * \version 1.0
@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef ASCPULSE_H
-#define ASCPULSE_H
+#ifndef ASC_PULSE_H
+#define ASC_PULSE_H
 
 /**
  * \brief Initialises the pulse train redaer module.

@@ -1,5 +1,5 @@
 /**
- * \file control.h
+ * \file asc_control.h
  * \brief Active suspension control.
  * \author James Duley
  * \version 1.0
@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef ASC_CONTROL_H
+#define ASC_CONTROL_H
 
 /**
  * \brief Current controller state.
