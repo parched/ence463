@@ -33,6 +33,7 @@
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
 /**
+ * \struct SimState
  * \brief A state of the simulator.
  */
 typedef struct SimState SimState;
