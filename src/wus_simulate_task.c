@@ -27,7 +27,7 @@
 #include "wus_simulate_task.h"
 
 #include "wus_simulator.h"
-#include "wus_pulse.h"
+#include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
@@ -82,7 +82,6 @@ void vSimulateTask(void *params) {
 	int dTime = 0;
 	char errorCode = 0;
 
-	initSimulation();
 	initPulse();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
