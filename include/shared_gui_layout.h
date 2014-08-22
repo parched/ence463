@@ -43,6 +43,11 @@ typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
  */
 typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
+/**
+ * \enum ContentType
+ *
+ * \brief Determines what mode the menue operates in either display only or input.
+ */
 typedef enum {CONTENT_OUTPUT, CONTENT_INPUT} ContentDirection;
 
 /**
