@@ -30,6 +30,11 @@
 #include "shared_guilayout.h"
 
 /**
+ * \brief Function type of callbacks for this module
+ */
+typedef void (*guidrawCallback)();
+
+/**
  * \brief Attaches the activity to the draw thread
  * 
  * \param activity Pointer to the activity layout to draw						
@@ -37,10 +42,17 @@
 void attachActivity(Activity* activity);
 
 /**
+ * \brief Attaches a callback to execute before a draw event
+ *
+ * \param callback Pointer to function to execute
+ */
+void attachOnDrawCallback(void (*callback)());
+
+/**
  * \brief Function of the GUI draw to be called by the FreeRTOS kernel
  *
  * \param pvParameters Unused
  */
-void vGUIRefreshTask(void *pvParameters);
+void vGuiRefreshTask(void *pvParameters);
 
 #endif

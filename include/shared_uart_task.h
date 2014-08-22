@@ -53,7 +53,7 @@ typedef void (*uartCallback)(UartFrame);
  *
  * \param pvParameters		Unused
  */
-void vUARTTask(void* pvParameters);
+void vUartTask(void* pvParameters);
 
 /**
  * \brief Attach callback to be executed on a UART message receive event
