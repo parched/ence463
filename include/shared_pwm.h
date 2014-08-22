@@ -46,6 +46,6 @@ void initPwmModule(char pwmOuts);
  * \param pwmOut The PWM output of which to set.
  * \param duty The PWM duty cycle times 1000.
  */
-void setPulseWidth(char pwmOut, int duty);
+void setDuty(char pwmOut, int duty);
 
 #endif

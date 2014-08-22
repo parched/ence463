@@ -1,5 +1,5 @@
 /**
- * \file asc_control.h
+ * \file asc_controller.h
  * \brief Active suspension control.
  * \author James Duley
  * \version 1.0
@@ -24,25 +24,26 @@
  * 
  */
 
-#ifndef ASC_CONTROL_H
-#define ASC_CONTROL_H
+#ifndef ASC_CONTROLLER_H
+#define ASC_CONTROLLER_H
 
 /**
+ * \struct ControllerState
  * \brief Current controller state.
  */
-typedef struct ControlState ControlState;
+typedef struct ControllerState ControllerState;
 
 /**
  * \brief Resets or initialises the controller state.
  *
- * \param controlState A pointer to the controller state.
+ * \param controllerState A pointer to the controller state.
  */
-void resetState(ControlState *controlState);
+void resetState(ControllerState *controllerState);
 
 /**
  * \brief Updates the controller state and gets the required actuator force.
  *
- * \param controlState A pointer to the controller state.
+ * \param controllerState A pointer to the controller state.
  * \param accSprung The sprung mass' acceleration.
  * \param accUnsprung The unsprung mass' acceleration.
  * \param coilExtension The coil extension.
@@ -52,6 +53,6 @@ void resetState(ControlState *controlState);
  *
  * \return The required actuator force.
  */
-int getAcutatorForce(ControlState *controlState, int accSprung, int accUnsprung, int coilExtension, int speed, int damping, int dTime);
+int getAcutatorForce(ControllerState *controllerState, int accSprung, int accUnsprung, int coilExtension, int speed, int damping, int dTime);
 
 #endif
