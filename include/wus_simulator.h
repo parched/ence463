@@ -39,11 +39,6 @@
 typedef struct SimState SimState;
 
 /**
- * \brief Initialise the simulation ouputs.
- */
-void initSimulation();
-
-/**
  * \brief Resets the simulation.
  *
  * \param simState
@@ -71,16 +66,7 @@ char simulate(SimState *simState, int force, int throttle, int dampingFactor, ch
  *
  * \return The car's speed.
  */
-int getCarSpeed(const SimState *simState);
-
-/**
- * \brief Gets the wheel rotation speed.
- *
- * \param simState A pointer the state of the simulator.
- *
- * \return The wheel's rotation speed.
- */
-int getWheelSpeed(const SimState *simState);
+int getSpeed(const SimState *simState);
 
 /**
  * \brief Gets the sprung mass' acceleration.
