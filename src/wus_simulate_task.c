@@ -25,13 +25,17 @@
  */
 
 #include "wus_simulate_task.h"
+
+#include "wus_simulator.h"
+#include "wus_pulse_out.h"
+#include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 
 SimState simState;
 char roadType = 0;
 int dampingFactor = 0;
-int accel = 0;
+int throttle = 0;
 
 /**
  * \brief Reads the road type from a message.
@@ -43,13 +47,13 @@ int accel = 0;
 char getRoadType(char *msg);
 
 /**
- * \brief Reads the acceleration from a message.
+ * \brief Reads the throttle from a message.
  *
  * \param msg The message to read.
  *
- * \return The acceleration.
+ * \return The throttle.
  */
-int getAccel(char *msg);
+int getThrottle(char *msg);
 
 /**
  * \brief Reads an incoming UART message.
@@ -65,7 +69,7 @@ void readMessage(UartFrame uartFrame) {
 			resetSimulation(&simState);
 			break;
 		case 'A':
-			accel = getAccel(uartFrame.msg);
+			accel = getThrottle(uartFrame.msg);
 			break;
 		case 'M':
 			/* TODO */
@@ -78,8 +82,9 @@ void vSimulateTask(void *params) {
 	int dTime = 0;
 	char errorCode = 0;
 
-	initSimulation();
+	initPulse();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
+	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
 
 	for (;;) {
@@ -87,10 +92,19 @@ void vSimulateTask(void *params) {
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
 
 		/* TODO: find dTime */
-		errorCode = simulate(&simState, force, accel, dampingFactor, roadType, dTime);
+		errorCode = simulate(&simState, force, throttle, dampingFactor, roadType, dTime);
+		setSpeed(getCarSpeed(&simState));
+		
+		setPulseWidth(ACC_SPRUNG_PWM, getSprungAcc(&simState));
+		setPulseWidth(ACC_UNSPRUNG_PWM, getUnsprungAcc(&simState));
+		setPulseWidth(COIL_EXTENSION_PWM, getCoilExtension(&simState));
 		
 		if (errorCode != 0) {
 			/* TODO */
 		}
 	}
+}
+
+SimState *getSimStatePtr() {
+	return &simState;
 }

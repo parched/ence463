@@ -1,5 +1,5 @@
 /**
- * \file wus_simulate.h
+ * \file wus_simulator.h
  * \brief A wheel unit simulator.
  * \author James Duley
  * \version 1.0
@@ -24,8 +24,8 @@
  * 
  */
 
-#ifndef WUS_SIMULATE_H
-#define WUS_SIMULATE_H
+#ifndef WUS_SIMULATOR_H
+#define WUS_SIMULATOR_H
 
 #define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
@@ -33,14 +33,10 @@
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
 /**
+ * \struct SimState
  * \brief A state of the simulator.
  */
 typedef struct SimState SimState;
-
-/**
- * \brief Initialise the simulation ouputs.
- */
-void initSimulation();
 
 /**
  * \brief Resets the simulation.
@@ -50,18 +46,18 @@ void initSimulation();
 void resetSimulation(SimState *simState);
 
 /**
- * \brief Simulates and updates the outputs.
+ * \brief Simulates and updates the state.
  *
  * \param simState A pointer to the state of the simulator.
  * \param force The applied force from the controller.
- * \param accel The forward acceleration from the driver.
+ * \param throttle The forward acceleration from the driver.
  * \param dampingFactor The set damping factor.
  * \param roadType The road type.
  * \param dTime The time since the last state.
  *
  * \return The error statuses of the car.
  */
-char simulate(SimState *simState, int force, int accel, int dampingFactor, char roadType, int dTime);
+char simulate(SimState *simState, int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
  * \brief Gets the car's current speed.
@@ -70,16 +66,7 @@ char simulate(SimState *simState, int force, int accel, int dampingFactor, char 
  *
  * \return The car's speed.
  */
-int getCarSpeed(const SimState *simState);
-
-/**
- * \brief Gets the wheel rotation speed.
- *
- * \param simState A pointer the state of the simulator.
- *
- * \return The wheel's rotation speed.
- */
-int getWheelSpeed(const SimState *simState);
+int getSpeed(const SimState *simState);
 
 /**
  * \brief Gets the sprung mass' acceleration.

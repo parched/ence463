@@ -46,12 +46,12 @@ void resetState(ControlState *controlState);
  * \param accSprung The sprung mass' acceleration.
  * \param accUnsprung The unsprung mass' acceleration.
  * \param coilExtension The coil extension.
- * \param wheelSpeed The wheel's rotation speed.
+ * \param speed The car's speed.
  * \param damping The damping coeffiecient.
  * \param dTime The time passed since the last update.
  *
  * \return The required actuator force.
  */
-int getAcutatorForce(ControlState *controlState, int accSprung, int accUnsprung, int coilExtension, int wheelSpeed, int damping, int dTime);
+int getAcutatorForce(ControlState *controlState, int accSprung, int accUnsprung, int coilExtension, int speed, int damping, int dTime);
 
 #endif

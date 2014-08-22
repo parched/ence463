@@ -1,9 +1,9 @@
 /**
- * \file asc_pulse.h
- * \brief Active suspension control pulse train reader module.
+ * \file wus_pulse_out.h
+ * \brief Wheel unit simulator pulse train module.
  * \author James Duley
  * \version 1.0
- * \date 2014-08-21
+ * \date 2014-08-20
  */
 
 /* Copyright (C) 
@@ -24,19 +24,19 @@
  * 
  */
 
-#ifndef ASC_PULSE_H
-#define ASC_PULSE_H
+#ifndef WUS_PULSE_OUT_H
+#define WUS_PULSE_OUT_H
 
 /**
- * \brief Initialises the pulse train redaer module.
+ * \brief Initialises the pulse train generator.
  */
-void initPulseReader();
+void initPulse();
 
 /**
- * \brief Gets the car speed.
+ * \brief Sets the car speed.
  *
- * \return The car's speed in 0.1 kph.
+ * \param speed The speed in 0.1 kph.
  */
-int getSpeed();
+void setSpeed(int speed);
 
 #endif

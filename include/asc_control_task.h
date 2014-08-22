@@ -1,9 +1,9 @@
 /**
- * \file wus_simulate_task.h
- * \brief Wheel unit simulation task.
+ * \file asc_control_task.h
+ * \brief The active suspension controller task.
  * \author James Duley
  * \version 1.0
- * \date 2014-08-21
+ * \date 2014-08-22
  */
 
 /* Copyright (C) 
@@ -24,24 +24,14 @@
  * 
  */
 
-#ifndef WUS_SIMULATE_TASK_H
-#define WUS_SIMULATE_TASK_H
-
-#include "wus_simulator.h"
+#ifndef ASC_CONTROL_TASK_H
+#define ASC_CONTROL_TASK_H
 
 /**
- * \brief The simulation task.
+ * \brief The active suspension control task.
  *
  * \param params Unused parameters.
  */
-void vSimulateTask(void *params);
-
-/**
- * \brief Gets a pointer the task's SimState.
- *
- * \return A pointer to the SimState.
- */
-SimState *getSimStatePtr();
+void vControlTask(void *params);
 
 #endif
-
