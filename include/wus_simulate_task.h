@@ -27,12 +27,21 @@
 #ifndef WUS_SIMULATE_TASK_H
 #define WUS_SIMULATE_TASK_H
 
+#include "wus_simulator.h"
+
 /**
  * \brief The simulation task.
  *
  * \param params Unused parameters.
  */
 void vSimulateTask(void *params);
+
+/**
+ * \brief Gets a pointer the task's SimState.
+ *
+ * \return A pointer to the SimState.
+ */
+SimState *getSimStatePtr();
 
 #endif
 

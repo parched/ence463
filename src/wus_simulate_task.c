@@ -104,3 +104,7 @@ void vSimulateTask(void *params) {
 		}
 	}
 }
+
+SimState *getSimStatePtr() {
+	return &simState;
+}
