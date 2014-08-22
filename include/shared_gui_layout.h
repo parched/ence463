@@ -43,7 +43,7 @@ typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
  */
 typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 
-typedef enum {DISPLAY_VIEW, INPUT_VIEW} DisplayType;
+typedef enum {CONTENT_OUTPUT, CONTENT_INPUT} ContentDirection;
 
 /**
  * \struct Content
@@ -56,7 +56,7 @@ typedef struct {
 	int index; /**<index of menu*/
 	DisplayType displayMode; /**<display mode, user input or display only*/
 	char values[10]; /**<user input variable*/
-	int *binding; /**<data to display on menu*/
+	int (*binding)(void); /**<data to display on menu*/
 } Content;
 
 /**
@@ -89,7 +89,7 @@ typedef struct  {
 typedef struct {
 	int y[20]: /**<road height*/
 	int timestep: /**<timestep that the simulation runs at*/
-}TraceView;
+} TraceView;
 
 
 
