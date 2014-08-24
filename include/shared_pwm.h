@@ -1,6 +1,6 @@
 /**
  * \file shared_pwm.h
- * \brief Active suspension PWM module.
+ * \brief Common module allowing configuation of and reading of PWM outputs.
  * \author James Duley
  * \version 1.0
  * \date 2014-08-20

@@ -1,6 +1,6 @@
 /**
  * \file shared_gui_layout.h
- * \brief Active suspension simulator user interface module.
+ * \brief Common module which declares types used to markup menu layout and hierachy.
  * \author Hugh Bisset
  * \version 1.0
  * \date 2014-08-21
@@ -28,13 +28,13 @@
 #ifndef UI_TASK_H_
 #define UI_TASK_H_
 
+#include "shared_tracenode.h"
 
-/**
- * \enum ContentType
- *
- * \brief ContentType enum
- */
-typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
+#define ACTIVITY_MAX_PAGES 5	/**<maximum number of pages in a GUI */
+#define LISTVIEW_MAX_ITEMS 5	/**<maximum number of contents allowed in a list view menu */
+#define TRACEVIEW_POINTS 64     /**<number of data points to store in trace view menu */
+#define CONTENT_NAME_SIZE 10	/**<maximum string size allowed for a list view content entry */
+#define STROPTION_ITEM_SIZE 5   /**<maximum number of items allowed for contents with string options */
 
 /**
  * \enum ViewType
@@ -46,57 +46,67 @@ typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
 /**
  * \enum ContentType
  *
- * \brief Determines what mode the menue operates in either display only or input.
+ * \brief Determines whether ListView content displays number or string options
+ */
+typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
+
+/**
+ * \enum ContentType
+ *
+ * \brief Determines what mode the menu operates in either display only or input.
  */
 typedef enum {CONTENT_OUTPUT, CONTENT_INPUT} ContentDirection;
 
 /**
  * \struct Content
  *
- * \brief content state for each list
+ * \brief Declares a ListView content entry and holds relevant context for it.
  */
 typedef struct {
-	char name[10]; /**<name of menu*/
-	ContentType type; /**<determines the type of content to display*/
-	int index; /**<index of menu*/
-	DisplayType displayMode; /**<display mode, user input or display only*/
-	char values[10]; /**<user input variable*/
-	int (*binding)(void); /**<data to display on menu*/
+	char name[CONTENT_NAME_SIZE];                           /**<name to display for list view entry*/
+	ContentType optionType;                                 /**<determines the type of content to display*/
+	ContentDirection direction;                             /**<declares whether content allows user to modify its value*/
+
+	int option;					                            /**<context of what option is selected for this content*/
+	int minIndex;                                           /**<minimum size allowed for option index*/
+	int maxIndex;                                           /**<maximum size allowed for option index*/
+	char values[STROPTION_ITEM_SIZE][CONTENT_NAME_SIZE];    /**<declares what value to display at every index (for CONTENT_TYPE_STRING type only)*/
+
+	int (*getter)(void);  			                        /**<getter function to get data for the bound variable*/
+	void (*setter)(int);									/**<setter function to set data for the bound variable (for CONTENT_OUTPUT direction only)*/
 } Content;
 
 /**
  * \struct ListView
  *
- * \brief container of contents
+ * \brief Declares a ListView menu and holds relevant context for it.
  */
 typedef struct  {
-	Content contents[5]; /**<array of contents*/
+	Content contents[LISTVIEW_MAX_ITEMS];    /**<top down list of ListView contents*/
 } ListView;
-
-/**
- * \struct Activity
- *
- * \brief activity state used to define menus
- */
-typedef struct  {
-	void* menus[10]; /**<Menus that can be displayed*/
-	ViewType menuTypes[10]; /**<type of menu to display*/
-	int page; /**<current page, the current page is used to determine the menu to displays*/
-	int cursor; /**<the position of the cursor, the cursor is used to select the varialbe you want changed or to scroll down a menu to display different part of the menues*/
-} Activity;
-
 
 /**
  * \struct TraceView
  *
- * \brief Traceview state used to draw road surface
+ * \brief Declares a TraceView menu and holds relevant context for it.
  */
 typedef struct {
-	int y[20]: /**<road height*/
-	int timestep: /**<timestep that the simulation runs at*/
+	TraceNode* head;			 /**<pointer to head node of the buffer to draw*/
+	unsigned int sparseIndex;	 /**<number of data points to skip when drawing the trace*/	
 } TraceView;
 
-
+/**
+ * \struct Activity
+ *
+ * \brief Declares full menu hierachy and layout for a GUI and maintains menu page and cursor context.
+ */
+typedef struct  {
+	void* menus[ACITIVTY_MAX_PAGES];          /**<menu corresponding to each page*/
+	ViewType menuTypes[ACITIVTY_MAX_PAGES];   /**<the menu type corresponding to each page*/
+	unsigned int pageContext;                 /**<displayed page context*/
+	unsigned int cursorContext;               /**<cursor position context*/
+	unsigned int noPages;					  /**<number of pages in this activity*/
+} Activity;
 
 
 #endif /* UI_TASK_H_ */

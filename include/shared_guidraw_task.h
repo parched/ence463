@@ -1,6 +1,6 @@
 /**
  * \file shared_guidraw_task.h
- * \brief Active suspension GUI drawing module
+ * \brief Shared task module which handles rendering of Activity to the OLED display
  * \author George Xian
  * \version 1.0
  * \date 2014-08-21

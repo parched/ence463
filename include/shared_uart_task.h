@@ -1,6 +1,6 @@
 /**
  * \file shared_uart_task.h
- * \brief Active suspension UART module.
+ * \brief Common task module which handles UART message reception and queuing of sending jobs.
  * \author George Xian
  * \version 1.0
  * \date 2014-08-21
@@ -75,7 +75,7 @@ int queueMsgToSend(UartFrame uartFrame);
  *
  * \return Number of spaces left on queue
  */
-int sendQueueAvailSpaces(void);
+int getSendQueueAvailSpaces(void);
 
 
 #endif
