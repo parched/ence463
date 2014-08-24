@@ -1,6 +1,6 @@
 /**
  * \file shared_adc.h
- * \brief Active suspension ADC module.
+ * \brief Common module allowing configuration and reading of ADC input.
  * \author James Duley
  * \version 1.0
  * \date 2014-08-21
