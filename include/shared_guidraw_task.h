@@ -27,8 +27,6 @@
 #ifndef SHARED_GUIDRAW_H
 #define SHARED_GUIDRAW_H
 
-#include "shared_guilayout.h"
-
 /**
  * \brief Function type of callbacks for this module
  */

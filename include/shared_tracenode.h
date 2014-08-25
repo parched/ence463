@@ -27,11 +27,13 @@
 #ifndef SHARED_TRACENODE
 #define SHARED_TRACENODE
 
-typedef enum 
+typedef struct TraceNode TraceNode;
+
+struct TraceNode
 {
 	int x;
 	int y;
 	TraceNode* next;
-} TraceNode;
+};
 
 #endif
