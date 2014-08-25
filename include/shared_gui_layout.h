@@ -30,32 +30,47 @@
 
 #include "shared_tracenode.h"
 
-#define ACTIVITY_MAX_PAGES 5	/**<maximum number of pages in a GUI */
-#define LISTVIEW_MAX_ITEMS 5	/**<maximum number of contents allowed in a list view menu */
-#define TRACEVIEW_POINTS 64     /**<number of data points to store in trace view menu */
-#define CONTENT_NAME_SIZE 10	/**<maximum string size allowed for a list view content entry */
-#define STROPTION_ITEM_SIZE 5   /**<maximum number of items allowed for contents with string options */
+#define ACTIVITY_MAX_PAGES 5    /**<maximum number of pages in a GUI */
+
+#define LISTVIEW_MAX_ITEMS 5    /**<maximum number of items allowed in a ListView */
+
+#define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
+#define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
+
+#define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 
 /**
  * \enum ViewType
  *
  * \brief ViewType enum
  */
-typedef enum {VIEW_TYPE_TRACE, VIEW_TYPE_LIST} ViewType;
+typedef enum {VIEWTYPE_TRACE, VIEWTYPE_LIST} ViewType;
 
 /**
  * \enum ContentType
  *
  * \brief Determines whether ListView content displays number or string options
  */
-typedef enum {CONTENT_TYPE_INT, CONTENT_TYPE_STRING} ContentType;
+typedef enum {OPTIONTYPE_INT, OPTIONTYPE_STRING} OptionType;
 
 /**
  * \enum ContentType
  *
  * \brief Determines what mode the menu operates in either display only or input.
  */
-typedef enum {CONTENT_OUTPUT, CONTENT_INPUT} ContentDirection;
+typedef enum {OPTIONACCESS_READONLY, OPTIONACCESS_MODIFIABLE} OptionAccess;
+
+/**
+ * \struct Option
+ *
+ * \brief Declares options available for an Item and holds relevant context for it.
+ */
+typedef struct {
+    int optionIndex;                                        /**<context of what option is selected for this content*/
+    int minIndex;                                           /**<minimum size allowed for option index*/
+    int maxIndex;                                           /**<maximum size allowed for option index*/
+    char values[ITEM_MAX_OPTIONSTR][ITEM_NAME_SIZE];        /**<declares what value to display at every index (for OPTIONTYPE_STRING type only)*/
+} Options;
 
 /**
  * \struct Content
@@ -63,18 +78,14 @@ typedef enum {CONTENT_OUTPUT, CONTENT_INPUT} ContentDirection;
  * \brief Declares a ListView content entry and holds relevant context for it.
  */
 typedef struct {
-	char name[CONTENT_NAME_SIZE];                           /**<name to display for list view entry*/
-	ContentType optionType;                                 /**<determines the type of content to display*/
-	ContentDirection direction;                             /**<declares whether content allows user to modify its value*/
+	char name[ITEM_NAME_SIZE];                              /**<name to display for this ListView item*/
+	OptionType optionType;                                  /**<determines the type of content to display*/
+	OptionAccess accessType;                                /**<declares whether content allows user to modify its value*/
 
-	int option;					                            /**<context of what option is selected for this content*/
-	int minIndex;                                           /**<minimum size allowed for option index*/
-	int maxIndex;                                           /**<maximum size allowed for option index*/
-	char values[STROPTION_ITEM_SIZE][CONTENT_NAME_SIZE];    /**<declares what value to display at every index (for CONTENT_TYPE_STRING type only)*/
-
-	int (*getter)(void);  			                        /**<getter function to get data for the bound variable*/
-	void (*setter)(int);									/**<setter function to set data for the bound variable (for CONTENT_OUTPUT direction only)*/
-} Content;
+    Options options;                                        /**<options available for this item*/
+	int (*getter)(void);                                    /**<getter function to get data for the bound variable*/
+	void (*setter)(int);                                    /**<setter function to set data for the bound variable (for OPTIONACCESS_MODIFIABLE only)*/
+} Item;
 
 /**
  * \struct ListView
@@ -82,7 +93,8 @@ typedef struct {
  * \brief Declares a ListView menu and holds relevant context for it.
  */
 typedef struct  {
-	Content contents[LISTVIEW_MAX_ITEMS];    /**<top down list of ListView contents*/
+	Item items[LISTVIEW_MAX_ITEMS];           /**<top down list of ListView contents*/
+    unsigned int numItems;                    /**<number of items in this ListView*/
 } ListView;
 
 /**
@@ -91,21 +103,21 @@ typedef struct  {
  * \brief Declares a TraceView menu and holds relevant context for it.
  */
 typedef struct {
-	TraceNode* head;			 /**<pointer to head node of the buffer to draw*/
-	unsigned int sparseIndex;	 /**<number of data points to skip when drawing the trace*/	
+	TraceNode* head;                          /**<pointer to head node of the buffer to draw*/
+	unsigned int sparseIndex;                 /**<number of data points to skip when drawing the trace*/
 } TraceView;
 
 /**
  * \struct Activity
  *
- * \brief Declares full menu hierachy and layout for a GUI and maintains menu page and cursor context.
+ * \brief Declares full menu hierarchy and layout for a GUI and maintains menu page and cursor position context.
  */
 typedef struct  {
 	void* menus[ACITIVTY_MAX_PAGES];          /**<menu corresponding to each page*/
 	ViewType menuTypes[ACITIVTY_MAX_PAGES];   /**<the menu type corresponding to each page*/
 	unsigned int pageContext;                 /**<displayed page context*/
 	unsigned int cursorContext;               /**<cursor position context*/
-	unsigned int noPages;					  /**<number of pages in this activity*/
+	unsigned int numPages;                    /**<number of pages in this activity*/
 } Activity;
 
 
