@@ -30,16 +30,22 @@
 #define UART_FRAME_SIZE 9
 
 /**
+ * \struct _UartFrame
+ * \brief Structure of the UART message
+ */
+typedef struct
+{
+	char msgType;
+	char msg[UART_FRAME_SIZE];
+} _UartFrame;
+
+/**
  * \union UartFrame
- * \brief Structure of a UART message
+ * \brief Allows UART message to be accessed with structure or as a bit stream
  */
 typedef union
 {
-	struct 
-	{
-		char msgType;					/**< Character representing what the message describes */
-		char msg[UART_FRAME_SIZE];		/**< Contents of the message */
-	};
+	_UartFrame frameWise;				/**< Allows access with structure */
 	char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
 } UartFrame;
 

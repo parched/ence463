@@ -36,7 +36,7 @@
  * \struct SimState
  * \brief A state of the simulator.
  */
-typedef struct SimState SimState;
+typedef struct SimState SimState;		//TODO: Define the type
 
 /**
  * \brief Resets the simulation.

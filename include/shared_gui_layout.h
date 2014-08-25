@@ -113,8 +113,8 @@ typedef struct {
  * \brief Declares full menu hierarchy and layout for a GUI and maintains menu page and cursor position context.
  */
 typedef struct  {
-	void* menus[ACITIVTY_MAX_PAGES];          /**<menu corresponding to each page*/
-	ViewType menuTypes[ACITIVTY_MAX_PAGES];   /**<the menu type corresponding to each page*/
+	void* menus[ACTIVITY_MAX_PAGES];          /**<menu corresponding to each page*/
+	ViewType menuTypes[ACTIVITY_MAX_PAGES];   /**<the menu type corresponding to each page*/
 	unsigned int pageContext;                 /**<displayed page context*/
 	unsigned int cursorContext;               /**<cursor position context*/
 	unsigned int numPages;                    /**<number of pages in this activity*/

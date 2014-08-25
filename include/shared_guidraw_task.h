@@ -27,7 +27,7 @@
 #ifndef SHARED_GUIDRAW_H
 #define SHARED_GUIDRAW_H
 
-#include "shared_guilayout.h"
+#include "shared_gui_layout.h"
 
 /**
  * \brief Function type of callbacks for this module
