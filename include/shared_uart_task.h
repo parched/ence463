@@ -72,7 +72,7 @@ void attachOnReceiveCallback(void (*callback)(UartFrame));
  * \brief Queues message to be sent out via UART
  *
  * \param uartFrame			Frame to send 
- * \return Flag indicating whether queuing was successful
+ * \return 0 for success, -1 if queue is full
  */
 int queueMsgToSend(UartFrame uartFrame);
 

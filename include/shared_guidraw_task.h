@@ -27,6 +27,8 @@
 #ifndef SHARED_GUIDRAW_H
 #define SHARED_GUIDRAW_H
 
+#include "shared_button_task.h"
+
 /**
  * \brief Function type of callbacks for this module
  */
@@ -45,6 +47,15 @@ void attachActivity(Activity* activity);
  * \param callback Pointer to function to execute
  */
 void attachOnDrawCallback(void (*callback)());
+
+/**
+ * \brief Queue an input event for processing
+ * 
+ * \param button Button the event occured on
+ * \param event The type of ButtonEvent that occured on this button
+ * \return 0 for success, -1 if queue is full
+ */
+int queueInputEvent(Button button, ButtonEvent event);
 
 /**
  * \brief Function of the GUI draw to be called by the FreeRTOS kernel
