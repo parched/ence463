@@ -34,6 +34,7 @@
 
 #define LISTVIEW_MAX_ITEMS 5    /**<maximum number of items allowed in a ListView */
 
+#define VIEW_NAME_SIZE 15		/**<maximum string size allowed for a View title */
 #define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
 #define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
 
@@ -94,6 +95,7 @@ typedef struct {
  * \brief Declares a ListView menu and holds relevant context for it.
  */
 typedef struct  {
+	char name[VIEW_NAME_SIZE];                /**<name of the view*/
 	Item items[LISTVIEW_MAX_ITEMS];           /**<top down list of ListView contents*/
     unsigned int numItems;                    /**<number of items in this ListView*/
 } ListView;
@@ -104,6 +106,7 @@ typedef struct  {
  * \brief Declares a TraceView menu and holds relevant context for it.
  */
 typedef struct {
+	char name[VIEW_NAME_SIZE];                /**<name of the view*/
 	TraceNode* head;                          /**<pointer to head node of the buffer to draw*/
 	unsigned int sparseIndex;                 /**<number of data points to skip when drawing the trace*/
 } TraceView;

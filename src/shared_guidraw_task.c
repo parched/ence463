@@ -1,5 +1,5 @@
 /**
- * \file asc.c
+ * \file shared_guidraw_task.c
  * \brief Contains implementation of the task that draws the gui
  * \author George Xian
  * \version 1.0
@@ -26,12 +26,16 @@
 
 #include "shared_guidraw_task.h"
 
+#include <ustdlib.h>
+#include "drivers/rit128x96x4.h"
 #include "include/FreeRTOS.h"
 #include "include/queue.h"
 #include "shared_guilayout.h"
+#include "shared_displayformat128x64.h"
 
 #define INPUTEVENT_QUEUE_SIZE 10
 #define GUITASK_SLEEP_MS 40
+#define OLED_FREQ 1000000
 
 typedef enum {VERTDIR_UP, VERTDIR_DOWN} VertDir;
 typedef enum {HORZDIR_LEFT, HORZDIR_RIGHT} HorzDir;
@@ -69,6 +73,29 @@ void movePage(Activity* activity, HorzDir dir);
  */
 void changeOption(Activity* activity, HorzDir dir);
 
+/**
+ * \brief Determines what type of View to redraw
+ *
+ * \param activity Pointer to the activity
+ */
+void redrawView(Activity* activity);
+
+/**
+ * \brief Draws a new ListView upon switching to a different one
+ *
+ * \param view Pointer to the ListView to draw
+ */
+void redrawListView(ListView* view);
+
+/**
+ * \brief Gets the horizontal position of text given alignment and margins
+ *
+ * \param str String to draw
+ * \param type Type of alignment
+ * \param margin Offset given alignment type
+ */
+unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
+
 void attachActivity(Activity* activity)
 {
 	unitActivity = activity;
@@ -98,6 +125,9 @@ int queueInputEvent(Button button, ButtonEvent event)
 void vGuiRefreshTask(void *pvParameters)
 {
 	inputEventQueue = xQueueCreate(INPUTEVENT_QUEUE_SIZE, sizeof(InputEvent));
+
+	RIT128x96x4Init(OLED_FREQ);
+	redrawView(unitActivity);
 
 	for (;;)
 	{
@@ -194,6 +224,8 @@ void movePage(Activity* activity, HorzDir dir)
 			}
 			break;
 	}
+
+	redrawView(activity);
 }
 
 void changeOption(Activity* activity, HorzDir dir)
@@ -201,7 +233,7 @@ void changeOption(Activity* activity, HorzDir dir)
 	const unsigned int page = activity->pageContext;
 	if (activity->menuTypes[page] == VIEWTYPE_LIST)
 	{
-		unsigned int listCursorPos = activity->cursorContext- 1;
+		unsigned int listCursorPos = activity->cursorContext - 1;
 		Item* selectedItem = &(((ListView*) activity->menus[page])->items[listCursorPos]);
 		if (selectedItem->accessType == OPTIONACCESS_MODIFIABLE)
 		{
@@ -230,20 +262,93 @@ void changeOption(Activity* activity, HorzDir dir)
 		switch(dir)
 		{
 			case(HORZDIR_RIGHT):
-				if (activity->menus[page]->sparseIndex <= 1)
+				if (((TraceView*) activity->menus[page])->sparseIndex <= 1)
 				{
 					// zoom in
-					activity->menus[page]->sparseIndex /= 2;
+					((TraceView*) activity->menus[page])->sparseIndex /= 2;
 				}
 				break;
 			case(HORZDIR_LEFT):
-				if (activity->menus[page]->sparseIndex >= TRACEVIEW_MAX_ZOOM)
+				if (((TraceView*) activity->menus[page])->sparseIndex >= TRACEVIEW_MAX_ZOOM)
 				{
 					// zoom out
-					activity->menus[page]->sparseIndex *= 2;
+					((TraceView*) activity->menus[page])->sparseIndex *= 2;
 				}
 				break;
 		}
 	}
+}
+
+void redrawView(Activity* activity)
+{
+	switch (activity->menuTypes[activity->pageContext])
+	{
+		case(VIEWTYPE_LIST):
+			redrawListView((ListView*) (activity->menus[unitActivity->pageContext]));
+			break;
+		case(VIEWTYPE_TRACE):
+			//TODO: Implement initial TraceView draw
+			break;
+	}
+}
+
+void redrawListView(ListView* listView)
+{
+	RIT128x96x4Clear();
+
+	// draw title (is selected when coming to new page)
+	unsigned int posX = getHorzAlignment(listView->name, TITLE_TEXTALIGN, TITLE_MARGIN);
+	RIT128x96x4StringDraw(listView->name, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+
+	// draw items (none are selected when coming to new page)
+	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP;
+	unsigned int i;
+	for (i=0; i<(listView->numItems); i++)
+	{
+		// draw item label
+		posX = getHorzAlignment(listView->items[i].name, ITEM_TEXTALIGN, ITEM_MARGIN);
+		RIT128x96x4StringDraw(listView->items[i].name, posX, posY, UNSELECTED_BRIGHTNESS);
+
+		// draw item option
+		char displayStr[ITEM_NAME_SIZE];	// buffer to store the option string
+		switch (listView->items[i].optionType)
+		{
+			case(OPTIONTYPE_INT):
+				usprintf(displayStr, "%u", listView->items[i].getter());
+				break;
+			case(OPTIONTYPE_STRING):
+				ustrncpy(displayStr, listView->items[i].options.values[listView->items[i].getter()], ITEM_NAME_SIZE);
+				break;
+		}
+		posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
+		RIT128x96x4StringDraw(displayStr, posX, posY, UNSELECTED_BRIGHTNESS);
+
+		// indicate whether option is modifiable
+		if (listView->items[i].accessType == OPTIONACCESS_MODIFIABLE)
+		{
+			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw(">", posX+ITEM_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+		}
+
+		posY += i*ITEM_HEIGHT;		// space Items out
+	}
+}
+
+unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin)
+{
+	unsigned int pos;
+	switch (align)
+	{
+		case(TEXTALIGN_LEFT):
+			pos = margin;
+			break;
+		case(TEXTALIGN_CENTER):
+			pos = PX_HORZ/2 + margin - ustrlen(str)*(CHAR_WIDTH/2);
+			break;
+		case(TEXTALIGN_RIGHT):
+			pos = PX_HORZ - margin - ustrlen(str)*CHAR_WIDTH;
+			break;
+	}
+	return pos;
 }
 
