@@ -38,6 +38,7 @@
 #define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
+#define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
 
 /**
  * \enum ViewType
@@ -66,9 +67,9 @@ typedef enum {OPTIONACCESS_READONLY, OPTIONACCESS_MODIFIABLE} OptionAccess;
  * \brief Declares options available for an Item and holds relevant context for it.
  */
 typedef struct {
-    int optionIndex;                                        /**<context of what option is selected for this content*/
     int minIndex;                                           /**<minimum size allowed for option index*/
     int maxIndex;                                           /**<maximum size allowed for option index*/
+    unsigned int skip;										/**<amount to increment/decrement when modified*/
     char values[ITEM_MAX_OPTIONSTR][ITEM_NAME_SIZE];        /**<declares what value to display at every index (for OPTIONTYPE_STRING type only)*/
 } Options;
 
