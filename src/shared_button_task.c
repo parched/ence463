@@ -29,9 +29,9 @@
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
 {
-	bool enabled;	// Switch is only polled if enabled.
-	int events;		// Switch triggers events on rising or falling edges.
-	int total;		// Total of previous switch values for oversampled debouncing.
+	tBoolean 	enabled;	// Switch is only polled if enabled.
+	int 		events;		// Switch triggers events on rising or falling edges.
+	int 		total;		// Total of previous switch values for oversampled debouncing.
 } ButtonSwitch;
 
 ButtonSwitch ButtonSet[5];
@@ -54,20 +54,20 @@ static void buttonGPIOInit(unsigned long mcu_clock)
 // Sets Button Event Parameters
 void configureButtonEvent(Button button, ButtonEvent eventType)
 {
-	ButtonSet[button].enabled 	= 1;
+	ButtonSet[button].enabled 	= true;
 	ButtonSet[button].events 	|= BIT(eventType);
 	ButtonSet[button].total 	= 0;
 }
 
 
 // Switch Polling Task
-void vButtonPollingTask(void* pvParameters);
+void vButtonPollingTask(void* pvParameters)
 {
 	// Initialise GPIO pins
 	unsigned long mcuClock = SysCtlClockGet();
 	buttonGPIOInit(mcuClock);
 
-	int itr 			= 0;		// Loop Iterator (Button to Process)
+	Button itr;						// Loop Iterator (Button to Process)
 	int switchStates 	= 0x00;		// Port G Switch Values
 	int tmpTotal 		= 0;		// Temporary Switch Total
 
@@ -84,7 +84,7 @@ void vButtonPollingTask(void* pvParameters);
 		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));
 
 		// Iterate through Switches, check for events
-		for (itr = 0; itr < NUM_BUTTONS; itr ++)
+		for (itr = BUTTON_UP; itr <= BUTTON_SELECT; itr ++)
 		{
 			if (ButtonSet[itr].enabled)
 			{
@@ -92,20 +92,22 @@ void vButtonPollingTask(void* pvParameters);
 				tmpTotal = ButtonSet[itr].total;
 
 				// Increment or Decrement total based on switch state
-				if (switchStates & BIT((itr + 3))) tmpTotal++ else tmpTotal --;
+				if (switchStates & BIT((itr + 3))) tmpTotal++;
+				else tmpTotal --;
+
 				if (tmpTotal > TOTAL_MAX) tmpTotal = TOTAL_MAX;
 				if (tmpTotal < TOTAL_MIN) tmpTotal = TOTAL_MIN;
 
 				// Check for rising edge, if enabled
 				if (tmpTotal == TOTAL_MAX && ButtonSet[itr].total < TOTAL_MAX && ButtonSet[itr].events & BIT(BUTTON_EVENT_RISING_EDGE))
 				{
-					queueInputEvent(itr, BUTTON_EVENT_RISING_EDGE)
+					queueInputEvent(itr, BUTTON_EVENT_RISING_EDGE);
 				}
 
 				// Check for falling edge, if enabled
 				if (tmpTotal == TOTAL_MIN && ButtonSet[itr].total > TOTAL_MIN && ButtonSet[itr].events & BIT(BUTTON_EVENT_FALLING_EDGE))
 				{
-					queueInputEvent(itr, BUTTON_EVENT_FALLING_EDGE)
+					queueInputEvent(itr, BUTTON_EVENT_FALLING_EDGE);
 				}
 
 				// Store new total value

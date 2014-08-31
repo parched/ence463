@@ -27,8 +27,8 @@
 #ifndef SHARED_BUTTON_TASK_H
 #define SHARED_BUTTON_TASK_H
 
-typedef enum {BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
-typedef enum {BUTTON_EVENT_RISING_EDGE, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
+typedef enum {BUTTON_UP = 0, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
+typedef enum {BUTTON_EVENT_RISING_EDGE = 0, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
 
 #define BIT(x)		(1 << x)
 
@@ -37,6 +37,12 @@ typedef enum {BUTTON_EVENT_RISING_EDGE, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
 #define TOTAL_MIN	0
 
 #include "shared_guidraw_task.h"
+
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
 
 /**
  * \brief Configures chosen button to listen for selected input event
