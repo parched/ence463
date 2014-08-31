@@ -37,6 +37,7 @@
 #define VIEW_NAME_SIZE 15		/**<maximum string size allowed for a View title */
 #define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
 #define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
+#define OPTION_NAME_SIZE 5		/**<maximum string size allowed for string Options */
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
@@ -71,7 +72,7 @@ typedef struct {
     int minIndex;                                           /**<minimum size allowed for option index*/
     int maxIndex;                                           /**<maximum size allowed for option index*/
     unsigned int skip;										/**<amount to increment/decrement when modified*/
-    char values[ITEM_MAX_OPTIONSTR][ITEM_NAME_SIZE];        /**<declares what value to display at every index (for OPTIONTYPE_STRING type only)*/
+    char values[ITEM_MAX_OPTIONSTR][OPTION_NAME_SIZE];      /**<declares what value to display at every index (for OPTIONTYPE_STRING type only)*/
 } Options;
 
 /**

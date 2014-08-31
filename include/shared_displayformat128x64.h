@@ -1,5 +1,5 @@
 /**
- * \file shared_displayformat.h
+ * \file shared_displayformat128x64.h
  * \brief Defines the margins and padding for display
  * \author George Xian
  * \version 1.0
@@ -26,13 +26,20 @@
 
 #ifndef SHARED_DISPLAYFORMAT128x64_H
 
+/* Display parameters */
 #define PX_HORZ 128
 #define PX_VERT 64
 
-typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
-
 #define CHAR_WIDTH 6
 
+/* Formatting parameter selections */
+typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
+
+/* General View parameters */
+#define UNSELECTED_BRIGHTNESS 6
+#define SELECTED_BRIGHTNESS 15
+
+/* ListView parameters */
 #define TITLE_PADDINGTOP 5
 #define TITLE_TEXTALIGN TEXTALIGN_CENTER
 #define TITLE_MARGIN 0
@@ -43,11 +50,8 @@ typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
 #define ITEM_MARGIN 4
 
 #define OPTION_TEXTALIGN TEXTALIGN_CENTER
-#define OPTION_MARGIN 30
+#define OPTION_MARGIN 20
 #define OPTION_MODFIABLEINDICATOR_MARGIN 4
-
-#define UNSELECTED_BRIGHTNESS 6
-#define SELECTED_BRIGHTNESS 15
 
 
 #endif
