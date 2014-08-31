@@ -31,6 +31,7 @@
 #include "drivers/rit128x96x4.h"
 #include "include/FreeRTOS.h"
 #include "include/queue.h"
+#include "include/task.h"
 #include "shared_guilayout.h"
 #include "shared_displayformat128x64.h"
 
@@ -49,6 +50,8 @@ typedef struct
 
 xQueueHandle inputEventQueue;
 Activity* unitActivity;
+
+char CLEAR_ROW [PX_HORZ] = "                      ";
 
 /**
  * \brief Moves the cursor up or down
@@ -142,13 +145,23 @@ int queueInputEvent(Button button, ButtonEvent event)
 
 void vGuiRefreshTask(void *pvParameters)
 {
+	// initialize FreeRTOS queue
 	inputEventQueue = xQueueCreate(INPUTEVENT_QUEUE_SIZE, sizeof(InputEvent));
 
+	// initialize FreeRTOS sleep parameters
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = GUITASK_SLEEP_MS*portTICK_RATE_MS;
+	xLastWakeTime = xTaskGetTickCount();
+
+	// initialize screen
 	RIT128x96x4Init(OLED_FREQ);
 	redrawView(unitActivity);
 
 	for (;;)
 	{
+		// wait for next cycle
+		vTaskDelayUntil( &xLastWakeTime, xFrequency);
+
 		// process input events
 		InputEvent event;
 		while (xQueueReceive(inputEventQueue, &event, 0) == pdTRUE)
@@ -242,11 +255,11 @@ void moveCursor(Activity* activity, VertDir dir)
 			}
 			else if (activity->menuTypes[page] == VIEWTYPE_LIST)
 			{
-				const unsigned int listCursorContext = activity->cursorContext - 1;
-				if (listCursorContext < ((ListView*) activity->menus[page])->numItems)
+				if (activity->cursorContext < ((ListView*) activity->menus[page])->numItems)
 				{
 					// if in ListView and cursor position and not at bottom, go down
 					activity->cursorContext++;
+					const unsigned int listCursorContext = activity->cursorContext - 1;
 
 					// update display
 					if (activity->cursorContext-1 == 0)
@@ -381,8 +394,11 @@ void redrawListView(Activity* activity)
 
 void drawListViewTitle(Activity* activity)
 {
+	RIT128x96x4StringDraw(CLEAR_ROW, 0, TITLE_PADDINGTOP, 0);
+
 	// draw title
-	char* titleStr = ((ListView*) (activity->menus[activity->pageContext]))->name;
+	char titleStr[VIEW_NAME_SIZE];
+	ustrncpy(titleStr, ((ListView*) (activity->menus[activity->pageContext]))->name, VIEW_NAME_SIZE);
 	unsigned int posX = getHorzAlignment(titleStr, TITLE_TEXTALIGN, TITLE_MARGIN);
 
 	if (activity->cursorContext == 0)
@@ -420,10 +436,12 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP + index*ITEM_HEIGHT;
 	if (selected)
 	{
+		RIT128x96x4StringDraw(CLEAR_ROW, 0, posY, 0);
 		RIT128x96x4StringDraw(item->name, posX, posY, SELECTED_BRIGHTNESS);
 	}
 	else
 	{
+		RIT128x96x4StringDraw(CLEAR_ROW, 0, posY, 0);
 		RIT128x96x4StringDraw(item->name, posX, posY, UNSELECTED_BRIGHTNESS);
 	}
 

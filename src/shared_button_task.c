@@ -26,6 +26,20 @@
 
 #include "shared_button_task.h"
 
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+#include "include/FreeRTOS.h"
+#include "include/task.h"
+#include "shared_guidraw_task.h"
+
+#define BIT(x)		(1 << x)
+
+#define TOTAL_MAX	250
+#define TOTAL_MIN	0
+
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
 {
@@ -71,15 +85,18 @@ void vButtonPollingTask(void* pvParameters)
 	int switchStates 	= 0x00;		// Port G Switch Values
 	int tmpTotal 		= 0;		// Temporary Switch Total
 
-	TickType_t xLastWakeTime;
+	portTickType xLastWakeTime;
 
 	// 10kHz operation = 0.1ms sleep
-	const TickType_t xFrequency = 0.1*portTICK_PERIOD_MS;
+	const portTickType xFrequency = 0.1*portTICK_RATE_MS;
 
 	xLastWakeTime = xTaskGetTickCount();
 
 	for(;;)
 	{
+		// Sleep for 0.1ms
+		vTaskDelayUntil( &xLastWakeTime, xFrequency);
+
 		// Read Switches
 		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));
 
@@ -114,8 +131,5 @@ void vButtonPollingTask(void* pvParameters)
 				ButtonSet[itr].total = tmpTotal;
 			}
 		}
-
-		// Sleep for 0.1ms
-		vTaskDelayUntil( &xLastWakeTime, xFrequency);
 	}
 }

@@ -30,19 +30,7 @@
 typedef enum {BUTTON_UP = 0, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
 typedef enum {BUTTON_EVENT_RISING_EDGE = 0, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
 
-#define BIT(x)		(1 << x)
-
 #define NUM_BUTTONS	5
-#define TOTAL_MAX	250
-#define TOTAL_MIN	0
-
-#include "shared_guidraw_task.h"
-
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
 
 /**
  * \brief Configures chosen button to listen for selected input event
