@@ -24,14 +24,12 @@
  *
  */
 
-#define BIT(x) (1 << x)
-
 #include "shared_button_task.h"
 
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
 {
-	int enabled;	// Switch is only polled if enabled.
+	bool enabled;	// Switch is only polled if enabled.
 	int events;		// Switch triggers events on rising or falling edges.
 	int total;		// Total of previous switch values for oversampled debouncing.
 } ButtonSwitch;
@@ -56,21 +54,66 @@ static void buttonGPIOInit(unsigned long mcu_clock)
 // Sets Button Event Parameters
 void configureButtonEvent(Button button, ButtonEvent eventType)
 {
-	ButtonSet[button].enabled = 1;
-	ButtonSet[button].events |= 1 << eventType;
+	ButtonSet[button].enabled 	= 1;
+	ButtonSet[button].events 	|= BIT(eventType);
+	ButtonSet[button].total 	= 0;
 }
 
 
 // Switch Polling Task
 void vButtonPollingTask(void* pvParameters);
 {
+	// Initialise GPIO pins
 	unsigned long mcuClock = SysCtlClockGet();
 	buttonGPIOInit(mcuClock);
 
-	while(1)
+	int itr 			= 0;		// Loop Iterator (Button to Process)
+	int switchStates 	= 0x00;		// Port G Switch Values
+	int tmpTotal 		= 0;		// Temporary Switch Total
+
+	TickType_t xLastWakeTime;
+
+	// 10kHz operation = 0.1ms sleep
+	const TickType_t xFrequency = 0.1*portTICK_PERIOD_MS;
+
+	xLastWakeTime = xTaskGetTickCount();
+
+	for(;;)
 	{
-		//TODO: Poll Enabled Buttons
-		//TODO: Check for Events
-		//TODO: Sleep Task
+		// Read Switches
+		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));
+
+		// Iterate through Switches, check for events
+		for (itr = 0; itr < NUM_BUTTONS; itr ++)
+		{
+			if (ButtonSet[itr].enabled)
+			{
+				// Get previous total for comparison
+				tmpTotal = ButtonSet[itr].total;
+
+				// Increment or Decrement total based on switch state
+				if (switchStates & BIT((itr + 3))) tmpTotal++ else tmpTotal --;
+				if (tmpTotal > TOTAL_MAX) tmpTotal = TOTAL_MAX;
+				if (tmpTotal < TOTAL_MIN) tmpTotal = TOTAL_MIN;
+
+				// Check for rising edge, if enabled
+				if (tmpTotal == TOTAL_MAX && ButtonSet[itr].total < TOTAL_MAX && ButtonSet[itr].events & BIT(BUTTON_EVENT_RISING_EDGE))
+				{
+					queueInputEvent(itr, BUTTON_EVENT_RISING_EDGE)
+				}
+
+				// Check for falling edge, if enabled
+				if (tmpTotal == TOTAL_MIN && ButtonSet[itr].total > TOTAL_MIN && ButtonSet[itr].events & BIT(BUTTON_EVENT_FALLING_EDGE))
+				{
+					queueInputEvent(itr, BUTTON_EVENT_FALLING_EDGE)
+				}
+
+				// Store new total value
+				ButtonSet[itr].total = tmpTotal;
+			}
+		}
+
+		// Sleep for 0.1ms
+		vTaskDelayUntil( &xLastWakeTime, xFrequency);
 	}
 }

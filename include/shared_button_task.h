@@ -30,6 +30,14 @@
 typedef enum {BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
 typedef enum {BUTTON_EVENT_RISING_EDGE, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
 
+#define BIT(x)		(1 << x)
+
+#define NUM_BUTTONS	5
+#define TOTAL_MAX	250
+#define TOTAL_MIN	0
+
+#include "shared_guidraw_task.h"
+
 /**
  * \brief Configures chosen button to listen for selected input event
  *
