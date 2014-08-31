@@ -27,6 +27,7 @@
 #include "shared_guidraw_task.h"
 
 #include <ustdlib.h>
+#include "inc/hw_types.h"
 #include "drivers/rit128x96x4.h"
 #include "include/FreeRTOS.h"
 #include "include/queue.h"
@@ -96,6 +97,24 @@ void redrawListView(ListView* view);
  */
 unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
 
+/**
+ * \brief Draws given string formatted as title in a ListView
+ *
+ * \param str Title string
+ * \param selected Is title string selected
+ */
+void drawListViewTitle(char* str, tBoolean selected);
+
+/**
+ * \brief Draws the given Item in a ListView
+ *
+ * \param item Pointer to Item object to draw
+ * \param index The place this item is in the ListView where 0 is top
+ * \param selected Is Item selected
+ */
+void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
+
+
 void attachActivity(Activity* activity)
 {
 	unitActivity = activity;
@@ -133,38 +152,41 @@ void vGuiRefreshTask(void *pvParameters)
 	{
 		// process input events
 		InputEvent event;
-		while (xQueueReceive(inputEventQueue, (InputEvent*) &event, 0) == pdTRUE)
+		while (xQueueReceive(inputEventQueue, &event, 0) == pdTRUE)
 		{
-			switch(event.button)
+			if (event.event == BUTTON_EVENT_RISING_EDGE)
 			{
-				case(BUTTON_UP):
-					moveCursor(unitActivity, VERTDIR_UP);
-					break;
-				case(BUTTON_DOWN):
-					moveCursor(unitActivity, VERTDIR_DOWN);
-					break;
-				case(BUTTON_LEFT):
-					if (unitActivity->cursorContext == 0)
-					{
-						movePage(unitActivity, HORZDIR_LEFT);
-					}
-					else
-					{
-						changeOption(unitActivity, HORZDIR_LEFT);
-					}
-					break;
-				case(BUTTON_RIGHT):
-					if (unitActivity->cursorContext == 0)
-					{
-						movePage(unitActivity, HORZDIR_RIGHT);
-					}
-					else
-					{
-						changeOption(unitActivity, HORZDIR_RIGHT);
-					}
-					break;
-				default:
-					break;
+				switch(event.button)
+				{
+					case(BUTTON_UP):
+						moveCursor(unitActivity, VERTDIR_UP);
+						break;
+					case(BUTTON_DOWN):
+						moveCursor(unitActivity, VERTDIR_DOWN);
+						break;
+					case(BUTTON_LEFT):
+						if (unitActivity->cursorContext == 0)
+						{
+							movePage(unitActivity, HORZDIR_LEFT);
+						}
+						else
+						{
+							changeOption(unitActivity, HORZDIR_LEFT);
+						}
+						break;
+					case(BUTTON_RIGHT):
+						if (unitActivity->cursorContext == 0)
+						{
+							movePage(unitActivity, HORZDIR_RIGHT);
+						}
+						else
+						{
+							changeOption(unitActivity, HORZDIR_RIGHT);
+						}
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	}
@@ -198,6 +220,7 @@ void moveCursor(Activity* activity, VertDir dir)
 				{
 					// if in ListView and cursor position and not at bottom, go down
 					activity->cursorContext++;
+					//TODO:
 				}
 			}
 			break;
@@ -297,40 +320,48 @@ void redrawListView(ListView* listView)
 	RIT128x96x4Clear();
 
 	// draw title (is selected when coming to new page)
-	unsigned int posX = getHorzAlignment(listView->name, TITLE_TEXTALIGN, TITLE_MARGIN);
-	RIT128x96x4StringDraw(listView->name, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+	drawListViewTitle(listView->name, true);
 
 	// draw items (none are selected when coming to new page)
-	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP;
 	unsigned int i;
 	for (i=0; i<(listView->numItems); i++)
 	{
-		// draw item label
-		posX = getHorzAlignment(listView->items[i].name, ITEM_TEXTALIGN, ITEM_MARGIN);
-		RIT128x96x4StringDraw(listView->items[i].name, posX, posY, UNSELECTED_BRIGHTNESS);
+		drawListViewItem(&(listView->items[i]), i, false);
+	}
+}
 
-		// draw item option
-		char displayStr[ITEM_NAME_SIZE];	// buffer to store the option string
-		switch (listView->items[i].optionType)
-		{
-			case(OPTIONTYPE_INT):
-				usprintf(displayStr, "%u", listView->items[i].getter());
-				break;
-			case(OPTIONTYPE_STRING):
-				ustrncpy(displayStr, listView->items[i].options.values[listView->items[i].getter()], ITEM_NAME_SIZE);
-				break;
-		}
-		posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
-		RIT128x96x4StringDraw(displayStr, posX, posY, UNSELECTED_BRIGHTNESS);
+void drawListViewTitle(char* str, tBoolean selected)
+{
+	unsigned int posX = getHorzAlignment(str, TITLE_TEXTALIGN, TITLE_MARGIN);
+	RIT128x96x4StringDraw(str, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+}
 
-		// indicate whether option is modifiable
-		if (listView->items[i].accessType == OPTIONACCESS_MODIFIABLE)
-		{
-			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
-			RIT128x96x4StringDraw(">", posX+ITEM_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
-		}
+void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
+{
+	// draw item label
+	unsigned int posX = getHorzAlignment(item->name, ITEM_TEXTALIGN, ITEM_MARGIN);
+	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP + index*ITEM_HEIGHT;
+	RIT128x96x4StringDraw(item->name, posX, posY, UNSELECTED_BRIGHTNESS);
 
-		posY += i*ITEM_HEIGHT;		// space Items out
+	// draw item option
+	char displayStr[OPTION_NAME_SIZE];	// buffer to store the option string
+	switch (item->optionType)
+	{
+		case(OPTIONTYPE_INT):
+			usprintf(displayStr, "%u", item->getter());
+			break;
+		case(OPTIONTYPE_STRING):
+			ustrncpy(displayStr, item->options.values[item->getter()], ITEM_NAME_SIZE);
+			break;
+	}
+	posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
+	RIT128x96x4StringDraw(displayStr, posX, posY, UNSELECTED_BRIGHTNESS);
+
+	// indicate whether option is modifiable
+	if (item->accessType == OPTIONACCESS_MODIFIABLE)
+	{
+		RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+		RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
 	}
 }
 
