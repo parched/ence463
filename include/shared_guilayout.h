@@ -34,7 +34,7 @@
 
 #define LISTVIEW_MAX_ITEMS 5    /**<maximum number of items allowed in a ListView */
 
-#define VIEW_NAME_SIZE 15		/**<maximum string size allowed for a View title */
+#define VIEW_NAME_SIZE 12		/**<maximum string size allowed for a View title */
 #define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
 #define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
 #define OPTION_NAME_SIZE 5		/**<maximum string size allowed for string Options */

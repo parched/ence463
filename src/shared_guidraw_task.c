@@ -86,24 +86,14 @@ void redrawView(Activity* activity);
  *
  * \param view Pointer to the ListView to draw
  */
-void redrawListView(ListView* view);
-
-/**
- * \brief Gets the horizontal position of text given alignment and margins
- *
- * \param str String to draw
- * \param type Type of alignment
- * \param margin Offset given alignment type
- */
-unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
+void redrawListView(Activity* view);
 
 /**
  * \brief Draws given string formatted as title in a ListView
  *
- * \param str Title string
- * \param selected Is title string selected
+ * \param activity Pointer to activity containing title to draw
  */
-void drawListViewTitle(char* str, tBoolean selected);
+void drawListViewTitle(Activity* activity);
 
 /**
  * \brief Draws the given Item in a ListView
@@ -113,6 +103,15 @@ void drawListViewTitle(char* str, tBoolean selected);
  * \param selected Is Item selected
  */
 void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
+
+/**
+ * \brief Gets the horizontal position of text given alignment and margins
+ *
+ * \param str String to draw
+ * \param type Type of alignment
+ * \param margin Offset given alignment type
+ */
+unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
 
 
 void attachActivity(Activity* activity)
@@ -307,7 +306,7 @@ void redrawView(Activity* activity)
 	switch (activity->menuTypes[activity->pageContext])
 	{
 		case(VIEWTYPE_LIST):
-			redrawListView((ListView*) (activity->menus[unitActivity->pageContext]));
+			redrawListView(activity);
 			break;
 		case(VIEWTYPE_TRACE):
 			//TODO: Implement initial TraceView draw
@@ -315,14 +314,15 @@ void redrawView(Activity* activity)
 	}
 }
 
-void redrawListView(ListView* listView)
+void redrawListView(Activity* activity)
 {
 	RIT128x96x4Clear();
 
 	// draw title (is selected when coming to new page)
-	drawListViewTitle(listView->name, true);
+	drawListViewTitle(activity);
 
 	// draw items (none are selected when coming to new page)
+	ListView* listView = (ListView*) activity->menus[activity->pageContext];
 	unsigned int i;
 	for (i=0; i<(listView->numItems); i++)
 	{
@@ -330,10 +330,38 @@ void redrawListView(ListView* listView)
 	}
 }
 
-void drawListViewTitle(char* str, tBoolean selected)
+void drawListViewTitle(Activity* activity)
 {
-	unsigned int posX = getHorzAlignment(str, TITLE_TEXTALIGN, TITLE_MARGIN);
-	RIT128x96x4StringDraw(str, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+	// draw title
+	char* titleStr = ((ListView*) (activity->menus[activity->pageContext]))->name;
+	unsigned int posX = getHorzAlignment(titleStr, TITLE_TEXTALIGN, TITLE_MARGIN);
+
+	if (activity->cursorContext == 0)
+	{
+		// title selected, draw bright
+		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+		if (activity->pageContext > 0)
+		{
+			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+		}
+		if (activity->pageContext < activity->numPages-1)
+		{
+			RIT128x96x4StringDraw(">", posX+ustrlen(titleStr)*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+		}
+	}
+	else
+	{
+		// title not selected, draw dim
+		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+		if (activity->pageContext > 0)
+		{
+			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+		}
+		if (activity->pageContext < activity->numPages-1)
+		{
+			RIT128x96x4StringDraw(">", posX+ustrlen(titleStr)*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+		}
+	}
 }
 
 void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
@@ -341,27 +369,61 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	// draw item label
 	unsigned int posX = getHorzAlignment(item->name, ITEM_TEXTALIGN, ITEM_MARGIN);
 	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP + index*ITEM_HEIGHT;
-	RIT128x96x4StringDraw(item->name, posX, posY, UNSELECTED_BRIGHTNESS);
+	if (selected)
+	{
+		RIT128x96x4StringDraw(item->name, posX, posY, SELECTED_BRIGHTNESS);
+	}
+	else
+	{
+		RIT128x96x4StringDraw(item->name, posX, posY, UNSELECTED_BRIGHTNESS);
+	}
 
 	// draw item option
-	char displayStr[OPTION_NAME_SIZE];	// buffer to store the option string
+	char* displayStr;
 	switch (item->optionType)
 	{
 		case(OPTIONTYPE_INT):
 			usprintf(displayStr, "%u", item->getter());
 			break;
 		case(OPTIONTYPE_STRING):
-			ustrncpy(displayStr, item->options.values[item->getter()], ITEM_NAME_SIZE);
+			displayStr = item->options.values[item->getter()];
 			break;
 	}
 	posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
-	RIT128x96x4StringDraw(displayStr, posX, posY, UNSELECTED_BRIGHTNESS);
+	if (selected)
+	{
+		RIT128x96x4StringDraw(displayStr, posX, posY, SELECTED_BRIGHTNESS);
+	}
+	else
+	{
+		RIT128x96x4StringDraw(displayStr, posX, posY, UNSELECTED_BRIGHTNESS);
+	}
 
 	// indicate whether option is modifiable
 	if (item->accessType == OPTIONACCESS_MODIFIABLE)
 	{
-		RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
-		RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+		if (selected)
+		{
+			if (item->getter() < item->options.maxIndex)
+			{
+				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+			}
+			if (item->getter() > item->options.minIndex)
+			{
+				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+			}
+		}
+		else
+		{
+			if (item->getter() < item->options.maxIndex)
+			{
+				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+			}
+			if (item->getter() > item->options.minIndex)
+			{
+				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+			}
+		}
 	}
 }
 
@@ -374,7 +436,7 @@ unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin)
 			pos = margin;
 			break;
 		case(TEXTALIGN_CENTER):
-			pos = PX_HORZ/2 + margin - ustrlen(str)*(CHAR_WIDTH/2);
+			pos = PX_HORZ/2 + margin - (ustrlen(str)/2)*CHAR_WIDTH;
 			break;
 		case(TEXTALIGN_RIGHT):
 			pos = PX_HORZ - margin - ustrlen(str)*CHAR_WIDTH;
