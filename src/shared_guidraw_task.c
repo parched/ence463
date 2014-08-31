@@ -201,6 +201,30 @@ void moveCursor(Activity* activity, VertDir dir)
 			{
 				// move cursor up if not at the top
 				activity->cursorContext--;
+
+				// update display
+				const unsigned int listCursorContext = activity->cursorContext-1;
+				switch(activity->menuTypes[page])
+				{
+					case(VIEWTYPE_LIST):
+						// dim previous selected item
+						drawListViewItem(&(((ListView*) (activity->menus[page]))->items[listCursorContext+1]), listCursorContext+1, false);
+						if (activity->cursorContext == 0)
+						{
+							// user is now selecting the title, brighten title
+							drawListViewTitle(activity);
+						}
+						else
+						{
+							// user is now selecting another item, redraw the item
+							drawListViewItem(&(((ListView*) (activity->menus[page]))->items[listCursorContext]), listCursorContext, true);
+						}
+						break;
+					case(VIEWTYPE_TRACE):
+						drawListViewTitle(activity);
+						//TODO: dim the trace as it is no longer being selected
+						break;
+				}
 			}
 			break;
 		case(VERTDIR_DOWN):
@@ -210,16 +234,33 @@ void moveCursor(Activity* activity, VertDir dir)
 				{
 					// if in TraceView and not currently in zoom context, enter it
 					activity->cursorContext++;
+
+					// update display
+					drawListViewTitle(activity);
+					//TODO: Brighten trace as it is now being selected
 				}
 			}
 			else if (activity->menuTypes[page] == VIEWTYPE_LIST)
 			{
-				unsigned int listCursorPos = activity->cursorContext - 1;
-				if (listCursorPos < ((ListView*) activity->menus[page])->numItems)
+				const unsigned int listCursorContext = activity->cursorContext - 1;
+				if (listCursorContext < ((ListView*) activity->menus[page])->numItems)
 				{
 					// if in ListView and cursor position and not at bottom, go down
 					activity->cursorContext++;
-					//TODO:
+
+					// update display
+					if (activity->cursorContext-1 == 0)
+					{
+						// user was previously selected title, dim title
+						drawListViewTitle(activity);
+					}
+					else
+					{
+						// user was previously selecting another item, dim it
+						drawListViewItem(&(((ListView*) activity->menus[page])->items[listCursorContext-1]), listCursorContext-1, false);
+					}
+					// brighten selected item
+					drawListViewItem(&(((ListView*) activity->menus[page])->items[listCursorContext]), listCursorContext, true);
 				}
 			}
 			break;
@@ -267,6 +308,9 @@ void changeOption(Activity* activity, HorzDir dir)
 					{
 						// if ListView, not at top and selected item is modifiable and not at limit, decrease
 						selectedItem->setter(selectedItem->getter() - selectedOption->skip);
+
+						// redraw the item
+						drawListViewItem(selectedItem, listCursorPos, true);
 					}
 					break;
 				case(HORZDIR_RIGHT):
@@ -274,6 +318,9 @@ void changeOption(Activity* activity, HorzDir dir)
 					{
 						// if ListView, not at top and selected item is modifiable and not at limit, increase
 						selectedItem->setter(selectedItem->getter() + selectedOption->skip);
+
+						// redraw the item
+						drawListViewItem(selectedItem, listCursorPos, true);
 					}
 					break;
 			}
@@ -288,6 +335,7 @@ void changeOption(Activity* activity, HorzDir dir)
 				{
 					// zoom in
 					((TraceView*) activity->menus[page])->sparseIndex /= 2;
+					//TODO: Redraw trace
 				}
 				break;
 			case(HORZDIR_LEFT):
@@ -295,6 +343,7 @@ void changeOption(Activity* activity, HorzDir dir)
 				{
 					// zoom out
 					((TraceView*) activity->menus[page])->sparseIndex *= 2;
+					//TODO: Redraw trace
 				}
 				break;
 		}
