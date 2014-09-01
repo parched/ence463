@@ -11,23 +11,26 @@ set_source_files_properties(startup.c PROPERTIES
 	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
 	)
 
+# Add shared c files to this list
 add_library(shared
 	shared_adc.c
 	)
 
+# Add ASC c files to this list
 add_library(asc
 	asc_pulse_in.c
 	)
 
+# Add WUS c files to this list
 add_library(wus
 	wus_pulse_out.c
+	#wus_simulate_task.c
 	)
 
 
 add_executable(wus.axf
 	startup.c
 	wus.c
-	#wus_simulate_task.c
 	)
 
 target_link_libraries(wus.axf
