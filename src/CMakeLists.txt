@@ -7,19 +7,25 @@ include_directories(
 	${AS_SOURCE_DIR}/StellarisWare
 	)
 
+set_source_files_properties(startup.c PROPERTIES
+	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
+	)
+
+add_library(wus
+	wus_pulse_out.c
+	)
+
+
 add_executable(wus.axf
 	startup.c
 	wus.c
 	#wus_simulate_task.c
 	)
 
-set_source_files_properties(startup.c PROPERTIES
-	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
-	)
-
 target_link_libraries(wus.axf
 	FreeRTOS
 	StellarisWare
+	wus
 	)
 
 set_target_properties(wus.axf PROPERTIES
