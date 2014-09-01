@@ -26,18 +26,18 @@
 
 
 /* FreeRTOS includes. */
-#include "include\FreeRTOS.h"
-#include "include\task.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* Stellaris library includes. */
-#include "inc\hw_types.h"
-#include "inc\hw_memmap.h"
-#include "driverlib\sysctl.h"
+#include "hw_types.h"
+#include "hw_memmap.h"
+#include "sysctl.h"
 
 
 /*Task Modules*/
 #include "wus_simulate_task.h"
-#include "wus_gui_task.h"
+#include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 

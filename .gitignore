@@ -1,3 +1,11 @@
+## CMake
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
 # Docs
 doc
 
@@ -26,3 +34,6 @@ doc
 *.i*86
 *.x86_64
 *.hex
+*.axf
+*.bin
+*.map
