@@ -11,8 +11,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
 add_definitions(
 	-DGCC_ARMCM3_LM3S102
 	-Dinline=
-	-DPACK_STRUCT_END=__attribute\(\(packed\)\)
-	-DALIGN_STRUCT_END=__attribute\(\(aligned\(4\)\)\)
 	-Dsprintf=usprintf
 	-Dsnprintf=usnprintf
 	-Dprintf=uipprintf
