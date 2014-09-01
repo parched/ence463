@@ -44,9 +44,8 @@ void initAdcModule(char adcs)
 		maxSteps = 1;
 	else if (adcs == 0x03 || adcs == 0x05 || adcs == 0x06)
 		maxSteps = 2;
-	else if (adcs = 0x07)
+	else if (adcs == 0x07)
 		maxSteps = 3;
-	else break;	// If you forged to specify ADC pins, function quits.
 
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
@@ -110,9 +109,11 @@ void initAdcModule(char adcs)
 int getSmoothAdc(char adc)
 {
 	unsigned long adcValues[3];
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, adcValues)
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, adcValues, 8);
 
 	//TODO: Store Data
+
+	return 0;
 }
 
 void adcISR (void)
