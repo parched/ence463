@@ -24,13 +24,98 @@
  *
  */
 
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/adc.h"
+#include "driverlib/interrupt.h"
+
+#define BIT(x) (1 << x)
+
+void adcISR (void);
+
+
+
 void initAdcModule(char adcs)
 {
+	// Determine Number of Enabled ADC Pins
+	int maxSteps = 0;
+	if (adcs == 0x01 || adcs == 0x02 || adcs == 0x04)
+		maxSteps = 1;
+	else if (adcs == 0x03 || adcs == 0x05 || adcs == 0x06)
+		maxSteps = 2;
+	else if (adcs = 0x07)
+		maxSteps = 3;
+	else break;	// If you forged to specify ADC pins, function quits.
 
+	// Enable ADC Peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
+	SysCtlDelay(SysCtlClockGet() / 3000);
+
+	// Set ADC Speed to 500ksps Max
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
+
+	// Disable Sequence 0 before Configuration
+	ADCSequenceDisable(ADC_BASE, 0);
+
+	// Configure Sequence 0 for a Processor Trigger and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, 0, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSoftwareOversampleConfigure(ADC_BASE, 0, 8);
+
+	// Configure ADC Sequence Steps
+	int stepItr;
+	int stepNum = 0;
+	for (stepItr = 0; stepItr < 3; stepItr ++)
+	{
+		int ADCconfig 	= 0;
+		int ADCinput	= BIT(stepItr);
+
+		// Check if ADC pin is required
+		if (ADCinput & adcs)
+		{
+			// Enable Channel
+			switch (ADCinput)
+			{
+				case BIT(0):
+					ADCconfig = ADC_CTL_CH0; break;
+				case BIT(1):
+					ADCconfig = ADC_CTL_CH1; break;
+				case BIT(2):
+					ADCconfig = ADC_CTL_CH2; break;
+			}
+
+			// Enable Interrupt on last Step
+			if (stepNum >= maxSteps - 1)
+				ADCconfig |= ADC_CTL_IE | ADC_CTL_END;
+
+			// Configure Sequence Step
+			ADCSequenceStepConfigure(ADC_BASE, 0, stepNum, ADCconfig);
+			stepNum ++;
+		}
+	}
+
+	// Enable ADC Sequence
+	ADCSequenceEnable(ADC_BASE, 0);
+
+	// Enable ADC Interrupts, register and enable ISR
+	ADCIntEnable(ADC_BASE, 0);
+	IntRegister(INT_ADC0SS0, adcISR);
+	IntEnable(INT_ADC0SS0);
+
+	// Clear ADC Interrupt
+	ADCIntClear(ADC_BASE, 0);
 }
 
 
 int getSmoothAdc(char adc)
 {
 
+}
+
+void adcISR (void)
+{
+	ADCIntClear(ADC_BASE, 0);
+
+	//TODO: READ ADC VALUE
 }
