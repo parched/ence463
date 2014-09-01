@@ -15,12 +15,12 @@ include_directories(
 add_executable(wus.axf
 	startup.c
 	wus.c
+	#wus_simulate_task.c
 	)
 
 set_source_files_properties(startup.c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -O1")
 
 target_link_libraries(wus.axf
-	shared
 	FreeRTOS
 	)
 

@@ -37,7 +37,7 @@
 
 /*Task Modules*/
 #include "wus_simulate_task.h"
-#include "shared_guidraw_task.h"
+/*#include "shared_guidraw_task.h"*/
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
@@ -52,13 +52,13 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
     /*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
-	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
+/*	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL); */
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
+	/*xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);*/
 	/*Inits the display and refreshes display*/
-	xTaskCreate(vWusUiTask, "UI task", 240, (void*) placeholder, 1, NULL);
+	/*xTaskCreate(vWusUiTask, "UI task", 240, (void*) placeholder, 1, NULL);*/
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);
+	/*xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);*/
 
 
 
