@@ -27,8 +27,10 @@
 #ifndef SHARED_BUTTON_TASK_H
 #define SHARED_BUTTON_TASK_H
 
-typedef enum {BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
-typedef enum {BUTTON_EVENT_RISING_EDGE} ButtonEvent;
+typedef enum {BUTTON_UP = 0, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_SELECT} Button;
+typedef enum {BUTTON_EVENT_RISING_EDGE = 0, BUTTON_EVENT_FALLING_EDGE} ButtonEvent;
+
+#define NUM_BUTTONS	5
 
 /**
  * \brief Configures chosen button to listen for selected input event
