@@ -36,7 +36,6 @@
 void adcISR (void);
 
 
-
 void initAdcModule(char adcs)
 {
 	// Determine Number of Enabled ADC Pins
@@ -90,7 +89,7 @@ void initAdcModule(char adcs)
 				ADCconfig |= ADC_CTL_IE | ADC_CTL_END;
 
 			// Configure Sequence Step
-			ADCSequenceStepConfigure(ADC_BASE, 0, stepNum, ADCconfig);
+			ADCSoftwareOversampleStepConfigure(ADC_BASE, 0, stepNum, ADCconfig);
 			stepNum ++;
 		}
 	}
@@ -110,12 +109,15 @@ void initAdcModule(char adcs)
 
 int getSmoothAdc(char adc)
 {
+	unsigned long adcValues[3];
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, adcValues)
 
+	//TODO: Store Data
 }
 
 void adcISR (void)
 {
 	ADCIntClear(ADC_BASE, 0);
 
-	//TODO: READ ADC VALUE
+	//TODO: Schedule ADC Data read
 }
