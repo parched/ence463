@@ -1,8 +1,6 @@
 # set the linker script
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Tstandalone.ld -nostartfiles")
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -M -Xlinker -Map=wus.map")
-
 link_directories(
 	${AS_SOURCE_DIR}/FreeRTOS/Source
 	${AS_SOURCE_DIR}/Luminary
@@ -20,11 +18,17 @@ add_executable(wus.axf
 	#wus_simulate_task.c
 	)
 
-set_source_files_properties(startup.c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -O1")
+set_source_files_properties(startup.c PROPERTIES
+	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
+	)
 
 target_link_libraries(wus.axf
 	FreeRTOS
 	)
+
+set_target_properties(wus.axf PROPERTIES
+       LINK_FLAGS "${LINK_FLAGS} -Xlinker -M -Xlinker -Map=wus.map"
+       )
 
 add_custom_command(
 	TARGET wus.axf
