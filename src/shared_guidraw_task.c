@@ -434,26 +434,27 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	// draw item label
 	unsigned int posX = getHorzAlignment(item->name, ITEM_TEXTALIGN, ITEM_MARGIN);
 	unsigned int posY = TITLE_PADDINGTOP + TITLE_ITEM_SEP + index*ITEM_HEIGHT;
+	RIT128x96x4StringDraw(CLEAR_ROW, 0, posY, 0);
 	if (selected)
 	{
-		RIT128x96x4StringDraw(CLEAR_ROW, 0, posY, 0);
 		RIT128x96x4StringDraw(item->name, posX, posY, SELECTED_BRIGHTNESS);
 	}
 	else
 	{
-		RIT128x96x4StringDraw(CLEAR_ROW, 0, posY, 0);
 		RIT128x96x4StringDraw(item->name, posX, posY, UNSELECTED_BRIGHTNESS);
 	}
 
 	// draw item option
-	char displayStr[OPTION_NAME_SIZE];
+	char buffer[OPTION_NAME_SIZE];
+	char* displayStr;
 	switch (item->optionType)
 	{
 		case(OPTIONTYPE_INT):
-			usprintf(displayStr, "%d", item->getter());
+			usprintf(buffer, "%4d\0", item->getter());
+			displayStr = buffer;
 			break;
 		case(OPTIONTYPE_STRING):
-			usprintf(displayStr, "%s", item->options.values[item->getter()]);
+			displayStr = item->options.values[item->getter()];
 			break;
 	}
 	posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
