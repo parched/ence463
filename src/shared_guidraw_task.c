@@ -78,7 +78,14 @@ void movePage(Activity* activity, HorzDir dir);
 void changeOption(Activity* activity, HorzDir dir);
 
 /**
- * \brief Determines what type of View to redraw
+ * \brief Redraws aspects of current view that are read only
+ *
+ * \param activity Pointer to the activity that holds the context
+ */
+void refreshReadonlyValues(Activity* activity);
+
+/**
+ * \brief Determines what type of View to redraw and redraws
  *
  * \param activity Pointer to the activity
  */
@@ -161,6 +168,9 @@ void vGuiRefreshTask(void *pvParameters)
 	{
 		// wait for next cycle
 		vTaskDelayUntil( &xLastWakeTime, xFrequency);
+
+		// updates read only values
+		refreshReadonlyValues(unitActivity);
 
 		// process input events
 		InputEvent event;
@@ -373,6 +383,29 @@ void redrawView(Activity* activity)
 		case(VIEWTYPE_TRACE):
 			//TODO: Implement initial TraceView draw
 			break;
+	}
+}
+
+void refreshReadonlyValues(Activity* activity)
+{
+	unsigned int i;
+	if (activity->menuTypes[activity->pageContext] == VIEWTYPE_LIST)
+	{
+		ListView* listView = (ListView*) activity->menus[activity->pageContext];
+		// Redraw items that are read-only only
+		for (i=0; i<listView->numItems; i++)
+		{
+			if (listView->items[i].accessType == OPTIONACCESS_READONLY)
+			{
+				tBoolean selected = (activity->cursorContext-1) == i;
+				drawListViewItem(&(((ListView*) listView)->items[i]), i, selected);
+			}
+		}
+	}
+	else if (activity->menuTypes[activity->pageContext] == VIEWTYPE_TRACE)
+	{
+		TraceView* traveView = (TraceView*) activity->menus[activity->pageContext];
+		//TODO: Redraw trace only
 	}
 }
 
