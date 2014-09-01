@@ -446,14 +446,14 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	}
 
 	// draw item option
-	char* displayStr;
+	char displayStr[OPTION_NAME_SIZE];
 	switch (item->optionType)
 	{
 		case(OPTIONTYPE_INT):
 			usprintf(displayStr, "%u", item->getter());
 			break;
 		case(OPTIONTYPE_STRING):
-			displayStr = item->options.values[item->getter()];
+			usprintf(displayStr, "%s", item->options.values[item->getter()]);
 			break;
 	}
 	posX = getHorzAlignment(displayStr, OPTION_TEXTALIGN, OPTION_MARGIN);
