@@ -1,5 +1,7 @@
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -M -Xlinker -Map=wus.map")
+# set the linker script
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Tstandalone.ld -nostartfiles")
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -M -Xlinker -Map=wus.map")
 
 link_directories(
 	${AS_SOURCE_DIR}/FreeRTOS/Source
