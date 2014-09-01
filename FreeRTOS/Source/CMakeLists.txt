@@ -1,5 +1,5 @@
 include_directories(
-	${AS_SOURCE_DIR}/Luminary
+	${AS_SOURCE_DIR}/StellarisWare
 	${AS_SOURCE_DIR}/FreeRTOS/Source/include
 	${AS_SOURCE_DIR}/include
 	)
@@ -15,4 +15,6 @@ add_library(FreeRTOS
 ./timers.c
 )
 
-target_link_libraries(FreeRTOS Luminary)
+target_link_libraries(FreeRTOS
+	PRIVATE StellarisWare
+	)

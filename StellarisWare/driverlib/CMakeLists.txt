@@ -1,0 +1,29 @@
+include_directories(
+	"../"
+	)
+
+add_library(driver
+	./adc.c
+	./can.c
+	./comp.c
+	./cpu.c
+	./epi.c
+	./ethernet.c
+	./flash.c
+	./gpio.c
+	./hibernate.c
+	./i2c.c
+	./i2s.c
+	./interrupt.c
+	./mpu.c
+	./pwm.c
+	./qei.c
+	./ssi.c
+	./sysctl.c
+	./systick.c
+	./timer.c
+	./uart.c
+	./udma.c
+	./usb.c
+	./watchdog.c
+	)

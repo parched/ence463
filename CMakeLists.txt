@@ -9,6 +9,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
 
 add_definitions(
+	-Dgcc
 	-DGCC_ARMCM3_LM3S102
 	-Dinline=
 	-Dsprintf=usprintf
@@ -16,7 +17,7 @@ add_definitions(
 	-Dprintf=uipprintf
 )
 
-add_subdirectory(Luminary)
+add_subdirectory(StellarisWare)
 add_subdirectory(FreeRTOS/Source)
 add_subdirectory(src)
 

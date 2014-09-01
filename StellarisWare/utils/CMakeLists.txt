@@ -1,0 +1,26 @@
+include_directories(
+	"../"
+	)
+
+add_library(utils
+	./cmdline.c
+	./cpu_usage.c
+	./crc.c
+	./flash_pb.c
+	#./fswrapper.c
+	./isqrt.c
+	#./locator.c
+	#./lwiplib.c
+	#./ptpdlib.c
+	./ringbuf.c
+	./scheduler.c
+	./sine.c
+	./softi2c.c
+	./softssi.c
+	./softuart.c
+	#./speexlib.c
+	#./swupdate.c
+	#./tftp.c
+	./uartstdio.c
+	./ustdlib.c
+	)

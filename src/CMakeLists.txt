@@ -1,15 +1,10 @@
 # set the linker script
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Tstandalone.ld -nostartfiles")
 
-link_directories(
-	${AS_SOURCE_DIR}/FreeRTOS/Source
-	${AS_SOURCE_DIR}/Luminary
-	)
-
 include_directories(
 	${AS_SOURCE_DIR}/include
 	${AS_SOURCE_DIR}/FreeRTOS/Source/include
-	${AS_SOURCE_DIR}/Luminary
+	${AS_SOURCE_DIR}/StellarisWare
 	)
 
 add_executable(wus.axf
@@ -24,6 +19,7 @@ set_source_files_properties(startup.c PROPERTIES
 
 target_link_libraries(wus.axf
 	FreeRTOS
+	StellarisWare
 	)
 
 set_target_properties(wus.axf PROPERTIES
