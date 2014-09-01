@@ -27,46 +27,14 @@
 #include "shared_guilayout.h"
 #include <stdlib.h>
 
-#include "include/FreeRTOS.h"
-#include "include/task.h"
-#include "demo_code\basic_io.h"
 
-//could/should/maybe write own function and minimize need to import string.h.
-#include <string.h>
-
-//circular buffer size
-#define MAX_CIRC_BUFF_SIZE 300
-
-
-/*allows for multiple TraceViews if needed in the future. Set circular buffer
- *of TraceNodes and gets a TraceView stuct pointing to the head of the circular buffer. Note
- *this function only allocates a memory block for a circular buffer. It does not dynmatically create/delete TraceNodes
- *as needed. Unless someone repetively calls this function there will be no memory leaks. A check could be
- *be written for this but probally unnessary */
-TraceView initTraceView(unsigned int sparseIndex, int circularBufferSize) {
-	TraceView traceView = {NULL,0}; //return this if bad input is detected. Up to user of function to check for this
-	if(circularBufferSize > 0 && circularBufferSize < MAX_CIRC_BUFF_SIZE && sparseIndex > 0) { //checks for bad input
-		//creates circular buffer of TraceNodes
-		TraceNode *newTraceNode;
-		newTraceNode = (TraceNode *)malloc(sizeof(TraceNode)*circularBufferSize);
-		int i = 0;
-		for(i = 0; i < (circularBufferSize-1); i++) {
-			(newTraceNode+i)->next = (newTraceNode + i + 1);
-			//dont want junk for all the TraceNodes defined
-			(newTraceNode+i)->x = 0;
-			(newTraceNode+i)->y = 0;
-		}
-		(newTraceNode+i)->next = newTraceNode;
-		//dont want junk for all the TraceNodes defined
-		(newTraceNode+i)->x = 0;
-		(newTraceNode+i)->y = 0;
-		traceView.head = newTraceNode; //sets head of traceView to head of TraceNode circular buffer
+/*inits a TraceView object with the variables passed to it
+ * */
+TraceView initTraceView(unsigned int sparseIndex, TraceNode *traceNode) {
+	TraceView traceView = {NULL,0}; //return this if bad input is detected
+	if(sparseIndex > 0) { //checks for bad input
+		traceView.head = traceNode; //sets head of traceView to head of TraceNode circular buffer
 		traceView.sparseIndex = sparseIndex; //sets the sparseIndex
-	} else {
-		/*bad error case. Prints to usb that the function was declared incorrectly. Used for testing only, may delete this
-		 *  unless I can think of something else to do here. Requires importing FreeRTOS libray
-		 */
-		vPrintString("initTraceView declared incorrectly");
 	}
 	return traceView;
 }
@@ -76,15 +44,22 @@ TraceView initTraceView(unsigned int sparseIndex, int circularBufferSize) {
 int attachItem(char *name, OptionType optionType, OptionAccess accessType, Options options,int getter(),void setter(int),ListView *listView)  {
 	int errorFlag = 0; //return this if function could not attach an  item to a ListView
 	int i = 0;
-	for(i = 0; i < LISTVIEW_MAX_ITEMS; i++) {
-		if(listView->items[i].setter == NULL) { //check if item has been declared.
-			strcpy (listView->items[i].name, name); //null termination? overflow checking?
+	for(i = 0; i < LISTVIEW_MAX_ITEMS; i++) { //finds the next empty Item to attach
+		if(listView->items[i].setter == NULL) { //check if item has been declared
+			//write the name to the Item object
+			int m = 0;
+			while(m < (ITEM_NAME_SIZE-1) && name[m] != '\0') {
+				listView->items[i].name[m] = name[m];
+				m++;
+			}
+			listView->items[i].name[m] = '\0'; //Null tertermiate the string. If bigger string than ITEM_NAME_SIZE then only take first ITEM_NAME_SIZE-1 characters
+			//set all the other variables of the Item object
 			listView->items[i].accessType = accessType;
 			listView->items[i].optionType = optionType;
 			listView->items[i].options = options;
 			listView->items[i].getter = getter;
 			listView->items[i].setter = setter;
-			errorFlag = 1;
+			errorFlag = 1; //success
 			break;
 		}
 	}
@@ -103,7 +78,7 @@ Options createOption(int minIndex, int maxIndex, char *values) {
 	for(i = 0; i < ITEM_MAX_OPTIONSTR; i++) {
 		for(l = 0; l < ITEM_NAME_SIZE; l++) {
 			if(*(values + (i*ITEM_NAME_SIZE) + l) != '\0') {
-				newOptions.values[i][l] = *(values + (i*ITEM_NAME_SIZE) + l); //pointer magic
+				newOptions.values[i][l] = *(values + (i*ITEM_NAME_SIZE) + l); //uses pointers to get value from 2D char array
 			} else {
 				newOptions.values[i][l] = '\0'; //null terminate the string
 				break; //only read what needs to be read
@@ -135,15 +110,13 @@ Activity initAcitivity(void* menus[], ViewType menuTypes[],  unsigned int numPag
 
 
 
-//what happens to Items not used? Two cases this can occur. 1) User does not declare Item. 2) The number of pages declared
-//is less than the maximum allowared therefore the extra items will still be created if not used. In this implementation
-//it is up to the user to check for nonillialized items with something like ListView.items[i].getter == NULL
+/*Inits and returns a ListView*/
 ListView initListView(unsigned int numItems) {
 	ListView newListView;
 	newListView.numItems = 0; //check for this for wrong init of ListView
 	int i = 0;
 	for(i = 0; i < LISTVIEW_MAX_ITEMS; i++) {
-		//so we know that the item has been initizialed later on or not. Will improve but for now
+		//so we know that the item has been initizialed later on or not.
 		newListView.items[i].name[0] = '\0';
 		newListView.items[i].getter = NULL;
 		newListView.items[i].setter = NULL;
