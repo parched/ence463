@@ -11,6 +11,10 @@ set_source_files_properties(startup.c PROPERTIES
 	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
 	)
 
+add_library(shared
+	shared_adc.c
+	)
+
 add_library(wus
 	wus_pulse_out.c
 	)
@@ -25,6 +29,7 @@ add_executable(wus.axf
 target_link_libraries(wus.axf
 	FreeRTOS
 	StellarisWare
+	shared
 	wus
 	)
 
