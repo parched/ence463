@@ -290,18 +290,18 @@ void movePage(Activity* activity, HorzDir dir)
 			{
 				// go to the left page if cursor at top and not at leftmost
 				activity->pageContext--;
+				redrawView(activity);
 			}
 			break;
 		case(HORZDIR_RIGHT):
-			if (page < activity->numPages)
+			if (page < activity->numPages-1)
 			{
 				// go to the right page if cursor at top and not at rightmost
 				activity->pageContext++;
+				redrawView(activity);
 			}
 			break;
 	}
-
-	redrawView(activity);
 }
 
 void changeOption(Activity* activity, HorzDir dir)
@@ -450,7 +450,7 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	switch (item->optionType)
 	{
 		case(OPTIONTYPE_INT):
-			usprintf(displayStr, "%u", item->getter());
+			usprintf(displayStr, "%d", item->getter());
 			break;
 		case(OPTIONTYPE_STRING):
 			usprintf(displayStr, "%s", item->options.values[item->getter()]);
@@ -473,22 +473,22 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 		{
 			if (item->getter() < item->options.maxIndex)
 			{
-				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
 			}
 			if (item->getter() > item->options.minIndex)
 			{
-				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
 			}
 		}
 		else
 		{
 			if (item->getter() < item->options.maxIndex)
 			{
-				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
 			}
 			if (item->getter() > item->options.minIndex)
 			{
-				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
 			}
 		}
 	}
