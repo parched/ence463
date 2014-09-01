@@ -14,16 +14,20 @@ set_source_files_properties(startup.c PROPERTIES
 # Add shared c files to this list
 add_library(shared
 	shared_adc.c
+	shared_uart_task.c
 	)
 
 # Add ASC c files to this list
 add_library(asc
 	asc_pulse_in.c
+	asc_controller.c
+	asc_control_task.c
 	)
 
 # Add WUS c files to this list
 add_library(wus
 	wus_pulse_out.c
+	wus_simulator.c
 	#wus_simulate_task.c
 	)
 
