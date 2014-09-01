@@ -24,7 +24,7 @@
  * 
  */
 
-#inlcude "asc_pulse_in.h"
+#include "asc_pulse_in.h"
 
 void initPulseReader() {
 }

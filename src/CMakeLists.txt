@@ -15,6 +15,10 @@ add_library(shared
 	shared_adc.c
 	)
 
+add_library(asc
+	asc_pulse_in.c
+	)
+
 add_library(wus
 	wus_pulse_out.c
 	)
