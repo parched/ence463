@@ -24,6 +24,7 @@
  * 
  */
 
+#include "wus_simulator.h"
 
 struct SimState {
 	int speed;
