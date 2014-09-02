@@ -25,101 +25,55 @@
  */
 
 #include "shared_guilayout.h"
-#include <stdlib.h>
+#include <ustdlib.h>
 
-
-/*inits a TraceView object with the variables passed to it
- * */
-TraceView traceView(char *name, unsigned int sparseIndex, TraceNode *head) {
-	TraceView traceView = {"",NULL,0}; //return this if bad input is detected
-	if(sparseIndex > 0) { //checks for bad input
-		traceView.head = head; //sets head of traceView to head of TraceNode circular buffer
-		traceView.sparseIndex = sparseIndex; //sets the sparseIndex
-		int m = 0;
-		while(m < (VIEW_NAME_SIZE-1) && name[m] != '\0') {
-			traceView.name[m] = name[m];
-			m++;
-		}
-		traceView.name[m] = '\0'; //Null tertermiate the string. If bigger string than ITEM_NAME_SIZE then only take first ITEM_NAME_SIZE-1 characters
-	}
-	return traceView;
-}
-
-
-/*add item one at a time i.e. seperate function calls for seperate items to a ListView. Returns 0 if cannot attach item to ListView*/
-Item item(char *name, OptionType optionType, OptionAccess accessType, Options options,int getter(),void setter(int))  {
-	Item item;
-	//write the name to the Item object
-	int m = 0;
-	while(m < (ITEM_NAME_SIZE-1) && name[m] != '\0') {
-		item.name[m] = name[m];
-		m++;
-	}
-	item.name[m] = '\0'; //Null tertermiate the string. If bigger string than ITEM_NAME_SIZE then only take first ITEM_NAME_SIZE-1 characters
-	//set all the other variables of the Item object
-	item.accessType = accessType;
-	item.optionType = optionType;
-	item.options = options;
-	item.getter = getter;
-	if(accessType == OPTIONACCESS_MODIFIABLE) {
-		item.setter = setter;
-	} else {
-		item.setter = NULL;
-	}
-	return item;
-}
-
-
-/*Creates and returns an Options object*/
-Options option(int minIndex, int maxIndex, unsigned int skip) {
+Options option(int minIndex, int maxIndex) {
 	Options newOptions;
 	newOptions.minIndex = minIndex;
 	newOptions.maxIndex = maxIndex;
-	newOptions.skip = skip;
-	int i = 0;
-	for(i = 0; i < ITEM_MAX_OPTIONSTR; i++) {
-		newOptions.values[i] = '\0';
-	}
+	newOptions.skip = 1;
 	return newOptions;
 }
 
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int *getter(void)) {
+	Item item;
+	//write the name to the Item object
+	ustrncpy(item.name, name, ITEM_NAME_SIZE);
 
-/*init a new Activity and pass it back*/
-Activity acitivity(unsigned int numPages) {
-	Activity newActivity;
-	newActivity.numPages = numPages;
-	newActivity.pageContext = 0;  //set defualt value
-	newActivity.cursorContext= 0;  //set defualt value
-	int i = 0;
-	for(i = 0; i < ACTIVITY_MAX_PAGES; i++) {
-		newActivity.menuTypes[i] = VIEWTYPE_NONE;
-		newActivity.menus[i] =  NULL;
-	}
-	return newActivity;
+	//set all the other variables of the Item object
+	item.optionType = optionType;
+	item.accessType = accessType;
+	item.options = options;
+	item.getter = getter;
+
+	return item;
 }
 
+TraceView traceView(char *name, TraceNode *head) {
+	TraceView traceView;
 
+	traceView.head = head;							//sets head of traceView to head of TraceNode circular buffer
+	traceView.sparseIndex = TRACEVIEW_MAX_ZOOM;		// defaults to most zoomed out
+	ustrncpy(traceView.name, name, VIEW_NAME_SIZE);
+	
+	return traceView;
+}
 
-/*Inits and returns a ListView*/
-ListView listView(unsigned int numItems, char *name) {
+ListView listView(char *name, unsigned int numItems) {
 	ListView newListView;
-	newListView.numItems = 0; //check for this for wrong init of ListView
-	int i = 0;
-	for(i = 0; i < LISTVIEW_MAX_ITEMS; i++) {
-		//so we know that the item has been initizialed later on or not.
-		newListView.items[i].name[0] = '\0';
-		newListView.items[i].getter = NULL;
-		newListView.items[i].setter = NULL;
-	}
-	if(numItems < LISTVIEW_MAX_ITEMS && numItems > 0) { //check for bad input
-		newListView.numItems = numItems;
-		//write the name to the Item object
-		int m = 0;
-		while(m < (VIEW_NAME_SIZE-1) && name[m] != '\0') {
-			newListView.name[m] = name[m];
-			m++;
-		}
-		newListView.name[m] = '\0'; //Null tertermiate the string. If bigger string than ITEM_NAME_SIZE then only take first ITEM_NAME_SIZE-1 characters
-	}
+
+	newListView.numItems = numItems; 
+	ustrncpy(newListView.name, name, VIEW_NAME_SIZE);
+	
 	return newListView;
+}
+
+Activity activity(unsigned int numPages) {
+	Activity newActivity;
+
+	newActivity.numPages = numPages;
+	newActivity.pageContext = 0;   //set default value
+	newActivity.cursorContext= 0;  //set default value
+
+	return newActivity;
 }

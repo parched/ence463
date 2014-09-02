@@ -48,7 +48,7 @@
  *
  * \brief ViewType enum
  */
-typedef enum {VIEWTYPE_TRACE, VIEWTYPE_LIST, VIEWTYPE_NONE} ViewType;
+typedef enum {VIEWTYPE_TRACE, VIEWTYPE_LIST} ViewType;
 
 /**
  * \enum ContentType
@@ -127,47 +127,47 @@ typedef struct  {
 } Activity;
 
 /**
- * \brief Returns an initilied TraceView which includes attaching the head of a ciruclar buffer of TraceNodes to it
+ * \brief Constructs an Option with compulsory values as set and context initialized
  *
- * \param sparseIndex The amount of TraceNodes to skip when drawing the road surface
- * param circularBufferSize The size of the circular buffer size of TraceNodes, must be less than MAX_CIRC_BUFF_SIZE and greater than 0
+ * \param minIndex Minimum value this option can be set to
+ * \param maxIndex Maximum value this option can be set to
  */
-TraceView traceView(char *name, unsigned int sparseIndex, TraceNode *head);
+Options option(int minIndex, int maxIndex);
 
 /**
- * \brief Creates An Item
+ * \brief Constructs an Item with compulsory values as set and context initialized
  *
- * \param name The name of the item.
- * \param optionType Determines whereever display a string or number
- * \param OptionAccess determines wherever to display only or allow user input
- * \param options The bitwise OR of the PWM outputs init.
- * \param getter Attach an item getter function
- * \param setter Attach an item setter function
+ * \param name Label of the item
+ * \param optionType Sets whether options scroll through number or string
+ * \param accessType Sets whether user can modify the option value
+ * \param options Settings for the options available for this Item
+ * \param getter Function that retrieves the system variable, binding this option to it
  */
-Item item(char *name, OptionType optionType, OptionAccess accessType, Options options,int getter(),void setter(int));
-
-/**
- * \brief Creates and returns an Option
- *
- * \param minIndex The size of the min Index
- * param manIndex The size of the man Index
- */
-Options option(int minIndex, int maxIndex, unsigned int skip);
-
-/**
- * \brief Initilizes an activity
- *
- * \param numPages Number of pages for this activity
- */
-Activity acitivity(unsigned int numPages);
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int *getter(void));
 
 /**
  * \brief Initailises a ListView and sets the items to a known initial values. Sets numItems =0 if fails to complete
  *
+ * \param name Label of the view
  * \param numItems The number of Items that this ListView will have
- * \param name name of ListView
  */
-ListView listView(unsigned int numItems, char *name);
+ListView listView(char *name, unsigned int numItems);
+
+/**
+ * \brief Constructs a TraceView with compulsory values as set and context initialized
+ *
+ * \param name Label of the view
+ * \param sparseIndex Number of TraceNodes to skip when drawing trace
+ * \param head The node the represents the first data point of the trace
+ */
+TraceView traceView(char *name, TraceNode *head);
+
+/**
+ * \brief Constructs an Activity with compulsory values set set and context initialized
+ *
+ * \param numPages Number of pages for this activity
+ */
+Activity activity(unsigned int numPages);
 
 
 #endif /* UI_TASK_H_ */
