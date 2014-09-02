@@ -61,15 +61,15 @@ int getThrottle(char *msg);
  * \param uartFrame Pointer to the uartFrame to read.
  */
 void readMessage(UartFrame uartFrame) {
-	switch (uartFrame.msgType) {
+	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.msg);
+			roadType = getRoadType(uartFrame.frameWise.msg);
 			break;
 		case 'S':
 			resetSimulation(&simState);
 			break;
 		case 'A':
-			accel = getThrottle(uartFrame.msg);
+			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
 			/* TODO */

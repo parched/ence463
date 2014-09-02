@@ -35,7 +35,7 @@ add_library(asc
 add_library(wus
 	wus_pulse_out.c
 	wus_simulator.c
-	#wus_simulate_task.c
+	wus_simulate_task.c
 	)
 
 
