@@ -42,12 +42,13 @@
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
 
+
 /**
  * \enum ViewType
  *
  * \brief ViewType enum
  */
-typedef enum {VIEWTYPE_TRACE, VIEWTYPE_LIST} ViewType;
+typedef enum {VIEWTYPE_TRACE, VIEWTYPE_LIST, VIEWTYPE_NONE} ViewType;
 
 /**
  * \enum ContentType
@@ -124,6 +125,49 @@ typedef struct  {
 	unsigned int cursorContext;               /**<cursor position context*/
 	unsigned int numPages;                    /**<number of pages in this activity*/
 } Activity;
+
+/**
+ * \brief Returns an initilied TraceView which includes attaching the head of a ciruclar buffer of TraceNodes to it
+ *
+ * \param sparseIndex The amount of TraceNodes to skip when drawing the road surface
+ * param circularBufferSize The size of the circular buffer size of TraceNodes, must be less than MAX_CIRC_BUFF_SIZE and greater than 0
+ */
+TraceView traceView(unsigned int sparseIndex, TraceNode *head);
+
+/**
+ * \brief Creates An Item
+ *
+ * \param name The name of the item.
+ * \param optionType Determines whereever display a string or number
+ * \param OptionAccess determines wherever to display only or allow user input
+ * \param options The bitwise OR of the PWM outputs init.
+ * \param getter Attach an item getter function
+ * \param setter Attach an item setter function
+ */
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options,int getter(),void setter(int));
+
+/**
+ * \brief Creates and returns an Option
+ *
+ * \param minIndex The size of the min Index
+ * param manIndex The size of the man Index
+ */
+Options option(int minIndex, int maxIndex, unsigned int skip);
+
+/**
+ * \brief Initilizes an activity
+ *
+ * \param numPages Number of pages for this activity
+ */
+Activity acitivity(unsigned int numPages);
+
+/**
+ * \brief Initailises a ListView and sets the items to a known initial values. Sets numItems =0 if fails to complete
+ *
+ * \param numItems The number of Items that this ListView will have
+ * \param name name of ListView
+ */
+ListView listView(unsigned int numItems, char *name);
 
 
 #endif /* UI_TASK_H_ */
