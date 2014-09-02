@@ -30,11 +30,17 @@
 
 /*inits a TraceView object with the variables passed to it
  * */
-TraceView traceView(unsigned int sparseIndex, TraceNode *head) {
-	TraceView traceView = {NULL,0}; //return this if bad input is detected
+TraceView traceView(char *name, unsigned int sparseIndex, TraceNode *head) {
+	TraceView traceView = {"",NULL,0}; //return this if bad input is detected
 	if(sparseIndex > 0) { //checks for bad input
 		traceView.head = head; //sets head of traceView to head of TraceNode circular buffer
 		traceView.sparseIndex = sparseIndex; //sets the sparseIndex
+		int m = 0;
+		while(m < (VIEW_NAME_SIZE-1) && name[m] != '\0') {
+			traceView.name[m] = name[m];
+			m++;
+		}
+		traceView.name[m] = '\0'; //Null tertermiate the string. If bigger string than ITEM_NAME_SIZE then only take first ITEM_NAME_SIZE-1 characters
 	}
 	return traceView;
 }

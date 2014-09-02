@@ -132,7 +132,7 @@ typedef struct  {
  * \param sparseIndex The amount of TraceNodes to skip when drawing the road surface
  * param circularBufferSize The size of the circular buffer size of TraceNodes, must be less than MAX_CIRC_BUFF_SIZE and greater than 0
  */
-TraceView traceView(unsigned int sparseIndex, TraceNode *head);
+TraceView traceView(char *name, unsigned int sparseIndex, TraceNode *head);
 
 /**
  * \brief Creates An Item
