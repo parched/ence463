@@ -3,8 +3,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Tstandalone.ld -nostartfi
 
 include_directories(
 	${AS_SOURCE_DIR}/include
+	${AS_SOURCE_DIR}/FreeRTOS/Source/
 	${AS_SOURCE_DIR}/FreeRTOS/Source/include
 	${AS_SOURCE_DIR}/StellarisWare
+	${AS_SOURCE_DIR}/StellarisWare/utils
+	${AS_SOURCE_DIR}/StellarisWare/boards/ek-lm3s1968
 	)
 
 set_source_files_properties(startup.c PROPERTIES
@@ -22,6 +25,9 @@ add_library(asc
 	asc_pulse_in.c
 	asc_controller.c
 	asc_control_task.c
+	#shared_button_task.c
+	#shared_guidraw_task.c
+	#shared_guilayout.c
 	)
 
 # Add WUS c files to this list
