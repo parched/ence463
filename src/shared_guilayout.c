@@ -50,7 +50,7 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 }
 
 TraceView traceView(char *name, TraceNode *head) {
-	TraceView traceView;
+	TraveView traceView;
 
 	traceView.head = head;							//sets head of traceView to head of TraceNode circular buffer
 	traceView.sparseIndex = TRACEVIEW_MAX_ZOOM;		// defaults to most zoomed out
