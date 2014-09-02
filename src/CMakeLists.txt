@@ -10,7 +10,7 @@ include_directories(
 	${AS_SOURCE_DIR}/StellarisWare/boards/ek-lm3s1968
 	)
 
-set_source_files_properties(startup.c PROPERTIES
+set_source_files_properties(startup_gcc.c PROPERTIES
 	COMPILE_FLAGS "${COMPILE_FLAGS} -O1"
 	)
 
@@ -39,7 +39,7 @@ add_library(wus
 
 
 add_executable(wus.axf
-	startup.c
+	startup_gcc.c
 	wus.c
 	)
 
