@@ -17,6 +17,7 @@ set_source_files_properties(startup_gcc.c PROPERTIES
 # Add shared c files to this list
 add_library(shared
 	shared_adc.c
+	shared_pwm.c
 	shared_uart_task.c
 	shared_button_task.c
 	shared_guidraw_task.c
