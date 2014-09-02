@@ -35,6 +35,15 @@
 
 #define BIT(x) (1 << x)
 
+typedef struct adcVars
+{
+	unsigned long channel0;
+	unsigned long channel1;
+	unsigned long channel2;
+} adcVars;
+
+adcVars ADCout;
+
 void adcISR (void);
 
 
@@ -109,11 +118,6 @@ void initAdcModule(char adcs)
 			sequence ++;
 		}
 	}
-
-
-
-	// Clear ADC Interrupt
-	ADCIntClear(ADC_BASE, 0);
 }
 
 
@@ -130,10 +134,9 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, 1);
 	ADCIntClear(ADC_BASE, 2);
 
-	unsigned long adcValues[3];
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, adcValues[0], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 1, adcValues[1], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 2, adcValues[2], 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout.channel0, 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout.channel1, 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout.channel2, 4);
 
 	//TODO: Store adcValues in externally accessible location
 }
