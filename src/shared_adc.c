@@ -130,13 +130,13 @@ int getSmoothAdc(char adc)
 
 void adcISR (void)
 {
+	// Clear ADC Interrupts (All of them, because all lead to this ISR)
 	ADCIntClear(ADC_BASE, 0);
 	ADCIntClear(ADC_BASE, 1);
 	ADCIntClear(ADC_BASE, 2);
 
+	// Get Data from the ADC
 	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout.channel0, 4);
 	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout.channel1, 4);
 	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout.channel2, 4);
-
-	//TODO: Store adcValues in externally accessible location
 }
