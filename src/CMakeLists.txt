@@ -47,8 +47,8 @@ add_executable(wus.axf
 target_link_libraries(wus.axf
 	FreeRTOS
 	StellarisWare
-	shared
 	wus
+	shared
 	)
 
 set_target_properties(wus.axf PROPERTIES

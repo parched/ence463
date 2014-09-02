@@ -95,11 +95,11 @@ void vSimulateTask(void *params) {
 
 		/* TODO: find dTime */
 		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
-		setSpeed(getCarSpeed(&wusSimState));
+		setSpeed(getSpeed(&wusSimState));
 		
-		setPulseWidth(ACC_SPRUNG_PWM, getSprungAcc(&wusSimState));
-		setPulseWidth(ACC_UNSPRUNG_PWM, getUnsprungAcc(&wusSimState));
-		setPulseWidth(COIL_EXTENSION_PWM, getCoilExtension(&wusSimState));
+		setDuty(ACC_SPRUNG_PWM, getSprungAcc(&wusSimState));
+		setDuty(ACC_UNSPRUNG_PWM, getUnsprungAcc(&wusSimState));
+		setDuty(COIL_EXTENSION_PWM, getCoilExtension(&wusSimState));
 		
 		if (errorCode != 0) {
 			/* TODO */
@@ -109,4 +109,12 @@ void vSimulateTask(void *params) {
 
 SimState *getSimStatePtr() {
 	return &wusSimState;
+}
+
+char getRoadType(char *msg) {
+	return 0;
+}
+
+int getThrottle(char *msg) {
+	return 0;
 }
