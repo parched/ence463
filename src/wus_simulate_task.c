@@ -26,11 +26,15 @@
 
 #include "wus_simulate_task.h"
 
+#include "FreeRTOS.h"
+
 #include "wus_simulator.h"
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
+
+#define SIMULATE_TASK_RATE_HZ 1000
 
 SimState wusSimState;
 char roadType = 0;
@@ -89,7 +93,14 @@ void vSimulateTask(void *params) {
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
 
+	// initialize FreeRTOS sleep parameters
+	portTickType pxPreviousWakeTime;
+	const portTickType xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
+	pxPreviousWakeTime = xTaskGetTickCount();
+
 	for (;;) {
+		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
+
 		force = getSmoothAdc(ACTUATOR_FORCE_ADC);
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
 
