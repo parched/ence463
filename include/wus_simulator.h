@@ -36,7 +36,22 @@
  * \struct SimState
  * \brief A state of the simulator.
  */
-typedef struct SimState SimState;		//TODO: Define the type
+typedef struct {
+	int _speed;
+	int _zR;
+	int _zU;
+	int _zS;
+	int _vR;
+	int _vU;
+	int _vS;
+} SimState;
+
+/**
+ * \brief Creates a SimState.
+ *
+ * \return A SimState.
+ */
+SimState simState();
 
 /**
  * \brief Resets the simulation.
