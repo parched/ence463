@@ -72,7 +72,7 @@ Options option(int minIndex, int maxIndex, unsigned int skip) {
 	newOptions.skip = skip;
 	int i = 0;
 	for(i = 0; i < ITEM_MAX_OPTIONSTR; i++) {
-		newOptions.values[i][0] = '\0';
+		newOptions.values[i] = '\0';
 	}
 	return newOptions;
 }
