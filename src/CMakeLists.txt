@@ -18,6 +18,9 @@ set_source_files_properties(startup_gcc.c PROPERTIES
 add_library(shared
 	shared_adc.c
 	shared_uart_task.c
+	shared_button_task.c
+	shared_guidraw_task.c
+	#shared_guilayout.c
 	)
 
 # Add ASC c files to this list
@@ -25,9 +28,6 @@ add_library(asc
 	asc_pulse_in.c
 	asc_controller.c
 	asc_control_task.c
-	#shared_button_task.c
-	#shared_guidraw_task.c
-	#shared_guilayout.c
 	)
 
 # Add WUS c files to this list
