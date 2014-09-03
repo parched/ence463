@@ -69,7 +69,7 @@ FreeRTOS.org versions prior to V4.3.0 did not include this definition. */
 
 /* Each task maintains its own interrupt status in the critical nesting
 variable. */
-static unsigned portBASE_TYPE uxCriticalNesting = 0xaaaaaaaa;
+static unsigned BaseType_t uxCriticalNesting = 0xaaaaaaaa;
 
 /*
  * Setup the timer to generate the tick interrupts.
@@ -112,7 +112,7 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
 /*
  * See header file for description.
  */
-portBASE_TYPE xPortStartScheduler( void )
+BaseType_t xPortStartScheduler( void )
 {
 	/* Make PendSV and SysTick the lowest priority interrupts. */
 	*(portNVIC_SYSPRI2) |= portNVIC_PENDSV_PRI;
