@@ -29,9 +29,9 @@
 #include <ustdlib.h>
 #include "inc/hw_types.h"
 #include "drivers/rit128x96x4.h"
-#include "include/FreeRTOS.h"
-#include "include/queue.h"
-#include "include/task.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 #include "shared_guilayout.h"
 #include "shared_displayformat128x64.h"
 

@@ -31,8 +31,8 @@
 #include "inc/hw_ints.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
-#include "include/FreeRTOS.h"
-#include "include/task.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "shared_guidraw_task.h"
 
 #define BIT(x)		(1 << x)
