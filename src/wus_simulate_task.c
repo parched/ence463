@@ -27,6 +27,7 @@
 #include "wus_simulate_task.h"
 
 #include "FreeRTOS.h"
+#include "task.h"
 
 #include "wus_simulator.h"
 #include "wus_pulse_out.h"
