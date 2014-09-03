@@ -38,6 +38,10 @@ add_library(wus
 	#wus_simulate_task.c
 	)
 
+set_target_properties(shared asc wus
+	PROPERTIES
+	COMPILE_FLAGS "${COMPILE_FLAGS} -Wall"
+	)
 
 add_executable(wus.axf
 	startup_gcc.c
