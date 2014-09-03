@@ -63,7 +63,7 @@
 ;   the SafeRTOS brand: http://www.SafeRTOS.com.
 
 
-	.cdecls  C, NOLIST, WARN, "../FreeRTOSConfig.h"
+	.cdecls  C, NOLIST, WARN, "FreeRTOSConfig.h"
 
 	.thumb
 	.text
