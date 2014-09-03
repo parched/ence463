@@ -42,8 +42,8 @@
  *----------------------------------------------------------*/
 
 /* Scheduler includes. */
-#include "../include/FreeRTOS.h"
-#include "../include/task.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* Constants required to manipulate the NVIC. */
 #define portNVIC_SYSTICK_CTRL		( ( volatile unsigned long *) 0xe000e010 )
@@ -69,7 +69,7 @@ FreeRTOS.org versions prior to V4.3.0 did not include this definition. */
 
 /* Each task maintains its own interrupt status in the critical nesting
 variable. */
-static unsigned BaseType_t uxCriticalNesting = 0xaaaaaaaa;
+static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
 
 /*
  * Setup the timer to generate the tick interrupts.
