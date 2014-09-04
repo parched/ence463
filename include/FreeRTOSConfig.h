@@ -95,6 +95,7 @@
 #define configUSE_RECURSIVE_MUTEXES		1
 #define configQUEUE_REGISTRY_SIZE		10
 #define configGENERATE_RUN_TIME_STATS	0
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 
 #define configMAX_PRIORITIES		( 5 )
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
