@@ -51,8 +51,8 @@ int main(void)
 	whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-    /*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
-/*	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL); */
+	/*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
+	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
 	/*Inits UART, continously reads and writes UART messages*/
 	/*xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);*/
 	/*Inits the display and refreshes display*/

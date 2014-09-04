@@ -35,7 +35,7 @@ add_library(asc
 add_library(wus
 	wus_pulse_out.c
 	wus_simulator.c
-	#wus_simulate_task.c
+	wus_simulate_task.c
 	)
 
 
@@ -47,8 +47,8 @@ add_executable(wus.axf
 target_link_libraries(wus.axf
 	FreeRTOS
 	StellarisWare
-	shared
 	wus
+	shared
 	)
 
 set_target_properties(wus.axf PROPERTIES

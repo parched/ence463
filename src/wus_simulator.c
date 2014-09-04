@@ -26,15 +26,10 @@
 
 #include "wus_simulator.h"
 
-struct SimState {
-	int speed;
-	int zR;
-	int zU;
-	int zS;
-	int vR;
-	int vU;
-	int vS;
-};
+SimState simState() {
+	SimState newSimState;
+	return newSimState;
+}
 
 void resetSimulation(SimState *simState) {
 }
@@ -44,7 +39,7 @@ char simulate(SimState *simState, int force, int throttle, int dampingFactor, ch
 }
 
 int getSpeed(const SimState *simState) {
-	return simState->speed;
+	return simState->_speed;
 }
 
 int getSprungAcc(const SimState *simState) {

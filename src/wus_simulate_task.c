@@ -26,13 +26,18 @@
 
 #include "wus_simulate_task.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "wus_simulator.h"
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 
-SimState simState;
+#define SIMULATE_TASK_RATE_HZ 1000
+
+SimState wusSimState;
 char roadType = 0;
 int dampingFactor = 0;
 int throttle = 0;
@@ -61,15 +66,15 @@ int getThrottle(char *msg);
  * \param uartFrame Pointer to the uartFrame to read.
  */
 void readMessage(UartFrame uartFrame) {
-	switch (uartFrame.msgType) {
+	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.msg);
+			roadType = getRoadType(uartFrame.frameWise.msg);
 			break;
 		case 'S':
-			resetSimulation(&simState);
+			resetSimulation(&wusSimState);
 			break;
 		case 'A':
-			accel = getThrottle(uartFrame.msg);
+			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
 			/* TODO */
@@ -82,22 +87,31 @@ void vSimulateTask(void *params) {
 	int dTime = 0;
 	char errorCode = 0;
 
+	wusSimState = simState();
+
 	initPulse();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
 
+	// initialize FreeRTOS sleep parameters
+	portTickType pxPreviousWakeTime;
+	const portTickType xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
+	pxPreviousWakeTime = xTaskGetTickCount();
+
 	for (;;) {
-		force = getSmoothAdc(ACTUATOR_FORCE_ADC);
-		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
+		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
+
+		//force = getSmoothAdc(ACTUATOR_FORCE_ADC);
+		//dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
 
 		/* TODO: find dTime */
-		errorCode = simulate(&simState, force, throttle, dampingFactor, roadType, dTime);
-		setSpeed(getCarSpeed(&simState));
+		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
+		setSpeed(getSpeed(&wusSimState));
 		
-		setPulseWidth(ACC_SPRUNG_PWM, getSprungAcc(&simState));
-		setPulseWidth(ACC_UNSPRUNG_PWM, getUnsprungAcc(&simState));
-		setPulseWidth(COIL_EXTENSION_PWM, getCoilExtension(&simState));
+		setDuty(ACC_SPRUNG_PWM, getSprungAcc(&wusSimState));
+		setDuty(ACC_UNSPRUNG_PWM, getUnsprungAcc(&wusSimState));
+		setDuty(COIL_EXTENSION_PWM, getCoilExtension(&wusSimState));
 		
 		if (errorCode != 0) {
 			/* TODO */
@@ -106,5 +120,13 @@ void vSimulateTask(void *params) {
 }
 
 SimState *getSimStatePtr() {
-	return &simState;
+	return &wusSimState;
+}
+
+char getRoadType(char *msg) {
+	return 0;
+}
+
+int getThrottle(char *msg) {
+	return 0;
 }
