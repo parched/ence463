@@ -404,7 +404,7 @@ void refreshReadonlyValues(Activity* activity)
 	}
 	else if (activity->menuTypes[activity->pageContext] == VIEWTYPE_TRACE)
 	{
-		TraceView* traveView = (TraceView*) activity->menus[activity->pageContext];
+		TraceView* traceView = (TraceView*) activity->menus[activity->pageContext];
 		//TODO: Redraw trace only
 	}
 }
