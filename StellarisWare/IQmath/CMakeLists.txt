@@ -1,9 +1,5 @@
 add_library(IQmath INTERFACE)
 
-link_directories(
-	"."
-	)
-
 target_link_libraries(IQmath
-	INTERFACE gcc-cm3/IQmathLib-cm3
+	INTERFACE ${CMAKE_CURRENT_LIST_DIR}/gcc-cm3/IQmathLib-cm3.a
 	)
