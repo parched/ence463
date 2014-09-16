@@ -143,7 +143,7 @@ Options option(int minIndex, int maxIndex);
  * \param options Settings for the options available for this Item
  * \param getter Function that retrieves the system variable, binding this option to it
  */
-Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int *getter(void));
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int (*getter)(void));
 
 /**
  * \brief Initailises a ListView and sets the items to a known initial values. Sets numItems =0 if fails to complete

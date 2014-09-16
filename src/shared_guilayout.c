@@ -35,7 +35,7 @@ Options option(int minIndex, int maxIndex) {
 	return newOptions;
 }
 
-Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int *getter(void)) {
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int (*getter)(void)) {
 	Item item;
 	//write the name to the Item object
 	ustrncpy(item.name, name, ITEM_NAME_SIZE);
@@ -50,7 +50,7 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 }
 
 TraceView traceView(char *name, TraceNode *head) {
-	TraveView traceView;
+	TraceView traceView;
 
 	traceView.head = head;							//sets head of traceView to head of TraceNode circular buffer
 	traceView.sparseIndex = TRACEVIEW_MAX_ZOOM;		// defaults to most zoomed out
