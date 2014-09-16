@@ -42,6 +42,7 @@
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
 
+
 /**
  * \enum ViewType
  *
@@ -124,6 +125,49 @@ typedef struct  {
 	unsigned int cursorContext;               /**<cursor position context*/
 	unsigned int numPages;                    /**<number of pages in this activity*/
 } Activity;
+
+/**
+ * \brief Constructs an Option with compulsory values as set and context initialized
+ *
+ * \param minIndex Minimum value this option can be set to
+ * \param maxIndex Maximum value this option can be set to
+ */
+Options option(int minIndex, int maxIndex);
+
+/**
+ * \brief Constructs an Item with compulsory values as set and context initialized
+ *
+ * \param name Label of the item
+ * \param optionType Sets whether options scroll through number or string
+ * \param accessType Sets whether user can modify the option value
+ * \param options Settings for the options available for this Item
+ * \param getter Function that retrieves the system variable, binding this option to it
+ */
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int *getter(void));
+
+/**
+ * \brief Initailises a ListView and sets the items to a known initial values. Sets numItems =0 if fails to complete
+ *
+ * \param name Label of the view
+ * \param numItems The number of Items that this ListView will have
+ */
+ListView listView(char *name, unsigned int numItems);
+
+/**
+ * \brief Constructs a TraceView with compulsory values as set and context initialized
+ *
+ * \param name Label of the view
+ * \param sparseIndex Number of TraceNodes to skip when drawing trace
+ * \param head The node the represents the first data point of the trace
+ */
+TraceView traceView(char *name, TraceNode *head);
+
+/**
+ * \brief Constructs an Activity with compulsory values set set and context initialized
+ *
+ * \param numPages Number of pages for this activity
+ */
+Activity activity(unsigned int numPages);
 
 
 #endif /* UI_TASK_H_ */
