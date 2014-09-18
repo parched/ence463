@@ -35,6 +35,15 @@
 
 #define BIT(x) (1 << x)
 
+typedef struct adcVars
+{
+	unsigned long channel0;
+	unsigned long channel1;
+	unsigned long channel2;
+} adcVars;
+
+adcVars ADCout;
+
 void adcISR (void);
 
 
@@ -56,71 +65,78 @@ void initAdcModule(char adcs)
 	// Set ADC Speed to 500ksps Max
 	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
-	// Disable Sequence 0 before Configuration
+	// Disable Sequence 0-2 before Configuration
 	ADCSequenceDisable(ADC_BASE, 0);
+	ADCSequenceDisable(ADC_BASE, 1);
+	ADCSequenceDisable(ADC_BASE, 2);
 
-	// Configure Sequence 0 for a Processor Trigger and 8x Oversampling
-	ADCSequenceConfigure(ADC_BASE, 0, ADC_TRIGGER_PROCESSOR, 0);
-	ADCSoftwareOversampleConfigure(ADC_BASE, 0, 8);
-
-	// Configure ADC Sequence Steps
-	int stepItr;
-	int stepNum = 0;
-	for (stepItr = 0; stepItr < 3; stepItr ++)
+	// Configure ADC Processors
+	int sequence = 0;
+	int step;
+	for (step = 0; step < 3; step ++)
 	{
-		int ADCconfig 	= 0;
-		int ADCinput	= BIT(stepItr);
-
 		// Check if ADC pin is required
-		if (ADCinput & adcs)
+		if (BIT(step) & adcs)
 		{
-			// Enable Channel
-			switch (ADCinput)
+			// Create ADC Config Flags.
+			// Only one step per sequence so Sequence End flag set by default.
+			int adcConfig = ADC_CTL_END;
+
+			// Configure next ADC processor for a Processor Trigger and 4x Oversampling
+			ADCSequenceConfigure(ADC_BASE, sequence, ADC_TRIGGER_PROCESSOR, sequence);
+			ADCSoftwareOversampleConfigure(ADC_BASE, sequence, 4);
+
+			// Select ADC Input
+			switch (step)
 			{
-				case BIT(0):
-					ADCconfig = ADC_CTL_CH0; break;
-				case BIT(1):
-					ADCconfig = ADC_CTL_CH1; break;
-				case BIT(2):
-					ADCconfig = ADC_CTL_CH2; break;
+				case 0:
+					adcConfig |= ADC_CTL_CH0; break;
+				case 1:
+					adcConfig |= ADC_CTL_CH1; break;
+				case 2:
+					adcConfig |= ADC_CTL_CH2; break;
 			}
 
-			// Enable Interrupt on last Step
-			if (stepNum >= maxSteps - 1)
-				ADCconfig |= ADC_CTL_IE | ADC_CTL_END;
+			// Check if an interrupt should be configured
+			if (step == maxSteps - 1)
+			{
+				adcConfig |= ADC_CTL_IE;
 
-			// Configure Sequence Step
-			ADCSoftwareOversampleStepConfigure(ADC_BASE, 0, stepNum, ADCconfig);
-			stepNum ++;
+				// Configure, Register and Clear Interrupt
+				ADCIntEnable 	(ADC_BASE, sequence);
+				IntRegister 	(INT_ADC0 + sequence, adcISR);
+				IntEnable 		(INT_ADC0 + sequence);
+				ADCIntClear 	(ADC_BASE, sequence);
+			}
+
+			// Configure ADC Sample Step
+			ADCSoftwareOversampleStepConfigure(ADC_BASE, sequence, 0, adcConfig);
+
+			// Enable ADC Sequence
+			ADCSequenceEnable(ADC_BASE, sequence);
+
+			sequence ++;
 		}
 	}
-
-	// Enable ADC Sequence
-	ADCSequenceEnable(ADC_BASE, 0);
-
-	// Enable ADC Interrupts, register and enable ISR
-	ADCIntEnable(ADC_BASE, 0);
-	IntRegister(INT_ADC0SS0, adcISR);
-	IntEnable(INT_ADC0SS0);
-
-	// Clear ADC Interrupt
-	ADCIntClear(ADC_BASE, 0);
 }
 
 
 int getSmoothAdc(char adc)
 {
-	unsigned long adcValues[3];
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, adcValues, 8);
-
-	//TODO: Store Data
+	//TODO: Trigger ADC???
 
 	return 0;
 }
 
 void adcISR (void)
 {
+	// Clear ADC Interrupts (All of them, because all lead to this ISR)
 	ADCIntClear(ADC_BASE, 0);
+	ADCIntClear(ADC_BASE, 1);
+	ADCIntClear(ADC_BASE, 2);
 
-	//TODO: Schedule ADC Data read
+	// Get Data from the ADC
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout.channel0, 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout.channel1, 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout.channel2, 4);
 }
