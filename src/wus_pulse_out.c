@@ -24,8 +24,63 @@
  * 
  */
 
+#include "wus_pulse_out.h"
+
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "shared_pulse.h"
+
+#define TASK_STACK_DEPTH 100
+#define TASK_PROIRITY 5
+
+#define PULSE_OUT_PERIPH SYSCTL_PERIPH_GPIOB
+#define PULSE_OUT_PORT GPIO_PORTB_BASE
+#define PULSE_OUT_PIN GPIO_PIN_0
+
+static volatile int _speed = 0; /**< The internally stored speed. */
+
+/**
+ * \brief The pulse output task.
+ *
+ * \param pvParams Unused.
+ */
+static void vPulseOutTask(void *pvParams);
+
 void initPulse() {
+	// Enable peripheral
+	SysCtlPeripheralEnable(PULSE_OUT_PERIPH);
+
+	// Set pin direction and configure output settings
+	GPIODirModeSet(PULSE_OUT_PORT, PULSE_OUT_PIN, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet(PULSE_OUT_PORT, PULSE_OUT_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+	GPIOPinTypeGPIOOutput(PULSE_OUT_PORT, PULSE_OUT_PIN);
+
+	xTaskCreate(vPulseOutTask, "Pulse Out", TASK_STACK_DEPTH, NULL, TASK_PROIRITY, NULL);
 }
 
 void setSpeed(int speed) {
+	_speed = speed;
+}
+
+void vPulseOutTask(void *pvParams) {
+	unsigned char isPulseHigh = 0;
+
+	// initialise FreeRTOS sleep parameters
+	portTickType pxPreviousWakeTime;
+	pxPreviousWakeTime = xTaskGetTickCount();
+
+	for (;;) {
+		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
+
+		isPulseHigh = ~isPulseHigh;
+
+		portTickType xTimeIncrement = configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * _speed * 2);
+		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
+	}
 }
