@@ -37,13 +37,14 @@
  * \brief A state of the simulator.
  */
 typedef struct {
-	int _speed;
-	int _zR;
-	int _zU;
-	int _zS;
-	int _vR;
-	int _vU;
-	int _vS;
+	/** \privatesection */
+	int speed;  /**< The car speed. */
+	int zR;     /**< The road displacement. */
+	int zU;     /**< The unsprung mass displacement. */
+	int zS;     /**< The sprung mass dispalcement. */
+	int vR;     /**< The road velocity. */
+	int vU;     /**< The unsprung mass velocity. */
+	int vS;     /**< The sprung mass velocity. */
 } SimState;
 
 /**
@@ -55,15 +56,14 @@ SimState simState();
 
 /**
  * \brief Resets the simulation.
- *
- * \param simState
+ * \public \memberof SimState
  */
 void resetSimulation(SimState *simState);
 
 /**
  * \brief Simulates and updates the state.
+ * \public \memberof SimState
  *
- * \param simState A pointer to the state of the simulator.
  * \param force The applied force from the controller.
  * \param throttle The forward acceleration from the driver.
  * \param dampingFactor The set damping factor.
@@ -76,8 +76,7 @@ char simulate(SimState *simState, int force, int throttle, int dampingFactor, ch
 
 /**
  * \brief Gets the car's current speed.
- *
- * \param simState A pointer the state of the simulator.
+ * \public \memberof SimState
  *
  * \return The car's speed.
  */
@@ -85,8 +84,7 @@ int getSpeed(const SimState *simState);
 
 /**
  * \brief Gets the sprung mass' acceleration.
- *
- * \param simState A pointer the state of the simulator.
+ * \public \memberof SimState
  *
  * \return The sprung mass' acceleration.
  */
@@ -94,8 +92,7 @@ int getSprungAcc(const SimState *simState);
 
 /**
  * \brief Gets the unsprung mass' acceleration.
- *
- * \param simState A pointer the state of the simulator.
+ * \public \memberof SimState
  *
  * \return The unsprung mass' acceleration.
  */
@@ -103,8 +100,7 @@ int getUnsprungAcc(const SimState *simState);
 
 /**
  * \brief Gets the coil's extension.
- *
- * \param simState A pointer the state of the simulator.
+ * \public \memberof SimState
  *
  * \return The coil's extension.
  */

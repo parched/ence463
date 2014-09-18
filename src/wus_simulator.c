@@ -39,7 +39,7 @@ char simulate(SimState *simState, int force, int throttle, int dampingFactor, ch
 }
 
 int getSpeed(const SimState *simState) {
-	return simState->_speed;
+	return simState->speed;
 }
 
 int getSprungAcc(const SimState *simState) {
