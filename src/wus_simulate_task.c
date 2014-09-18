@@ -102,8 +102,8 @@ void vSimulateTask(void *params) {
 	for (;;) {
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
-		//force = getSmoothAdc(ACTUATOR_FORCE_ADC);
-		//dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
+		force = getSmoothAdc(ACTUATOR_FORCE_ADC);
+		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
 
 		/* TODO: find dTime */
 		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
