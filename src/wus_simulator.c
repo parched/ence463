@@ -28,10 +28,18 @@
 
 SimState simState() {
 	SimState newSimState;
+	resetSimulation(&newSimState);
 	return newSimState;
 }
 
 void resetSimulation(SimState *simState) {
+	simState->speed = 0;
+	simState->zR = 0;
+	simState->zU = 0;
+	simState->zS = 0;
+	simState->vR = 0;
+	simState->vU = 0;
+	simState->vS = 0;
 }
 
 char simulate(SimState *simState, int force, int throttle, int dampingFactor, char roadType, int dTime) {
