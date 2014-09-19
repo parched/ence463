@@ -49,6 +49,7 @@ typedef struct {
 
 /**
  * \brief Creates a SimState.
+ * \public \memberof SimState
  *
  * \return A SimState.
  */
