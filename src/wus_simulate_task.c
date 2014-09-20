@@ -128,10 +128,6 @@ void vSimulateTask(void *params) {
 	}
 }
 
-SimState *getSimStatePtr() {
-	return &wusSimState;
-}
-
 int getDisplaySpeed() {
 	return speed / 10;
 }

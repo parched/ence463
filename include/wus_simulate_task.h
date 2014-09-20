@@ -37,13 +37,6 @@
 void vSimulateTask(void *params);
 
 /**
- * \brief Gets a pointer the task's SimState.
- *
- * \return A pointer to the SimState.
- */
-SimState *getSimStatePtr();
-
-/**
  * \brief Gets the speed for display.
  *
  * \return The speed.
