@@ -43,5 +43,33 @@ void vSimulateTask(void *params);
  */
 SimState *getSimStatePtr();
 
+/**
+ * \brief Gets the speed for display.
+ *
+ * \return The speed.
+ */
+int getDisplaySpeed();
+
+/**
+ * \brief Gets the sprung mass acceleration for display.
+ *
+ * \return The acceleration.
+ */
+int getDisplaySprungAcc();
+
+/**
+ * \brief Gets the unsprung mass acceleration for display.
+ *
+ * \return The acceleration.
+ */
+int getDisplayUnsprungAcc();
+
+/**
+ * \brief Gets the coil extension for display.
+ *
+ * \return The coil extension.
+ */
+int getDisplayCoilExtension();
+
 #endif
 

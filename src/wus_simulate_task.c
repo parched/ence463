@@ -132,6 +132,22 @@ SimState *getSimStatePtr() {
 	return &wusSimState;
 }
 
+int getDisplaySpeed() {
+	return speed / 10;
+}
+
+int getDisplaySprungAcc() {
+	return sprungAcc;
+}
+
+int getDisplayUnsprungAcc() {
+	return unsprungAcc;
+}
+
+int getDisplayCoilExtension() {
+	return coilExtension;
+}
+
 char getRoadType(char *msg) {
 	return 0;
 }
