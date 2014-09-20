@@ -89,7 +89,7 @@ void vSimulateTask(void *params) {
 
 	wusSimState = simState();
 
-	initPulse();
+	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);

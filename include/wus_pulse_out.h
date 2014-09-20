@@ -30,7 +30,7 @@
 /**
  * \brief Initialises the pulse train generator.
  */
-void initPulse();
+void initPulseOut();
 
 /**
  * \brief Sets the car speed.

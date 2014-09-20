@@ -52,7 +52,7 @@ static volatile int _speed = 0; /**< The internally stored speed. */
  */
 static void vPulseOutTask(void *pvParams);
 
-void initPulse() {
+void initPulseOut() {
 	// Enable peripheral
 	SysCtlPeripheralEnable(PULSE_OUT_PERIPH);
 
