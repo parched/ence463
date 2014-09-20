@@ -37,10 +37,10 @@
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
-SimState wusSimState;
-char roadType = 0;
-int dampingFactor = 0;
-int throttle = 0;
+static SimState wusSimState;
+static char roadType = 0;
+static int dampingFactor = 0;
+static int throttle = 0;
 
 /**
  * \brief Reads the road type from a message.
