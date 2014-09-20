@@ -64,7 +64,7 @@ void initPulse() {
 	xTaskCreate(vPulseOutTask, "Pulse Out", TASK_STACK_DEPTH, NULL, TASK_PROIRITY, NULL);
 }
 
-void setSpeed(int speed) {
+void setPulseSpeed(int speed) {
 	_speed = speed;
 }
 

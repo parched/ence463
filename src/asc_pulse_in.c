@@ -29,6 +29,6 @@
 void initPulseReader() {
 }
 
-int getSpeed() {
+int getPulseSpeed() {
 	return 500;
 }

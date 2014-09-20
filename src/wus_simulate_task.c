@@ -107,7 +107,7 @@ void vSimulateTask(void *params) {
 
 		/* TODO: find dTime */
 		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
-		setSpeed(getSpeed(&wusSimState));
+		setPulseSpeed(getSpeed(&wusSimState));
 		
 		setDuty(ACC_SPRUNG_PWM, getSprungAcc(&wusSimState));
 		setDuty(ACC_UNSPRUNG_PWM, getUnsprungAcc(&wusSimState));

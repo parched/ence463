@@ -37,6 +37,6 @@ void initPulseReader();
  *
  * \return The car's speed in 0.1 kph.
  */
-int getSpeed();
+int getPulseSpeed();
 
 #endif

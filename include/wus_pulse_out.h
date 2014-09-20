@@ -37,6 +37,6 @@ void initPulse();
  *
  * \param speed The speed in 0.1 kph.
  */
-void setSpeed(int speed);
+void setPulseSpeed(int speed);
 
 #endif
