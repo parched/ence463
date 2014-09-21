@@ -37,10 +37,14 @@
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
-SimState wusSimState;
-char roadType = 0;
-int dampingFactor = 0;
-int throttle = 0;
+static SimState wusSimState;
+static char roadType = 0;
+static int dampingFactor = 0;
+static int throttle = 0;
+static int speed = 0;
+static int sprungAcc = 0;
+static int unsprungAcc = 0;
+static int coilExtension = 0;
 
 /**
  * \brief Reads the road type from a message.
@@ -107,11 +111,16 @@ void vSimulateTask(void *params) {
 
 		/* TODO: find dTime */
 		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
-		setPulseSpeed(getSpeed(&wusSimState));
-		
-		setDuty(ACC_SPRUNG_PWM, getSprungAcc(&wusSimState));
-		setDuty(ACC_UNSPRUNG_PWM, getUnsprungAcc(&wusSimState));
-		setDuty(COIL_EXTENSION_PWM, getCoilExtension(&wusSimState));
+
+		speed = getSpeed(&wusSimState);
+		sprungAcc = getSprungAcc(&wusSimState);
+		unsprungAcc = getUnsprungAcc(&wusSimState);
+		coilExtension = getCoilExtension(&wusSimState);
+
+		setPulseSpeed(speed);
+		setDuty(ACC_SPRUNG_PWM, sprungAcc);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc);
+		setDuty(COIL_EXTENSION_PWM, coilExtension);
 		
 		if (errorCode != 0) {
 			/* TODO */
@@ -119,8 +128,20 @@ void vSimulateTask(void *params) {
 	}
 }
 
-SimState *getSimStatePtr() {
-	return &wusSimState;
+int getDisplaySpeed() {
+	return speed / 10;
+}
+
+int getDisplaySprungAcc() {
+	return sprungAcc;
+}
+
+int getDisplayUnsprungAcc() {
+	return unsprungAcc;
+}
+
+int getDisplayCoilExtension() {
+	return coilExtension;
 }
 
 char getRoadType(char *msg) {
