@@ -37,7 +37,7 @@
 
 /*Task Modules*/
 #include "wus_simulate_task.h"
-/*#include "shared_guidraw_task.h"*/
+#include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
@@ -51,16 +51,48 @@ int main(void)
 	whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-	/*Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension*/
-	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 1, NULL);
+	/* Marking up GUI */
+	TraceView roadSurface = traceView("Surface", NULL);
+	//TODO: Road surface stuff
+
+	ListView telemetry = listView("Telemetry", 4);
+	Options speedOption = option(-999, 999);
+	Item speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
+	Options sprungAccOption = option(-9999, 9999);
+	Item sprungAccItem = item("Sp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
+	Options unsprungAccOption = option(-9999, 9999);
+	Item unsprungAccItem = item("Unsp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
+	Options coilExtensionOption = option(-9999, 9999);
+	Item coilExtensionItem = item("Coil Ext.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
+	telemetry.items[0] = speedItem;
+	telemetry.items[1] = sprungAccItem;
+	telemetry.items[2] = unsprungAccItem;
+	telemetry.items[3] = coilExtensionItem;
+
+	Activity mainActivity = activity(2);
+	mainActivity.menus[0] = &telemetry;
+	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
+	mainActivity.menus[1] = &roadSurface;
+	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	attachActivity(&mainActivity);
+
+	/* Configure buttons */
+	configureButtonEvent(BUTTON_UP, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_DOWN, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_LEFT, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
+
+	/* Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension */
+	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 0, NULL);
+
 	/*Inits UART, continously reads and writes UART messages*/
-	/*xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);*/
-	/*Inits the display and refreshes display*/
-	/*xTaskCreate(vWusUiTask, "UI task", 240, (void*) placeholder, 1, NULL);*/
-	/*Inits button polling and checks for button pushes*/
-	/*xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);*/
+	//xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
 
+	/* Refreshes GUI */
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 2, NULL);
 
+	/* Polls buttons */
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
 	vTaskStartScheduler();	
