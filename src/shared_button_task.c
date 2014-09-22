@@ -39,6 +39,7 @@
 
 #define TOTAL_MAX	250
 #define TOTAL_MIN	0
+#define BUTTON_TASK_RATE_HZ 10000
 
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
@@ -87,8 +88,8 @@ void vButtonPollingTask(void* pvParameters)
 
 	portTickType xLastWakeTime;
 
-	// 10kHz operation = 0.1ms sleep
-	const portTickType xFrequency = 0.1*portTICK_RATE_MS;
+	// Set to 10kHz operation
+	const portTickType xFrequency = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
 
 	xLastWakeTime = xTaskGetTickCount();
 
