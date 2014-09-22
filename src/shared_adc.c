@@ -37,8 +37,9 @@
 
 #define BIT(x) 			(1 << x)
 #define ADC_FREQ_HZ 	50000
+#define ADC_DATA_MASK	0x3FF
 
-unsigned long ADCout[3];
+static int ADCout[3];
 
 void adcISR (void);
 
@@ -132,9 +133,21 @@ void initAdcModule(char adcs)
 }
 
 
-unsigned long getSmoothAdc(char adc)
+int getSmoothAdc(char adc)
 {
-	return ADCout[adc];
+	char channel;
+
+	switch(adc)
+	{
+	case 0x01:
+		channel = 0; break;
+	case 0x02:
+		channel = 1; break;
+	case 0x04:
+		channel = 2; break;
+	}
+
+	return ADCout[channel];
 }
 
 void adcISR (void)
@@ -145,7 +158,15 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, 2);
 
 	// Get Data from the ADC
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout[0], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout[1], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout[2], 4);
+	unsigned long ADCraw[3];
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCraw[0], 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCraw[1], 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCraw[2], 4);
+
+	// Mask and Convert to integer
+	// All ADC Data in lower 10 bits of 32-bit ADC output
+	// according to Stellarisware ADC App Note.
+	ADCout[0] = ADCraw[0] & ADC_DATA_MASK;
+	ADCout[1] = ADCraw[1] & ADC_DATA_MASK;
+	ADCout[2] = ADCraw[2] & ADC_DATA_MASK;
 }
