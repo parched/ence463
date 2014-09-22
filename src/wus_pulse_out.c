@@ -39,6 +39,8 @@
 #define TASK_STACK_DEPTH 100
 #define TASK_PROIRITY 5
 
+#define TASK_MIN_RATE_HZ 1
+
 #define PULSE_OUT_PERIPH SYSCTL_PERIPH_GPIOB
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
@@ -77,13 +79,13 @@ void vPulseOutTask(void *pvParams) {
 
 	for (;;) {
 		if (_speed == 0) {
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * 2));
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / TASK_MIN_RATE_HZ);
 		} else {
 			GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 
 			isPulseHigh = ~isPulseHigh;
 
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * _speed * 2));
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE * 36 / (PULSES_PER_REV * _speed * 2));
 		}
 	}
 }
