@@ -30,13 +30,13 @@
 /**
  * \brief Initialises the pulse train redaer module.
  */
-void initPulseReader();
+void initPulseIn();
 
 /**
  * \brief Gets the car speed.
  *
  * \return The car's speed in 0.1 kph.
  */
-int getSpeed();
+int getPulseSpeed();
 
 #endif

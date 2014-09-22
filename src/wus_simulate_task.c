@@ -93,7 +93,7 @@ void vSimulateTask(void *params) {
 
 	wusSimState = simState();
 
-	initPulse();
+	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
@@ -117,7 +117,7 @@ void vSimulateTask(void *params) {
 		unsprungAcc = getUnsprungAcc(&wusSimState);
 		coilExtension = getCoilExtension(&wusSimState);
 
-		setSpeed(speed);
+		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc);
 		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc);
 		setDuty(COIL_EXTENSION_PWM, coilExtension);

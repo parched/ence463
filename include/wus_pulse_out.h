@@ -30,13 +30,13 @@
 /**
  * \brief Initialises the pulse train generator.
  */
-void initPulse();
+void initPulseOut();
 
 /**
  * \brief Sets the car speed.
  *
  * \param speed The speed in 0.1 kph.
  */
-void setSpeed(int speed);
+void setPulseSpeed(int speed);
 
 #endif

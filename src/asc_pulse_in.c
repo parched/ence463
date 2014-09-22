@@ -26,9 +26,9 @@
 
 #include "asc_pulse_in.h"
 
-void initPulseReader() {
+void initPulseIn() {
 }
 
-int getSpeed() {
+int getPulseSpeed() {
 	return 500;
 }
