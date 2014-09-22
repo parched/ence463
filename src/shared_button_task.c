@@ -89,14 +89,14 @@ void vButtonPollingTask(void* pvParameters)
 	portTickType xLastWakeTime;
 
 	// Set to 10kHz operation
-	const portTickType xFrequency = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
+	const portTickType xTickIncrement = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
 
 	xLastWakeTime = xTaskGetTickCount();
 
 	for(;;)
 	{
 		// Sleep for 0.1ms
-		vTaskDelayUntil( &xLastWakeTime, xFrequency);
+		vTaskDelayUntil( &xLastWakeTime, xTickIncrement);
 
 		// Read Switches
 		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));
