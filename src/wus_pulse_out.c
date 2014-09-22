@@ -76,11 +76,14 @@ void vPulseOutTask(void *pvParams) {
 	pxPreviousWakeTime = xTaskGetTickCount();
 
 	for (;;) {
-		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
+		if (_speed == 0) {
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * 2));
+		} else {
+			GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 
-		isPulseHigh = ~isPulseHigh;
+			isPulseHigh = ~isPulseHigh;
 
-		portTickType xTimeIncrement = configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * _speed * 2);
-		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * _speed * 2));
+		}
 	}
 }
