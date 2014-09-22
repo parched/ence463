@@ -29,23 +29,31 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
+#include "inc/hw_timer.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
 #include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
 
-#define BIT(x) (1 << x)
+#define BIT(x) 			(1 << x)
+#define ADC_FREQ_HZ 	50000
 
-typedef struct adcVars
-{
-	unsigned long channel0;
-	unsigned long channel1;
-	unsigned long channel2;
-} adcVars;
-
-adcVars ADCout;
+unsigned long ADCout[3];
 
 void adcISR (void);
 
+static void initAdcTimer(void)
+{
+	// Initialise Timer 1 (Used to trogger ADC) as a Periodic Timer
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+	TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC_UP);
+
+	// Set Timer 1 Load to 50 ksps (ADC Sample Rate)
+	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ - 1);
+
+	// Enable Timer 1 ADC Trigger
+	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
+}
 
 void initAdcModule(char adcs)
 {
@@ -57,6 +65,9 @@ void initAdcModule(char adcs)
 		maxSteps = 2;
 	else if (adcs == 0x07)
 		maxSteps = 3;
+
+	// Configure Timer for ADC Triggering
+	initAdcTimer();
 
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
@@ -83,7 +94,7 @@ void initAdcModule(char adcs)
 			int adcConfig = ADC_CTL_END;
 
 			// Configure next ADC processor for a Processor Trigger and 4x Oversampling
-			ADCSequenceConfigure(ADC_BASE, sequence, ADC_TRIGGER_PROCESSOR, sequence);
+			ADCSequenceConfigure(ADC_BASE, sequence, ADC_TRIGGER_TIMER, sequence);
 			ADCSoftwareOversampleConfigure(ADC_BASE, sequence, 4);
 
 			// Select ADC Input
@@ -121,11 +132,9 @@ void initAdcModule(char adcs)
 }
 
 
-int getSmoothAdc(char adc)
+unsigned long getSmoothAdc(char adc)
 {
-	//TODO: Trigger ADC???
-
-	return 0;
+	return ADCout[adc];
 }
 
 void adcISR (void)
@@ -136,7 +145,7 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, 2);
 
 	// Get Data from the ADC
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout.channel0, 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout.channel1, 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout.channel2, 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout[0], 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout[1], 4);
+	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout[2], 4);
 }
