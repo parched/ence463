@@ -29,6 +29,6 @@
 
 #define MAX_SPEED 2000           /**< Maximum speed in 0.1kph */
 #define PULSES_PER_REV 40        /**< Number of pulses per wheel revolution */
-#define WHEEL_CIRCUMFERENCE 2    /**< Wheel circumference in metres */
+#define WHEEL_CIRCUMFERENCE_M 2  /**< Wheel circumference in metres */
 
 #endif /* SHARED_PULSE_H */

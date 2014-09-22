@@ -85,7 +85,7 @@ void vPulseOutTask(void *pvParams) {
 
 			isPulseHigh = ~isPulseHigh;
 
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE * 36 / (PULSES_PER_REV * _speed * 2));
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (PULSES_PER_REV * _speed * 2));
 		}
 	}
 }
