@@ -29,11 +29,33 @@
 
 typedef struct TraceNode TraceNode;
 
+/**
+ * \struct TraceNode
+ *
+ * \brief Vector object to be used for linked list or circular buffer
+ */
 struct TraceNode
 {
 	int x;
 	int y;
 	TraceNode* next;
 };
+
+/**
+ * \brief Creates a linked list from array of TraceNodes
+ *
+ * \param head Pointer to the first item in the array
+ * \param size Size of the linked list desired
+ */
+void createLinkedList(TraceNode* head, unsigned int size);
+
+/**
+ * \brief Creates a circular buffer from array of TraceNodes
+ *
+ * \param head Pointer to the first item in the array
+ * \param size Size of the circular buffer desired
+ */
+void createCircularBuffer(TraceNode* head, unsigned int size);
+
 
 #endif
