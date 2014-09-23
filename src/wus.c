@@ -113,7 +113,7 @@ void vApplicationMallocFailedHook(void)
 }
 /*-----------------------------------------------------------*/
 
-void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
+void vApplicationStackOverflowHook(TaskHandle_t *pxTask, signed char *pcTaskName)
 {
 	/* This function will only be called if a task overflows its stack.  Note
 	that stack overflow checking does slow down the context switch

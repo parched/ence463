@@ -74,7 +74,7 @@ void vPulseOutTask(void *pvParams) {
 	unsigned char isPulseHigh = 0;
 
 	// initialise FreeRTOS sleep parameters
-	portTickType pxPreviousWakeTime;
+	TickType_t pxPreviousWakeTime;
 	pxPreviousWakeTime = xTaskGetTickCount();
 
 	for (;;) {
