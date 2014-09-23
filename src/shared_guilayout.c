@@ -25,6 +25,8 @@
  */
 
 #include "shared_guilayout.h"
+
+#include "shared_displayformat128x64.h"
 #include <ustdlib.h>
 
 Options option(int minIndex, int maxIndex) {
@@ -49,11 +51,25 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 	return item;
 }
 
-TraceView traceView(char *name, TraceNode *head) {
+TraceView traceView(char *name, TraceNode *head, int zeroHeight, int vertScale) {
 	TraceView traceView;
 
 	traceView.head = head;							//sets head of traceView to head of TraceNode circular buffer
 	traceView.sparseIndex = TRACEVIEW_MAX_ZOOM;		// defaults to most zoomed out
+
+	// convert height from bottom of trace to screen position
+	if (zeroHeight > TRACE_HEIGHT || zeroHeight < 0)
+	{
+		// if zero height outside of drawable range, make it center of trace plot
+		traceView.zeroLine = TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP + TRACE_HEIGHT/2;
+	}
+	else
+	{
+		// convert pixel height from bottom of plot to pixel index from top of screen
+		traceView.zeroLine = PX_VERT - TRACE_MARGIN_BOTTOM - zeroHeight;
+	}
+	traceView.vertScale = vertScale;
+
 	ustrncpy(traceView.name, name, VIEW_NAME_SIZE);
 	
 	return traceView;

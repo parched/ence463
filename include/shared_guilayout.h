@@ -41,6 +41,7 @@
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
+#define TRACE_ZERO_CENTER -1    /**<specifies the zero height of the TraceView to be center */
 
 
 /**
@@ -111,6 +112,8 @@ typedef struct {
 	char name[VIEW_NAME_SIZE];                /**<name of the view*/
 	TraceNode* head;                          /**<pointer to head node of the buffer to draw*/
 	unsigned int sparseIndex;                 /**<number of data points to skip when drawing the trace*/
+	unsigned int zeroLine;                    /**<position on screen representing y value of 0*/
+	int vertScale;                            /**<change in trace height in CHAR_HEIGHT per change in y value of TraceNode*/
 } TraceView;
 
 /**
@@ -159,8 +162,10 @@ ListView listView(char *name, unsigned int numItems);
  * \param name Label of the view
  * \param sparseIndex Number of TraceNodes to skip when drawing trace
  * \param head The node the represents the first data point of the trace
+ * \param zeroHeight pixel height the value 0 from bottom of trace plot
+ * \param vertScale change in trace height in CHAR_HEIGHT per y value of TraceNode
  */
-TraceView traceView(char *name, TraceNode *head);
+TraceView traceView(char *name, TraceNode *head, int zeroHeight, int vertScale);
 
 /**
  * \brief Constructs an Activity with compulsory values set set and context initialized
