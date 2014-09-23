@@ -83,16 +83,16 @@ int main(void)
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
 	/* Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension */
-	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 0, NULL);
+	//xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 3, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
 	//xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
 
 	/* Refreshes GUI */
-	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 2, NULL);
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
 
 	/* Polls buttons */
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
 	vTaskStartScheduler();	
