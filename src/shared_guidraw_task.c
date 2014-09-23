@@ -48,8 +48,8 @@ typedef struct
 	ButtonEvent event;
 } InputEvent;
 
-xQueueHandle inputEventQueue;
-Activity* unitActivity;
+static xQueueHandle inputEventQueue;
+static Activity* unitActivity;
 
 char CLEAR_ROW [PX_HORZ] = "                      ";
 
@@ -82,28 +82,35 @@ void changeOption(Activity* activity, HorzDir dir);
  *
  * \param activity Pointer to the activity that holds the context
  */
-void refreshReadonlyValues(Activity* activity);
+void refreshReadonlyValues(const Activity* activity);
 
 /**
  * \brief Determines what type of View to redraw and redraws
  *
  * \param activity Pointer to the activity
  */
-void redrawView(Activity* activity);
+void redrawView(const Activity* activity);
 
 /**
  * \brief Draws a new ListView upon switching to a different one
  *
- * \param view Pointer to the ListView to draw
+ * \param view Pointer to the activity hosting the view
  */
-void redrawListView(Activity* view);
+void redrawListView(const Activity* activity);
+
+/**
+ * \brief Draws a new TraceView upon switching to a different one
+ *
+ * \param activity Pointer to the activity hosting the view
+ */
+void redrawTraceView(const Activity* activity);
 
 /**
  * \brief Draws given string formatted as title in a ListView
  *
  * \param activity Pointer to activity containing title to draw
  */
-void drawListViewTitle(Activity* activity);
+void drawViewTitle(const Activity* activity);
 
 /**
  * \brief Draws the given Item in a ListView
@@ -112,7 +119,7 @@ void drawListViewTitle(Activity* activity);
  * \param index The place this item is in the ListView where 0 is top
  * \param selected Is Item selected
  */
-void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
+void drawListViewItem(const Item* item, unsigned int index, tBoolean selected);
 
 /**
  * \brief Gets the horizontal position of text given alignment and margins
@@ -121,7 +128,7 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
  * \param type Type of alignment
  * \param margin Offset given alignment type
  */
-unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
+unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin);
 
 
 void attachActivity(Activity* activity)
@@ -235,7 +242,7 @@ void moveCursor(Activity* activity, VertDir dir)
 						if (activity->cursorContext == 0)
 						{
 							// user is now selecting the title, brighten title
-							drawListViewTitle(activity);
+							drawViewTitle(activity);
 						}
 						else
 						{
@@ -244,7 +251,7 @@ void moveCursor(Activity* activity, VertDir dir)
 						}
 						break;
 					case(VIEWTYPE_TRACE):
-						drawListViewTitle(activity);
+						drawViewTitle(activity);
 						//TODO: dim the trace as it is no longer being selected
 						break;
 				}
@@ -259,7 +266,7 @@ void moveCursor(Activity* activity, VertDir dir)
 					activity->cursorContext++;
 
 					// update display
-					drawListViewTitle(activity);
+					drawViewTitle(activity);
 					//TODO: Brighten trace as it is now being selected
 				}
 			}
@@ -275,7 +282,7 @@ void moveCursor(Activity* activity, VertDir dir)
 					if (activity->cursorContext-1 == 0)
 					{
 						// user was previously selected title, dim title
-						drawListViewTitle(activity);
+						drawViewTitle(activity);
 					}
 					else
 					{
@@ -373,7 +380,7 @@ void changeOption(Activity* activity, HorzDir dir)
 	}
 }
 
-void redrawView(Activity* activity)
+void redrawView(const Activity* activity)
 {
 	switch (activity->menuTypes[activity->pageContext])
 	{
@@ -381,12 +388,12 @@ void redrawView(Activity* activity)
 			redrawListView(activity);
 			break;
 		case(VIEWTYPE_TRACE):
-			//TODO: Implement initial TraceView draw
+			redrawTraceView(activity);
 			break;
 	}
 }
 
-void refreshReadonlyValues(Activity* activity)
+void refreshReadonlyValues(const Activity* activity)
 {
 	unsigned int i;
 	if (activity->menuTypes[activity->pageContext] == VIEWTYPE_LIST)
@@ -409,12 +416,12 @@ void refreshReadonlyValues(Activity* activity)
 	}
 }
 
-void redrawListView(Activity* activity)
+void redrawListView(const Activity* activity)
 {
 	RIT128x96x4Clear();
 
 	// draw title (is selected when coming to new page)
-	drawListViewTitle(activity);
+	drawViewTitle(activity);
 
 	// draw items (none are selected when coming to new page)
 	ListView* listView = (ListView*) activity->menus[activity->pageContext];
@@ -425,7 +432,17 @@ void redrawListView(Activity* activity)
 	}
 }
 
-void drawListViewTitle(Activity* activity)
+void redrawTraceView(const Activity* activity)
+{
+	RIT128x96x4Clear();
+
+	// draw title (is selected when coming to new page)
+	drawViewTitle(activity);
+
+
+}
+
+void drawViewTitle(const Activity* activity)
 {
 	RIT128x96x4StringDraw(CLEAR_ROW, 0, TITLE_PADDINGTOP, 0);
 
@@ -462,7 +479,7 @@ void drawListViewTitle(Activity* activity)
 	}
 }
 
-void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
+void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 {
 	// draw item label
 	unsigned int posX = getHorzAlignment(item->name, ITEM_TEXTALIGN, ITEM_MARGIN);
@@ -528,7 +545,7 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	}
 }
 
-unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin)
+unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin)
 {
 	unsigned int pos;
 	switch (align)
