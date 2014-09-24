@@ -122,6 +122,23 @@ void drawViewTitle(const Activity* activity);
 void drawListViewItem(const Item* item, unsigned int index, tBoolean selected);
 
 /**
+ * \brief Draws the plot area of TraceView
+ *
+ * \param view Pointer to the TraceView to draw
+ * \param selected Is the plot selected
+ */
+void drawTraceViewPlot(const TraceView* view, tBoolean selected);
+
+/**
+ * \brief Draws a single point on the display
+ *
+ * \param x Horizontal position to draw dot
+ * \param y Vertical position to draw dot
+ * \param level Brightness to draw dot
+ */
+void drawPoint(unsigned int x, unsigned int y, char level);
+
+/**
  * \brief Gets the horizontal position of text given alignment and margins
  *
  * \param str String to draw
@@ -361,20 +378,10 @@ void changeOption(Activity* activity, HorzDir dir)
 		switch(dir)
 		{
 			case(HORZDIR_RIGHT):
-				if (((TraceView*) activity->menus[page])->sparseIndex <= 1)
-				{
-					// zoom in
-					((TraceView*) activity->menus[page])->sparseIndex /= 2;
-					//TODO: Redraw trace
-				}
+				//TODO: Zoom in
 				break;
 			case(HORZDIR_LEFT):
-				if (((TraceView*) activity->menus[page])->sparseIndex >= TRACEVIEW_MAX_ZOOM)
-				{
-					// zoom out
-					((TraceView*) activity->menus[page])->sparseIndex *= 2;
-					//TODO: Redraw trace
-				}
+				//TODO: Zoom out
 				break;
 		}
 	}
@@ -411,8 +418,9 @@ void refreshReadonlyValues(const Activity* activity)
 	}
 	else if (activity->menuTypes[activity->pageContext] == VIEWTYPE_TRACE)
 	{
+		tBoolean selected = (activity->cursorContext) > 0;
 		TraceView* traceView = (TraceView*) activity->menus[activity->pageContext];
-		//TODO: Redraw trace only
+		drawTraceViewPlot(traceView, selected);
 	}
 }
 
@@ -439,7 +447,8 @@ void redrawTraceView(const Activity* activity)
 	// draw title (is selected when coming to new page)
 	drawViewTitle(activity);
 
-
+	// draw plot (not selected when coming to new page
+	drawTraceViewPlot((TraceView*) activity->menus[activity->pageContext], false);
 }
 
 void drawViewTitle(const Activity* activity)
@@ -545,6 +554,45 @@ void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 	}
 }
 
+void drawTraceViewPlot(const TraceView* view, tBoolean selected)
+{
+	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
+
+	unsigned int i;
+	TraceNode* plotting = view->head;
+	int headX = view->head->x;
+	for (i=0; i<view->bufferSize; i++)
+	{
+		unsigned int dispPosX = (plotting->x - headX)/(view->dispHorzScale);
+		unsigned int dispPosY = view->zeroLine + (plotting->y/view->vertScale)*CHAR_HEIGHT;
+		drawPoint(dispPosX, dispPosY, brightness);
+
+		// increment to next node for next iteration
+		plotting = plotting->next;
+	}
+}
+
+void drawPoint(unsigned int x, unsigned int y, char level)
+{
+	unsigned char dot[] = {0x00};
+
+	if (level > 15)
+	{
+		level = 15;	// limit brightness
+	}
+
+	if (x % 2)
+	{
+		dot[0] = (level << 4);	// set brightness and position of point
+		RIT128x96x4ImageDraw(dot, x, y, 2, 1);	// draw dot
+	}
+	else
+	{
+		dot[0] = (level);
+		RIT128x96x4ImageDraw(dot, x-1, y-1, 2, 1);	// draw dot
+	}
+}
+
 unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin)
 {
 	unsigned int pos;
@@ -562,4 +610,5 @@ unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int mar
 	}
 	return pos;
 }
+
 
