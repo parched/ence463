@@ -37,7 +37,7 @@ void createLinkedList(TraceNode* head, unsigned int size)
 	{
 		(head+i)->next = head+i+1;
 	}
-	(head+size)->next = NULL;
+	(head+size-1)->next = NULL;
 }
 
 void createCircularBuffer(TraceNode* head, unsigned int size)
@@ -47,7 +47,7 @@ void createCircularBuffer(TraceNode* head, unsigned int size)
 	{
 		(head+i)->next = head+i+1;
 	}
-	(head+size)->next = head;
+	(head+size-1)->next = head;
 }
 
 
