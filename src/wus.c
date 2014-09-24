@@ -41,21 +41,21 @@
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
-const char *placeholder = "test";
+static const char *placeholder = "test";
 
-Activity mainActivity;
+static Activity mainActivity;
 
-TraceView roadSurface;
+static TraceView roadSurface;
 
-ListView telemetry;
-Options speedOption;
-Item speedItem;
-Options sprungAccOption;
-Item sprungAccItem;
-Options unsprungAccOption;
-Item unsprungAccItem;
-Options coilExtensionOption;
-Item coilExtensionItem;
+static ListView telemetry;
+static Options speedOption;
+static Item speedItem;
+static Options sprungAccOption;
+static Item sprungAccItem;
+static Options unsprungAccOption;
+static Item unsprungAccItem;
+static Options coilExtensionOption;
+static Item coilExtensionItem;
 /*-----------------------------------------------------------*/
 
 int main(void)

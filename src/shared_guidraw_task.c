@@ -48,8 +48,8 @@ typedef struct
 	ButtonEvent event;
 } InputEvent;
 
-xQueueHandle inputEventQueue;
-Activity* unitActivity;
+static xQueueHandle inputEventQueue;
+static Activity* unitActivity;
 
 char CLEAR_ROW [PX_HORZ] = "                      ";
 

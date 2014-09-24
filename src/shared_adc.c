@@ -42,7 +42,7 @@ typedef struct adcVars
 	unsigned long channel2;
 } adcVars;
 
-adcVars ADCout;
+static adcVars ADCout;
 
 void adcISR (void);
 

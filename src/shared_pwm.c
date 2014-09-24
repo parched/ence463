@@ -38,7 +38,7 @@
 #define REAL_MAX_VOLTAGE_MV 3300
 #define DESIRED_MAX_VOLTAGE_MV 3000
 
-unsigned long ulPeriod;
+static unsigned long ulPeriod;
 
 typedef struct  {
     unsigned long pwmOut;
@@ -51,9 +51,9 @@ typedef struct  {
 } PwmPin;
 
 
-PwmPin pwm1 = {PWM_OUT_1,PWM_OUT_1_BIT,0};
-PwmPin pwm4 = {PWM_OUT_4,PWM_OUT_4_BIT,0};
-PwmPin pwm5 = {PWM_OUT_5,PWM_OUT_5_BIT,0};
+static PwmPin pwm1 = {PWM_OUT_1,PWM_OUT_1_BIT,0};
+static PwmPin pwm4 = {PWM_OUT_4,PWM_OUT_4_BIT,0};
+static PwmPin pwm5 = {PWM_OUT_5,PWM_OUT_5_BIT,0};
 
 
 /*init the PWM Module*/
