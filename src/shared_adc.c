@@ -131,7 +131,7 @@ void initAdcModule(char adcs)
 
 int getSmoothAdc(char adc)
 {
-	char channel;
+	size_t channel;
 
 	switch(adc)
 	{
@@ -153,5 +153,5 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
-	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, &ADCout);
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ADCout);
 }
