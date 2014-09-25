@@ -131,19 +131,15 @@ void initAdcModule(char adcs)
 
 int getSmoothAdc(char adc)
 {
-	size_t channel;
-
 	switch(adc)
 	{
 	case 0x01:
-		channel = 0; break;
+		return (int) ADCout[0] & ADC_DATA_MASK;
 	case 0x02:
-		channel = 1; break;
+		return (int) ADCout[1] & ADC_DATA_MASK;
 	case 0x04:
-		channel = 2; break;
+		return (int) ADCout[2] & ADC_DATA_MASK;
 	}
-
-	return (int) ADCout[channel] & ADC_DATA_MASK;
 }
 
 
