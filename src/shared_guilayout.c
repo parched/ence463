@@ -51,11 +51,11 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 	return item;
 }
 
-TraceView traceView(char *name, TraceNode *head, unsigned int bufferSize, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale) {
+TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale) {
 	TraceView traceView;
 
-	traceView.head = head;					//sets head of traceView to head of TraceNode circular buffer
-	traceView.bufferSize = bufferSize;
+	traceView.buffer = buffer;
+	traceView.horzScaleStep = 1;
 
 	// convert height from bottom of trace to screen position
 	if (zeroHeight > TRACE_HEIGHT || zeroHeight < 0)

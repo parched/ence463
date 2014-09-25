@@ -27,6 +27,8 @@
 #ifndef SHARED_TRACENODE
 #define SHARED_TRACENODE
 
+typedef enum {BUFFERFULLMODE_BLOCK, BUFFERFULLMODE_OVERWRITE} BufferFullMode;
+
 typedef struct TraceNode TraceNode;
 
 /**
@@ -39,23 +41,56 @@ struct TraceNode
 	int x;
 	int y;
 	TraceNode* next;
+	TraceNode* prev;
 };
 
 /**
- * \brief Creates a linked list from array of TraceNodes
+ * \struct CircularBuffer
  *
- * \param head Pointer to the first item in the array
- * \param size Size of the linked list desired
+ * \brief Handler for circular buffers
  */
-void createLinkedList(TraceNode* head, unsigned int size);
+typedef struct
+{
+	TraceNode* lastRead;
+	TraceNode* lastWritten;
+	unsigned int size;
+	BufferFullMode fullMode;
+} CircularBufferHandler;
 
 /**
  * \brief Creates a circular buffer from array of TraceNodes
  *
  * \param head Pointer to the first item in the array
  * \param size Size of the circular buffer desired
+ * \param mode Desired behavior when buffer is full
+ * \return Handler for the circular buffer
  */
-void createCircularBuffer(TraceNode* head, unsigned int size);
+CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, BufferFullMode mode);
 
+/**
+ * \brief Writes x and y values to chosen circular buffer
+ *
+ * \param buffer Pointer to the handler for the buffer to modify
+ * \param x value to write
+ * \param y value to write
+ * \return 0 for success, -1 for buffer full
+ */
+int circularBufferWrite(CircularBufferHandler* buffer, int x, int y);
+
+/**
+ * \brief Returns the node of the circular buffer that was last written
+ *
+ * \param buffer Pointer to the handler for the buffer to modify
+ * \return The last written node of the buffer
+ */
+TraceNode* getLatestNode(CircularBufferHandler* buffer);
+
+/**
+ * \brief Read data from the circular buffer
+ *
+ * \param buffer Pointer to the handler for the buffer to read
+ * \return The oldest unread node
+ */
+TraceNode* circularBufferRead(CircularBufferHandler* buffer);
 
 #endif
