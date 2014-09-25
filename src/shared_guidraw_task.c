@@ -51,7 +51,7 @@ typedef struct
 static xQueueHandle inputEventQueue;
 static Activity* unitActivity;
 
-char CLEAR_ROW [PX_HORZ] = "                      ";
+static char CLEAR_ROW [PX_HORZ] = "                      ";
 
 /**
  * \brief Moves the cursor up or down
@@ -558,10 +558,12 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 {
 	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
 
-	unsigned int i;
+	view->head = writing->next;
 	TraceNode* plotting = view->head;
 	int headX = view->head->x;
-	for (i=0; i<view->bufferSize; i++)
+
+	// draw until screen is full or up to one being written
+	do
 	{
 		unsigned int dispPosX = (plotting->x - headX)/(view->dispHorzScale);
 		unsigned int dispPosY = view->zeroLine + (plotting->y/view->vertScale)*CHAR_HEIGHT;
@@ -569,7 +571,7 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 
 		// increment to next node for next iteration
 		plotting = plotting->next;
-	}
+	} while(dispPosX >= PX_HORZ || plotting == writing);
 }
 
 void drawPoint(unsigned int x, unsigned int y, char level)
