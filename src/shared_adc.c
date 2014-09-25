@@ -38,8 +38,10 @@
 #define BIT(x) 			(1 << x)
 #define ADC_FREQ_HZ 	50000
 #define ADC_DATA_MASK	0x3FF
+#define ADC_SEQ			0
+#define ADC_PRIORITY	0
 
-static int ADCout[3];
+static unsigned long ADCout[3];
 
 void adcISR (void);
 
@@ -77,13 +79,14 @@ void initAdcModule(char adcs)
 	// Set ADC Speed to 500ksps Max
 	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
-	// Disable Sequence 0-2 before Configuration
-	ADCSequenceDisable(ADC_BASE, 0);
-	ADCSequenceDisable(ADC_BASE, 1);
-	ADCSequenceDisable(ADC_BASE, 2);
+	// Disable Sequence 0 before Configuration
+	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
+
+	// Configure  ADC processor for a Timer Trigger and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
+	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
 	// Configure ADC Processors
-	int sequence = 0;
 	int step;
 	for (step = 0; step < 3; step ++)
 	{
@@ -91,12 +94,7 @@ void initAdcModule(char adcs)
 		if (BIT(step) & adcs)
 		{
 			// Create ADC Config Flags.
-			// Only one step per sequence so Sequence End flag set by default.
-			int adcConfig = ADC_CTL_END;
-
-			// Configure next ADC processor for a Processor Trigger and 4x Oversampling
-			ADCSequenceConfigure(ADC_BASE, sequence, ADC_TRIGGER_TIMER, sequence);
-			ADCSoftwareOversampleConfigure(ADC_BASE, sequence, 4);
+			int adcConfig = 0;
 
 			// Select ADC Input
 			switch (step)
@@ -112,24 +110,22 @@ void initAdcModule(char adcs)
 			// Check if an interrupt should be configured
 			if (step == maxSteps - 1)
 			{
-				adcConfig |= ADC_CTL_IE;
-
-				// Configure, Register and Clear Interrupt
-				ADCIntEnable 	(ADC_BASE, sequence);
-				IntRegister 	(INT_ADC0 + sequence, adcISR);
-				IntEnable 		(INT_ADC0 + sequence);
-				ADCIntClear 	(ADC_BASE, sequence);
+				adcConfig |= ADC_CTL_IE | ADC_CTL_END;
 			}
 
 			// Configure ADC Sample Step
-			ADCSoftwareOversampleStepConfigure(ADC_BASE, sequence, 0, adcConfig);
-
-			// Enable ADC Sequence
-			ADCSequenceEnable(ADC_BASE, sequence);
-
-			sequence ++;
+			ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, step, adcConfig);
 		}
 	}
+
+	// Enable ADC Sequence
+	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
+
+	// Configure, Register and Clear Interrupt
+	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
+	IntRegister 	(INT_ADC0, adcISR);
+	IntEnable 		(INT_ADC0);
+	ADCIntClear 	(ADC_BASE, ADC_SEQ);
 }
 
 
@@ -147,26 +143,15 @@ int getSmoothAdc(char adc)
 		channel = 2; break;
 	}
 
-	return ADCout[channel];
+	return (int) ADCout[channel] & ADC_DATA_MASK;
 }
+
 
 void adcISR (void)
 {
-	// Clear ADC Interrupts (All of them, because all lead to this ISR)
-	ADCIntClear(ADC_BASE, 0);
-	ADCIntClear(ADC_BASE, 1);
-	ADCIntClear(ADC_BASE, 2);
+	// Clear ADC Interrupt
+	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
-	unsigned long ADCraw[3];
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCraw[0], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCraw[1], 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCraw[2], 4);
-
-	// Mask and Convert to integer
-	// All ADC Data in lower 10 bits of 32-bit ADC output
-	// according to Stellarisware ADC App Note.
-	ADCout[0] = ADCraw[0] & ADC_DATA_MASK;
-	ADCout[1] = ADCraw[1] & ADC_DATA_MASK;
-	ADCout[2] = ADCraw[2] & ADC_DATA_MASK;
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, &ADCout);
 }
