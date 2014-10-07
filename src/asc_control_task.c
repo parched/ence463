@@ -43,6 +43,12 @@
 #define DAMPING_RALLY	500
 
 static rideType rideMode = SEDATE;
+static int sprungAcc = 0;
+static int unsprungAcc = 0;
+static int coilExtension = 0;
+static int speed = 0;
+static int actuatorForce = 0;
+static int dampingCoefficient = 0;
 
 int getDampingCoefficient (void)
 {
@@ -62,14 +68,7 @@ int getDampingCoefficient (void)
 
 void vControlTask(void *params)
 {
-	// Initialise Variables (Local unless needed elsewhere)
-	int sprungAcc = 0;
-	int unsprungAcc = 0;
-	int coilExtension = 0;
-	int speed = 0;
 
-	int actuatorForce = 0;
-	int dampingCoefficient = 0;
 	int dTime = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
 
 	ascControlState =  controllerState();
@@ -105,8 +104,46 @@ void vControlTask(void *params)
 	}
 }
 
+/* SETTERS */
 
-void setRideType(rideType rideModeIn)
+void setRideMode(rideType rideModeIn)
 {
 	rideMode = rideModeIn;
+}
+
+/* GETTERS */
+
+rideType getDisplayRideMode()
+{
+	return rideMode;
+}
+
+int getDisplaySpeed() 
+{
+	return speed / 10;
+}
+
+int getDisplaySprungAcc() 
+{
+	return sprungAcc;
+}
+
+int getDisplayUnsprungAcc() 
+{
+	return unsprungAcc;
+}
+
+int getDisplayCoilExtension() 
+{
+	return coilExtension;
+}
+
+int getDisplayForce()
+{
+	return actuatorForce;
+}
+
+int getDisplayDampingCoefficient()
+{
+	return dampingCoefficient;
 }

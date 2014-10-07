@@ -41,6 +41,55 @@ void vControlTask(void *params);
  *
  * \param rideType Ride Type.
  */
-void setRideType(rideType rideModeIn);
+void setRideMode(rideType rideModeIn);
+
+/**
+ * \brief Returns the car ride type.
+ *
+ * \return Ride Type (enum).
+ */
+rideType getDisplayRideMode();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Car Speed (m/s).
+ */
+int getDisplaySpeed();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Sprung Acceleration.
+ */
+int getDisplaySprungAcc();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Unsprung Acceleration.
+ */
+int getDisplayUnsprungAcc();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Coil Extension.
+ */
+int getDisplayCoilExtension();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Actuator Force (N).
+ */
+int getDisplayForce();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Damping Coefficient (Nm/s).
+ */
+int getDisplayDampingCoefficient();
 
 #endif
