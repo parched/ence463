@@ -37,6 +37,29 @@
 
 #define CONTROL_TASK_RATE_HZ 1000
 
+#define DAMPING_SEDATE 	100
+#define DAMPING_NORMAL 	250
+#define DAMPING_SPORT	350
+#define DAMPING_RALLY	500
+
+static rideType rideMode = SEDATE;
+
+int getDampingCoefficient (void)
+{
+	switch (rideMode)
+	{
+		case SEDATE:
+			return DAMPING_SEDATE; break;
+		case NORMAL:
+			return DAMPING_NORMAL; break;
+		case SPORT:
+			return DAMPING_SPORT; break;
+		case RALLY:
+			return DAMPING_RALLY; break;
+	}
+}
+
+
 void vControlTask(void *params)
 {
 	// Initialise Variables (Local unless needed elsewhere)
@@ -71,9 +94,8 @@ void vControlTask(void *params)
 		unsprungAcc = getSmoothADC(ACC_UNSPRUNG_ADC);
 		coilExtension = getSmoothADC(COIL_EXTENSION_ADC);
 		speed = getPulseSpeed();
-
-		// TODO: Import Damping Coefficient from GUI
-
+		dampingCoefficient = getDampingCoefficient();
+		
 		//Calculate Control Outputs
 		//TODO: Get dTime
 		actuatorForce = getActuatorForce(&ascControlState, sprungAcc, unsprungAcc, coilExtension, speed, dampingCoefficient, dTime);
@@ -82,4 +104,10 @@ void vControlTask(void *params)
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce)
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient)
 	}
+}
+
+
+void setRideType(rideType rideModeIn)
+{
+	rideMode = rideModeIn;
 }

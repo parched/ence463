@@ -27,11 +27,20 @@
 #ifndef ASC_CONTROL_TASK_H
 #define ASC_CONTROL_TASK_H
 
+typedef enum {SEDATE, NORMAL, SPORT, RALLY} rideType;
+
 /**
  * \brief The active suspension control task.
  *
  * \param params Unused parameters.
  */
 void vControlTask(void *params);
+
+/**
+ * \brief Sets the car ride type.
+ *
+ * \param rideType Ride Type.
+ */
+void setRideType(rideType rideModeIn);
 
 #endif
