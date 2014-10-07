@@ -37,7 +37,7 @@
 
 /*Task Modules*/
 #include "asc_control_task.h"
-#include "asc_gui_task.h"
+#include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
