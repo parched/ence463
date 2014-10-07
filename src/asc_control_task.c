@@ -29,15 +29,32 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "asc_controller.h"
+#include "asc_pulse_in.h"
+#include "shared_pwm.h"
+#include "shared_adc.h"
+#include "shared_uart_task.h"
+
 #define CONTROL_TASK_RATE_HZ 1000
 
 void vControlTask(void *params)
 {
-	//TODO: Initialise Controller Modules
-		// PulseIn
-		// ADC
-		// PWM
-		// UART
+	// Initialise Variables (Local unless needed elsewhere)
+	int sprungAcc = 0;
+	int unsprungAcc = 0;
+	int coilExtension = 0;
+	int speed = 0;
+
+	int actuatorForce = 0;
+	int dampingCoefficient = 0;
+	int dTime = 0;
+
+	ascControlState =  controllerState();
+
+	// Initialise Controller Modules
+	initPulseIn();
+	initAdcModule(ACC_SPRUNG_ADC | ACC_UNSPRUNG_ADC | COIL_EXTENSION_ADC);
+	initPwmModule(ACTUATOR_FORCE_PWM | DAMPING_COEFF_PWM);
 
 	// Initialise FreeRTOS Sleep Parameters
 	portTickType pxPreviousWakeTime;
@@ -47,13 +64,22 @@ void vControlTask(void *params)
 	for (;;)
 	{
 		// Delay until ready
-		vTaskdelayUntil(&pxPreviousWakeTime, xTimeIncrement);
+		vTaskDelayUntil(&pxPreviousWakeTime, xTimeIncrement);
 
-		//TODO: Get Sensor Values
+		// Get Sensor Values
+		sprungAcc = getSmoothADC(ACC_SPRUNG_ADC);
+		unsprungAcc = getSmoothADC(ACC_UNSPRUNG_ADC);
+		coilExtension = getSmoothADC(COIL_EXTENSION_ADC);
+		speed = getPulseSpeed();
 
-		//TODO: Calculate Control Outputs
+		// TODO: Import Damping Coefficient from GUI
 
-		//TODO: Set Control Outputs
+		//Calculate Control Outputs
+		//TODO: Get dTime
+		actuatorForce = getActuatorForce(&ascControlState, sprungAcc, unsprungAcc, coilExtension, speed, dampingCoefficient, dTime);
 
+		// Set Control Outputs
+		setDuty(ACTUATOR_FORCE_PWM, actuatorForce)
+		setDuty(DAMPING_COEFF_PWM, dampingCoefficient)
 	}
 }
