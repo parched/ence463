@@ -45,6 +45,8 @@ typedef struct {
 	int vR;     /**< The road velocity. */
 	int vU;     /**< The unsprung mass velocity. */
 	int vS;     /**< The sprung mass velocity. */
+	int aU;     /**< The unsprung mass acceleration. */
+	int aS;     /**< The sprung mass acceleration. */
 } SimState;
 
 /**

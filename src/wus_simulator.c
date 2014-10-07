@@ -40,6 +40,8 @@ void resetSimulation(SimState *simState) {
 	simState->vR = 0;
 	simState->vU = 0;
 	simState->vS = 0;
+	simState->aU = 0;
+	simState->aS = 0;
 }
 
 char simulate(SimState *simState, int force, int throttle, int dampingFactor, char roadType, int dTime) {
