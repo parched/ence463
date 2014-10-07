@@ -32,6 +32,7 @@
 #include "asc_pulse_in.h"
 #include "shared_pulse.h"
 
+#include "FreeRTOS.h"
 #include "task.h"
 
 #include "driverlib/interrupt.h"
