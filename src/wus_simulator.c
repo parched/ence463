@@ -45,6 +45,17 @@ void resetSimulation(SimState *simState) {
 }
 
 char simulate(SimState *simState, int force, int throttle, int dampingFactor, char roadType, int dTime) {
+	int aR = 0;
+	/* TODO: aR pusedo random noise proportional to speed */
+
+	/* TODO: aU and aS */
+
+	simState->zR += simState->vR * dTime / configTICK_RATE_HZ;
+	simState->zU += simState->vU * dTime / configTICK_RATE_HZ;
+	simState->zS += simState->vS * dTime / configTICK_RATE_HZ;
+	simState->vR += aR * dTime / configTICK_RATE_HZ;
+	simState->vU += simState->aU * dTime / configTICK_RATE_HZ;
+	simState->vS += simState->aS * dTime / configTICK_RATE_HZ;
 	return 0;
 }
 
