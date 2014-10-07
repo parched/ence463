@@ -39,11 +39,15 @@ void vControlTask(void *params)
 		// PWM
 		// UART
 
-	//TODO: Initialise FreeRTOS sleep params
+	// Initialise FreeRTOS Sleep Parameters
+	portTickType pxPreviousWakeTime;
+	const portTickType xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
+	pxPreviousWakeTime = xTaskGetTickCount();
 
 	for (;;)
 	{
-		//TODO: Delay until ready
+		// Delay until ready
+		vTaskdelayUntil(&pxPreviousWakeTime, xTimeIncrement);
 
 		//TODO: Get Sensor Values
 
