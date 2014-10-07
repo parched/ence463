@@ -140,6 +140,8 @@ int getSmoothAdc(char adc)
 	case 0x04:
 		return (int) ADCout[2] & ADC_DATA_MASK;
 	}
+
+	return -1;
 }
 
 
