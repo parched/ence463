@@ -127,6 +127,9 @@ void initAdcModule(char adcs)
 	IntEnable 		(INT_ADC0);
 	ADCIntClear 	(ADC_BASE, ADC_SEQ);
 	IntMasterEnable	();
+
+	// Enable ADC Trigger Timer
+	TimerEnable(TIMER1_BASE, TIMER_A);
 }
 
 
