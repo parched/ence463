@@ -39,6 +39,7 @@
 
 #define TOTAL_MAX	250
 #define TOTAL_MIN	0
+#define BUTTON_TASK_RATE_HZ 10000
 
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
@@ -48,7 +49,7 @@ typedef struct ButtonSwitch
 	int 		total;		// Total of previous switch values for oversampled debouncing.
 } ButtonSwitch;
 
-ButtonSwitch ButtonSet[5];
+static ButtonSwitch ButtonSet[5];
 
 
 // Configures GPIO Port for Onboard Switches (and LED)
@@ -87,15 +88,15 @@ void vButtonPollingTask(void* pvParameters)
 
 	portTickType xLastWakeTime;
 
-	// 10kHz operation = 0.1ms sleep
-	const portTickType xFrequency = 0.1*portTICK_RATE_MS;
+	// Set to 10kHz operation
+	const portTickType xTickIncrement = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
 
 	xLastWakeTime = xTaskGetTickCount();
 
 	for(;;)
 	{
 		// Sleep for 0.1ms
-		vTaskDelayUntil( &xLastWakeTime, xFrequency);
+		vTaskDelayUntil( &xLastWakeTime, xTickIncrement);
 
 		// Read Switches
 		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));

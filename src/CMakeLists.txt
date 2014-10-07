@@ -21,7 +21,7 @@ add_library(shared
 	shared_uart_task.c
 	shared_button_task.c
 	shared_guidraw_task.c
-	#shared_guilayout.c
+	shared_guilayout.c
 	)
 
 # Add ASC c files to this list
@@ -49,10 +49,10 @@ add_executable(wus.axf
 	)
 
 target_link_libraries(wus.axf
-	FreeRTOS
-	StellarisWare
 	wus
 	shared
+	FreeRTOS
+	StellarisWare
 	)
 
 set_target_properties(wus.axf PROPERTIES
