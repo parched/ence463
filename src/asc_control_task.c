@@ -1,5 +1,13 @@
+/**
+ * \file asc_control_task.c
+ * \brief Active Suspension Controller task.
+ * \author Tom Walsh
+ * \version 1.0
+ * \date 2014-10-07
+ */
+
 /* Copyright (C) 
- * 2014 - James Duley
+ * 2014 - Tom Walsh
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -18,5 +26,30 @@
 
 #include "asc_control_task.h"
 
-void vControlTask(void *params) {
+#include "FreeRTOS.h"
+#include "task.h"
+
+#define CONTROL_TASK_RATE_HZ 1000
+
+void vControlTask(void *params)
+{
+	//TODO: Initialise Controller Modules
+		// PulseIn
+		// ADC
+		// PWM
+		// UART
+
+	//TODO: Initialise FreeRTOS sleep params
+
+	for (;;)
+	{
+		//TODO: Delay until ready
+
+		//TODO: Get Sensor Values
+
+		//TODO: Calculate Control Outputs
+
+		//TODO: Set Control Outputs
+
+	}
 }
