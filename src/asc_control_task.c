@@ -70,7 +70,7 @@ void vControlTask(void *params)
 
 	int actuatorForce = 0;
 	int dampingCoefficient = 0;
-	int dTime = 0;
+	int dTime = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
 
 	ascControlState =  controllerState();
 
@@ -97,7 +97,6 @@ void vControlTask(void *params)
 		dampingCoefficient = getDampingCoefficient();
 		
 		//Calculate Control Outputs
-		//TODO: Get dTime
 		actuatorForce = getActuatorForce(&ascControlState, sprungAcc, unsprungAcc, coilExtension, speed, dampingCoefficient, dTime);
 
 		// Set Control Outputs
