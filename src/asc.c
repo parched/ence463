@@ -30,9 +30,9 @@
 #include "task.h"
 
 /* Stellaris library includes. */
-#include "inc\hw_types.h"
-#include "inc\hw_memmap.h"
-#include "driverlib\sysctl.h"
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "driverlib/sysctl.h"
 
 
 /*Task Modules*/
