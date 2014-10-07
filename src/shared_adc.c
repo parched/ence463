@@ -126,6 +126,7 @@ void initAdcModule(char adcs)
 	IntRegister 	(INT_ADC0, adcISR);
 	IntEnable 		(INT_ADC0);
 	ADCIntClear 	(ADC_BASE, ADC_SEQ);
+	IntMasterEnable	();
 }
 
 
