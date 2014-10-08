@@ -35,8 +35,8 @@ void initPulseOut();
 /**
  * \brief Sets the car speed.
  *
- * \param speed The speed in 0.1 kph.
+ * \param speed The speed.
  */
-void setPulseSpeed(int speed);
+void setPulseSpeed(long speed);
 
 #endif

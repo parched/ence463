@@ -31,12 +31,11 @@
 #include "driverlib/sysctl.h"
 
 #include "shared_pwm.h"
+#include "shared_parameters.h"
 
 //so that we dont go above 3 Volts
 #define MAX_DUTY 1000
 #define FREQ_HZ 100000
-#define REAL_MAX_VOLTAGE_MV 3300
-#define DESIRED_MAX_VOLTAGE_MV 3000
 
 static unsigned long ulPeriod;
 
@@ -116,7 +115,7 @@ void setDuty(char pwmPin, int duty) {
 	} 
 
 	if(duty > 0) {
-		unsigned long pulseWidth = duty * ulPeriod * REAL_MAX_VOLTAGE_MV / (DESIRED_MAX_VOLTAGE_MV * MAX_DUTY);
+		unsigned long pulseWidth = duty * ulPeriod * REAL_MAX_VOLTAGE / (DESIRED_MAX_VOLTAGE * MAX_DUTY);
 		PWMPulseWidthSet(PWM_BASE, pwmToChange.pwmOut, pulseWidth);
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, true);
 	} else { //disable PWM output in order to get 0V
