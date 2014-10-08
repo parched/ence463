@@ -49,7 +49,7 @@ void initAdcModule(char adcs);
  *
  * \return The smoothed value from the ADC.
  */
-int getSmoothAdc(char adc, int minValue, int Maxvalue);
+int getSmoothAdc(char adc, int minValue, int maxValue);
 
 #endif
 
