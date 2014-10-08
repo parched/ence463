@@ -46,7 +46,7 @@
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
 
-static volatile int _speed = 0; /**< The internally stored speed. */
+static volatile long  _speed = 0; /**< The internally stored speed. */
 
 /**
  * \brief The pulse output task.
@@ -67,7 +67,7 @@ void initPulseOut() {
 	xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
-void setPulseSpeed(int speed) {
+void setPulseSpeed(long speed) {
 	_speed = speed;
 }
 
