@@ -201,6 +201,8 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
 	vS += sprungAcc * dTime / configTICK_RATE_HZ;
 
+	speed += throttle * dTime / configTICK_RATE_HZ;
+
 	coilExtension = zU - zS;
 	return 0;
 }
