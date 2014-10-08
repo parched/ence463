@@ -25,6 +25,7 @@
  */
 
 #include "shared_adc.h"
+#include "shared_parameters.h"
 
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -40,7 +41,7 @@
 #define ADC_DATA_MASK	0x3FF
 #define ADC_SEQ			0
 #define ADC_PRIORITY	0
-#define ADC_MAX			1023
+#define ADC_MAX			(1023 * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE)
 
 static unsigned long ADCout[3];
 
@@ -148,7 +149,7 @@ int getSmoothAdc(char adc, int minValue, int Maxvalue)
 		adcOutput = (int) ADCout[2] & ADC_DATA_MASK; break;
 	}
 
-	return minValue + ((maxValue-minValue)/ADC_MAX) * adcOutput;
+	return minValue + ((maxValue-maxValue) * adcOutput / ADC_MAX);
 }
 
 
