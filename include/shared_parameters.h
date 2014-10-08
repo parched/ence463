@@ -28,8 +28,9 @@
 #ifndef SHARED_PARAMETERS_H
 #define SHARED_PARAMETERS_H
 
-#define TO_FP << 16
-#define FROM_FP >> 16
+#define NUM_FP 10                         /**< The number of fixed points to use. */
+#define TO_FP << NUM_FP
+#define FROM_FP >> NUM_FP
 
 #define MAX_ACC_SPRUNG (20 TO_FP)         /**< The sprung acceleration. */
 #define MAX_ACC_UNSPRUNG (1000 TO_FP)     /**< The unsprung acceleration. */
