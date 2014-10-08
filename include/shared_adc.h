@@ -44,8 +44,9 @@ void initAdcModule(char adcs);
  * \brief Gets a smoothed ADC value.
  *
  * \param adc The ADC to read.
- * \param minValue The Minimum Return Point (Equivalent to ADC returning 0)
- * \param maxValye The Maximum Return Point (Equivalent to ADC returning 2^10)
+ * \param minValue The 0V Return Value 
+ * \param maxValue The 3V Return Value
+ *
  * \return The smoothed value from the ADC.
  */
 int getSmoothAdc(char adc, int minValue, int Maxvalue);
