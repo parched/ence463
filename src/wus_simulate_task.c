@@ -191,7 +191,8 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	int aR = 0;
 	/* TODO: aR pusedo random noise proportional to speed */
 
-	/* TODO: aU and aS */
+	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
+	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
 
 	zR += vR * dTime / configTICK_RATE_HZ;
 	zU += vU * dTime / configTICK_RATE_HZ;
