@@ -35,6 +35,7 @@
 #include "task.h"
 
 #include "shared_pulse.h"
+#include "shared_parameters.h"
 
 #define PULSE_OUT_TASK_STACK_DEPTH 100
 #define PULSE_OUT_TASK_PROIRITY 5
@@ -85,7 +86,7 @@ void vPulseOutTask(void *pvParams) {
 
 			isPulseHigh = ~isPulseHigh;
 
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (PULSES_PER_REV * _speed * 2));
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (10 * PULSES_PER_REV * _speed * 2 FROM_FP));
 		}
 	}
 }
