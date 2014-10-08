@@ -29,7 +29,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "wus_simulator.h"
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
@@ -38,14 +37,44 @@
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
-static SimState wusSimState;
+#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
+#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
+#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
+#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
+
 static char roadType = 0;
-static int dampingFactor = 0;
-static int throttle = 0;
-static int speed = 0;
-static int sprungAcc = 0;
-static int unsprungAcc = 0;
-static int coilExtension = 0;
+static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
+static int speed = 0;                  /**< The car speed (kph). */
+static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
+static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
+static int coilExtension = 0;          /**< The coil extension (mm). */
+
+/* simulation states */
+static int zR = 0;                     /**< The road displacement (mm). */
+static int zU = 0;                     /**< The unsprung mass displacement (mm). */
+static int zS = 0;                     /**< The sprung mass dispalcement (mm). */
+static int vR = 0;                     /**< The road velocity (m/s). */
+static int vU = 0;                     /**< The unsprung mass velocity (m/s). */
+static int vS = 0;                     /**< The sprung mass velocity (m/s). */
+
+/**
+ * \brief Resets the simulation.
+ */
+void resetSimulation();
+
+/**
+ * \brief Simulates and updates the state.
+ *
+ * \param force The applied force from the controller.
+ * \param throttle The forward acceleration from the driver.
+ * \param dampingFactor The set damping factor.
+ * \param roadType The road type.
+ * \param dTime The time since the last state.
+ *
+ * \return The error statuses of the car.
+ */
+char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
  * \brief Reads the road type from a message.
@@ -76,7 +105,7 @@ void readMessage(UartFrame uartFrame) {
 			roadType = getRoadType(uartFrame.frameWise.msg);
 			break;
 		case 'S':
-			resetSimulation(&wusSimState);
+			resetSimulation();
 			break;
 		case 'A':
 			throttle = getThrottle(uartFrame.frameWise.msg);
@@ -91,8 +120,6 @@ void vSimulateTask(void *params) {
 	int force = 0;
 	int dTime = 0;
 	char errorCode = 0;
-
-	wusSimState = simState();
 
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
@@ -111,12 +138,7 @@ void vSimulateTask(void *params) {
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
 		/* TODO: find dTime */
-		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
-
-		speed = getSpeed(&wusSimState);
-		sprungAcc = getSprungAcc(&wusSimState);
-		unsprungAcc = getUnsprungAcc(&wusSimState);
-		coilExtension = getCoilExtension(&wusSimState);
+		errorCode = simulate(force, throttle, dampingFactor, roadType, dTime);
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc);
@@ -150,5 +172,34 @@ char getRoadType(char *msg) {
 }
 
 int getThrottle(char *msg) {
+	return 0;
+}
+
+void resetSimulation() {
+	speed = 0;
+	zR = 0;
+	zU = 0;
+	zS = 0;
+	vR = 0;
+	vU = 0;
+	vS = 0;
+	sprungAcc = 0;
+	unsprungAcc = 0;
+}
+
+char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
+	int aR = 0;
+	/* TODO: aR pusedo random noise proportional to speed */
+
+	/* TODO: aU and aS */
+
+	zR += vR * dTime / configTICK_RATE_HZ;
+	zU += vU * dTime / configTICK_RATE_HZ;
+	zS += vS * dTime / configTICK_RATE_HZ;
+	vR += aR * dTime / configTICK_RATE_HZ;
+	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
+	vS += sprungAcc * dTime / configTICK_RATE_HZ;
+
+	coilExtension = zU - zS;
 	return 0;
 }
