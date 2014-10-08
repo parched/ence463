@@ -45,4 +45,7 @@
 #define MIN_DAMPING_COEFF (100 TO_FP)     /**< The damping coefficient. */
 #define MIN_SPEED (0 TO_FP)               /**< Maximum speed */
 
+#define REAL_MAX_VOLTAGE 33               /**< The actual maximum voltage for the ADC and PWM in 0.1V. */
+#define DESIRED_MAX_VOLTAGE 30            /**< The desired maximum voltage for the ADC and PWM in 0.1V. */
+
 #endif /* SHARED_PARAMETERS_H */
