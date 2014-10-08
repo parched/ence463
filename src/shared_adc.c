@@ -135,7 +135,7 @@ void initAdcModule(char adcs)
 }
 
 
-int getSmoothAdc(char adc, int minValue, int Maxvalue)
+int getSmoothAdc(char adc, int minValue, int maxValue)
 {
 	int adcOutput = -1;
 
