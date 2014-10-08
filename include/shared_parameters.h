@@ -32,21 +32,21 @@
 #define TO_FP << NUM_FP
 #define FROM_FP >> NUM_FP
 
-#define MAX_ACC_SPRUNG (20 TO_FP)         /**< The maximum sprung acceleration. */
-#define MAX_ACC_UNSPRUNG (1000 TO_FP)     /**< The maximum unsprung acceleration. */
-#define MAX_COIL_EXTENSION (250 TO_FP)    /**< The maximum coil extension. */
-#define MAX_ACTUATOR_FORCE (1000 TO_FP)   /**< The maximum actuator force. */
-#define MAX_DAMPING_COEFF (500 TO_FP)     /**< The maximum damping coefficient. */
-#define MAX_SPEED (200 TO_FP)             /**< The maximum speed */
+#define MAX_ACC_SPRUNG (20 TO_FP)         /**< The maximum sprung acceleration (m/s/s). */
+#define MAX_ACC_UNSPRUNG (1000 TO_FP)     /**< The maximum unsprung acceleration (m/s/s). */
+#define MAX_COIL_EXTENSION (250 TO_FP)    /**< The maximum coil extension (mm). */
+#define MAX_ACTUATOR_FORCE (1000 TO_FP)   /**< The maximum actuator force (N). */
+#define MAX_DAMPING_COEFF (500 TO_FP)     /**< The maximum damping coefficient (N.s/m). */
+#define MAX_SPEED (200 TO_FP)             /**< The maximum speed (kph).*/
 
-#define MIN_ACC_SPRUNG (-20 TO_FP)        /**< The minimum sprung acceleration. */
-#define MIN_ACC_UNSPRUNG (-1000 TO_FP)    /**< The minimum unsprung acceleration. */
-#define MIN_COIL_EXTENSION (-250 TO_FP)   /**< The minimum coil extension. */
-#define MIN_ACTUATOR_FORCE (-1000 TO_FP)  /**< The minimum actuator force. */
-#define MIN_DAMPING_COEFF (100 TO_FP)     /**< The minimum damping coefficient. */
-#define MIN_SPEED (0 TO_FP)               /**< The minimum speed */
+#define MIN_ACC_SPRUNG (-20 TO_FP)        /**< The minimum sprung acceleration (m/s/s). */
+#define MIN_ACC_UNSPRUNG (-1000 TO_FP)    /**< The minimum unsprung acceleration (m/s/s). */
+#define MIN_COIL_EXTENSION (-250 TO_FP)   /**< The minimum coil extension (mm). */
+#define MIN_ACTUATOR_FORCE (-1000 TO_FP)  /**< The minimum actuator force (N). */
+#define MIN_DAMPING_COEFF (100 TO_FP)     /**< The minimum damping coefficient (N.s/m). */
+#define MIN_SPEED (0 TO_FP)               /**< The minimum speed (kph).*/
 
-#define REAL_MAX_VOLTAGE 33               /**< The actual maximum voltage for the ADC and PWM in 0.1V. */
-#define DESIRED_MAX_VOLTAGE 30            /**< The desired maximum voltage for the ADC and PWM in 0.1V. */
+#define REAL_MAX_VOLTAGE 33               /**< The actual maximum voltage for the ADC and PWM (0.1V). */
+#define DESIRED_MAX_VOLTAGE 30            /**< The desired maximum voltage for the ADC and PWM (0.1V). */
 
 #endif /* SHARED_PARAMETERS_H */

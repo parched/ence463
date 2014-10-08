@@ -38,15 +38,15 @@
  */
 typedef struct {
 	/** \privatesection */
-	int speed;  /**< The car speed. */
-	int zR;     /**< The road displacement. */
-	int zU;     /**< The unsprung mass displacement. */
-	int zS;     /**< The sprung mass dispalcement. */
-	int vR;     /**< The road velocity. */
-	int vU;     /**< The unsprung mass velocity. */
-	int vS;     /**< The sprung mass velocity. */
-	int aU;     /**< The unsprung mass acceleration. */
-	int aS;     /**< The sprung mass acceleration. */
+	int speed;  /**< The car speed (kph). */
+	int zR;     /**< The road displacement (mm). */
+	int zU;     /**< The unsprung mass displacement (mm). */
+	int zS;     /**< The sprung mass dispalcement (mm). */
+	int vR;     /**< The road velocity (m/s). */
+	int vU;     /**< The unsprung mass velocity (m/s). */
+	int vS;     /**< The sprung mass velocity (m/s). */
+	int aU;     /**< The unsprung mass acceleration (m/s/s). */
+	int aS;     /**< The sprung mass acceleration (m/s/s). */
 } SimState;
 
 /**
