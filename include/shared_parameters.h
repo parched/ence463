@@ -49,4 +49,10 @@
 #define REAL_MAX_VOLTAGE 33               /**< The actual maximum voltage for the ADC and PWM (0.1V). */
 #define DESIRED_MAX_VOLTAGE 30            /**< The desired maximum voltage for the ADC and PWM (0.1V). */
 
+#define ON_MASS_SPRUNG /250               /**< Divide by the sprung mass (kg). */
+#define ON_MASS_UNSPRUNG *2/75            /**< Divide by the unsprung mass (kg). */
+#define STIFFNESS_SPRING 25               /**< The stiffness of the spring (N/mm). */
+#define STIFFNESS_TYRE 100                /**< The stiffness of the tyre (N/mm). */
+#define DAMPING_TYRE 50000                /**< The damping coefficient of the tyre (N.s/m). */
+
 #endif /* SHARED_PARAMETERS_H */
