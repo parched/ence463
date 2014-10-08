@@ -34,6 +34,7 @@
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
+#include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
@@ -106,8 +107,8 @@ void vSimulateTask(void *params) {
 	for (;;) {
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
-		force = getSmoothAdc(ACTUATOR_FORCE_ADC);
-		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
+		force = getSmoothAdc(ACTUATOR_FORCE_ADC, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
+		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
 		/* TODO: find dTime */
 		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
