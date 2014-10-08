@@ -25,6 +25,7 @@
  */
 
 #include "asc_control_task.h"
+#include "shared_parameters.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -89,9 +90,9 @@ void vControlTask(void *params)
 		vTaskDelayUntil(&pxPreviousWakeTime, xTimeIncrement);
 
 		// Get Sensor Values
-		sprungAcc = getSmoothADC(ACC_SPRUNG_ADC);
-		unsprungAcc = getSmoothADC(ACC_UNSPRUNG_ADC);
-		coilExtension = getSmoothADC(COIL_EXTENSION_ADC);
+		sprungAcc = getSmoothADC(ACC_SPRUNG_ADC, MIN_ACC_SPRUNG, MAX_ACC_SPRUNG);
+		unsprungAcc = getSmoothADC(ACC_UNSPRUNG_ADC, MIN_ACC_UNSPRUNG, MAX_ACC_UNSPRUNG);
+		coilExtension = getSmoothADC(COIL_EXTENSION_ADC, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
 		speed = getPulseSpeed();
 		dampingCoefficient = getDampingCoefficient();
 		
