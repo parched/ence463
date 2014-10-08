@@ -40,6 +40,7 @@
 #define ADC_DATA_MASK	0x3FF
 #define ADC_SEQ			0
 #define ADC_PRIORITY	0
+#define ADC_MAX			1023
 
 static unsigned long ADCout[3];
 
@@ -133,19 +134,21 @@ void initAdcModule(char adcs)
 }
 
 
-int getSmoothAdc(char adc)
+int getSmoothAdc(char adc, int minValue, int Maxvalue)
 {
+	int adcOutput = -1;
+
 	switch(adc)
 	{
 	case 0x01:
-		return (int) ADCout[0] & ADC_DATA_MASK;
+		adcOutput = (int) ADCout[0] & ADC_DATA_MASK; break;
 	case 0x02:
-		return (int) ADCout[1] & ADC_DATA_MASK;
+		adcOutput = (int) ADCout[1] & ADC_DATA_MASK; break;
 	case 0x04:
-		return (int) ADCout[2] & ADC_DATA_MASK;
+		adcOutput = (int) ADCout[2] & ADC_DATA_MASK; break;
 	}
 
-	return -1;
+	return minValue + ((maxValue-minValue)/ADC_MAX) * adcOutput;
 }
 
 
