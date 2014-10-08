@@ -152,19 +152,19 @@ void vSimulateTask(void *params) {
 }
 
 int getDisplaySpeed() {
-	return speed / 10;
+	return speed FROM_FP;
 }
 
 int getDisplaySprungAcc() {
-	return sprungAcc;
+	return sprungAcc FROM_FP;
 }
 
 int getDisplayUnsprungAcc() {
-	return unsprungAcc;
+	return unsprungAcc FROM_FP;
 }
 
 int getDisplayCoilExtension() {
-	return coilExtension;
+	return coilExtension FROM_FP;
 }
 
 char getRoadType(char *msg) {
