@@ -125,7 +125,6 @@ void readMessage(UartFrame uartFrame) {
 
 void vSimulateTask(void *params) {
 	int force = 0;
-	int dTime = 0;
 	char errorCode = 0;
 
 	initPulseOut();
@@ -145,7 +144,7 @@ void vSimulateTask(void *params) {
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
 		/* TODO: find dTime */
-		errorCode = simulate(force, throttle, dampingFactor, roadType, dTime);
+		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc);
