@@ -168,10 +168,12 @@ int getDisplayCoilExtension() {
 }
 
 char getRoadType(char *msg) {
+	/* TODO */
 	return 0;
 }
 
 int getThrottle(char *msg) {
+	/* TODO */
 	return 0;
 }
 
@@ -204,5 +206,7 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	speed += throttle * dTime / configTICK_RATE_HZ;
 
 	coilExtension = zU - zS;
+	
+	/* TODO: error check */
 	return 0;
 }
