@@ -95,6 +95,13 @@ char getRoadType(char *msg);
 int getThrottle(char *msg);
 
 /**
+ * \brief Generates a psuedo random number.
+ *
+ * \return A random number.
+ */
+int getRandom();
+
+/**
  * \brief Reads an incoming UART message.
  *
  * \param uartFrame Pointer to the uartFrame to read.
@@ -209,4 +216,14 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	
 	/* TODO: error check */
 	return 0;
+}
+
+int getRandom() {
+	static unsigned int a = 92304;
+	static unsigned int b = 12903;
+
+	a = 36969 * (a & 65535) + (a >> 16);
+	b = 18000 * (b & 65535) + (b >> 16);
+
+	return (a << 16) + b;
 }
