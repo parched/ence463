@@ -196,8 +196,9 @@ void resetSimulation() {
 }
 
 char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
-	int aR = 0;
-	/* TODO: aR pusedo random noise proportional to speed */
+	/* TODO: set the road factor according to roadType */
+	int roadFactor = 100;
+	int aR = (getRandom() + getRandom() - getRandom() - getRandom()) * ((speed * (speed FROM_FP)) FROM_FP) / roadFactor;
 
 	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
 	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
