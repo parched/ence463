@@ -42,6 +42,9 @@
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
+#define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
+#define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
+
 static char roadType = 0;
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
@@ -57,6 +60,10 @@ static int zS = 0;                     /**< The sprung mass dispalcement (mm). *
 static int vR = 0;                     /**< The road velocity (m/s). */
 static int vU = 0;                     /**< The unsprung mass velocity (m/s). */
 static int vS = 0;                     /**< The sprung mass velocity (m/s). */
+
+static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
+static int aR = 0;                     /**< The road acceleration (m/s/s). */
+static int aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 /**
  * \brief Resets the simulation.
@@ -196,9 +203,23 @@ void resetSimulation() {
 }
 
 char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
-	/* TODO: set the road factor according to roadType */
-	int roadFactor = 100;
-	int aR = (getRandom() + getRandom() - getRandom() - getRandom()) * ((speed * (speed FROM_FP)) FROM_FP) / roadFactor;
+	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
+	int amplitudeFactor = 100000;
+	int halfRoadWavelength = 250;
+
+	if (speed == 0) {
+		aRNoise = 0;
+	} else {
+		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / (speed FROM_FP);
+
+		if (timeFromLastNoise >= noisePeroid) {
+			timeFromLastNoise -= noisePeroid;
+			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * amplitudeFactor;
+		}
+		timeFromLastNoise += dTime;
+	}
+
+	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
 
 	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
 	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
