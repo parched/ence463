@@ -37,6 +37,10 @@
 #define MAX_DUTY 1000
 #define FREQ_HZ 100000
 
+
+#define PWM_RES 100000
+#define MAX_VOLT_DUTY 90909   //duty to create 3V
+
 static unsigned long ulPeriod;
 
 typedef struct  {
@@ -95,8 +99,9 @@ void initPwmModule(char pwmORed) {
 	PWMOutputState(PWM_BASE, PWM_OUT_1_BIT | PWM_OUT_4_BIT| PWM_OUT_5_BIT, false);
 }
 
-/*set the pwm dutycycle for the PWM pin passed to it*/
-void setDuty(char pwmPin, int duty) {
+
+//set the pwm dutycycle for the PWM of (value - minValue) / (maxValue - minValue) for the PWM pin passed to it
+void setDuty(char pwmPin, int value, int minValue, int maxValue) {
 	PwmPin pwmToChange;
 	if(pwmPin == 1 && pwm1.enableFlag == 1) {
 		pwmToChange = pwm1;
@@ -109,13 +114,18 @@ void setDuty(char pwmPin, int duty) {
 		return;
 	}
 
-	//So we dont go over 3 Volts as specified in the specs or put in a weird PWM duty
-	if(duty > MAX_DUTY) {
-		duty = MAX_DUTY;
-	} 
+	//for the case of bad input that is higher than maxValue
+	if(value > maxValue) {
+		value = maxValue;
+	}
 
-	if(duty > 0) {
-		unsigned long pulseWidth = duty * ulPeriod * REAL_MAX_VOLTAGE / (DESIRED_MAX_VOLTAGE * MAX_DUTY);
+	if(value > minValue && value <= maxValue) {
+		unsigned long dutyCycle = ((value - minValue) * PWM_RES) / (maxValue - minValue); // PWM_RES = 100%
+		if(dutyCycle > MAX_VOLT_DUTY) {
+			dutyCycle = MAX_VOLT_DUTY;
+		}
+		unsigned long pulseWidth = (dutyCycle* ulPeriod)/PWM_RES;
+		//unsigned long pulseWidth = testDuty * ulPeriod * REAL_MAX_VOLTAGE / (DESIRED_MAX_VOLTAGE * MAX_DUTY);
 		PWMPulseWidthSet(PWM_BASE, pwmToChange.pwmOut, pulseWidth);
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, true);
 	} else { //disable PWM output in order to get 0V

@@ -43,6 +43,16 @@ static char roadType = 0;
 static int dampingFactor = 0;
 static int throttle = 0;
 static int speed = 0;
+
+//set pwm values
+static int maxSprungAcc = 100;
+static int maxUnsprungAcc = 100;
+static int maxCoilExtension = 100;
+
+static int minSprungAcc = 100;
+static int minUnsprungAcc = 100;
+static int minCoilExtension = 100;
+
 static int sprungAcc = 0;
 static int unsprungAcc = 0;
 static int coilExtension = 0;
@@ -119,9 +129,9 @@ void vSimulateTask(void *params) {
 		coilExtension = getCoilExtension(&wusSimState);
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc);
-		setDuty(COIL_EXTENSION_PWM, coilExtension);
+		setDuty(ACC_SPRUNG_PWM, sprungAcc,minSprungAcc,maxSprungAcc);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,minUnsprungAcc,maxUnsprungAcc);
+		setDuty(COIL_EXTENSION_PWM, coilExtension,minCoilExtension,maxCoilExtension);
 		
 		if (errorCode != 0) {
 			/* TODO */
