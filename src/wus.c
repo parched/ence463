@@ -110,7 +110,7 @@ int main(void)
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();	
+	vTaskStartScheduler();
 	
 	/* If all is well we will never reach here as the scheduler will now be
 	running.  If we do reach here then it is likely that there was insufficient
