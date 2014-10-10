@@ -64,6 +64,8 @@ int getDampingCoefficient (void)
 		case RALLY:
 			return DAMPING_RALLY; break;
 	}
+	
+	return -1;
 }
 
 
