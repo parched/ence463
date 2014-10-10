@@ -61,7 +61,7 @@ static int vS = 0;                     /**< The sprung mass velocity (m/s). */
 /**
  * \brief Resets the simulation.
  */
-void resetSimulation();
+static void resetSimulation();
 
 /**
  * \brief Simulates and updates the state.
@@ -74,7 +74,7 @@ void resetSimulation();
  *
  * \return The error statuses of the car.
  */
-char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
+static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
  * \brief Reads the road type from a message.
@@ -83,7 +83,7 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
  *
  * \return The road type.
  */
-char getRoadType(char *msg);
+static char getRoadType(char *msg);
 
 /**
  * \brief Reads the throttle from a message.
@@ -92,14 +92,14 @@ char getRoadType(char *msg);
  *
  * \return The throttle.
  */
-int getThrottle(char *msg);
+static int getThrottle(char *msg);
 
 /**
  * \brief Reads an incoming UART message.
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-void readMessage(UartFrame uartFrame) {
+static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
 			roadType = getRoadType(uartFrame.frameWise.msg);
