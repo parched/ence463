@@ -37,10 +37,6 @@
 #define MAX_DUTY 1000
 #define FREQ_HZ 100000
 
-
-#define PWM_RES 100000
-#define MAX_VOLT_DUTY 90909   //duty to create 3V
-
 static unsigned long ulPeriod;
 
 typedef struct  {
