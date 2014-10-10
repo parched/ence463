@@ -119,7 +119,7 @@ void setDuty(char pwmPin, int value, int minValue, int maxValue) {
 		value = maxValue;
 	}
 
-	if(value > minValue && value <= maxValue) {
+	if(value > minValue) {
 		unsigned long dutyCycle = ((value - minValue) * PWM_RES) / (maxValue - minValue); // PWM_RES = 100%
 		if(dutyCycle > MAX_VOLT_DUTY) {
 			dutyCycle = MAX_VOLT_DUTY;
