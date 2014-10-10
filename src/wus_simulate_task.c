@@ -45,7 +45,7 @@
 static char roadType = 0;
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
-static int speed = 0;                  /**< The car speed (kph). */
+static int speed = 0;                  /**< The car speed (m/s). */
 static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static int coilExtension = 0;          /**< The coil extension (mm). */
