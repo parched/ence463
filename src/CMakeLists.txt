@@ -34,7 +34,6 @@ add_library(asc
 # Add WUS c files to this list
 add_library(wus
 	wus_pulse_out.c
-	wus_simulator.c
 	wus_simulate_task.c
 	)
 
