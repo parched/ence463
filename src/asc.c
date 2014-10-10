@@ -49,7 +49,7 @@ const char *placeholder = "test";
 static Activity mainActivity;
 static ListView controls;
 static Item roadTypeItem;
-static Options readTypeOption;
+static Options roadTypeOption;
 static Item rideTypeItem;
 static Options rideTypeOption;
 static Item carSpeedItem;
@@ -71,7 +71,7 @@ int main(void)
 	carSpeedItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, carSpeedOption, NULL);
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
-	controls.items[2] = speedItem;
+	controls.items[2] = carSpeedItem;
 
 	mainActivity = activity(1);
 	mainActivity.menus[0] = &controls;
@@ -79,15 +79,22 @@ int main(void)
 
 	attachActivity(&mainActivity);
 
+	/* Configure buttons */
+	configureButtonEvent(BUTTON_UP, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_DOWN, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_LEFT, BUTTON_EVENT_RISING_EDGE);
+	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
+
     /*Continously determines the actuator force needed*/
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
+
 	/*Inits the display and refreshes display*/
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
+
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vSharedUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vSharedButtonTask.h, "Button polling task", 240,(void*) placeholder , 1, NULL);
-
-
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
 	vTaskStartScheduler();	
