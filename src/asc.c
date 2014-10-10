@@ -46,11 +46,38 @@ const char *placeholder = "test";
 
 /*-----------------------------------------------------------*/
 
+static Activity mainActivity;
+static ListView controls;
+static Item roadTypeItem;
+static Options readTypeOption;
+static Item rideTypeItem;
+static Options rideTypeOption;
+static Item carSpeedItem;
+static Options carSpeedOption;
+
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
 	whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+
+	/* Marking up GUI */
+	controls = listView("Controls", 3);
+	roadTypeOption = option(0, 4);
+	roadTypeItem = item("Road Type", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, roadTypeOption, NULL);
+	rideTypeOption = option(0, 4);
+	rideTypeItem = item("Ride Type", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, rideTypeOption, NULL);
+	carSpeedOption = option(-999, 999);
+	carSpeedItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, carSpeedOption, NULL);
+	controls.items[0] = roadTypeItem;
+	controls.items[1] = rideTypeItem;
+	controls.items[2] = speedItem;
+
+	mainActivity = activity(1);
+	mainActivity.menus[0] = &controls;
+	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
+
+	attachActivity(&mainActivity);
 
     /*Continously determines the actuator force needed*/
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
