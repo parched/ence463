@@ -27,9 +27,7 @@
 #ifndef SHARED_PULSE_H
 #define SHARED_PULSE_H
 
-#define MAX_SPEED 2000           /**< Maximum speed in 0.1kph */
 #define PULSES_PER_REV 40        /**< Number of pulses per wheel revolution */
-#define WHEEL_CIRCUMFERENCE 2    /**< Wheel circumference in metres */
-#define PULSES_PER_SECOND_PER_TENTH_KPH  (PULSES_PER_REV * 36 / WHEEL_CIRCUMFERENCE)
+#define WHEEL_CIRCUMFERENCE_M 2  /**< Wheel circumference in metres */
 
 #endif /* SHARED_PULSE_H */

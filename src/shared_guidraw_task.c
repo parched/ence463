@@ -36,7 +36,6 @@
 #include "shared_displayformat128x64.h"
 
 #define INPUTEVENT_QUEUE_SIZE 10
-#define GUITASK_SLEEP_MS 40
 #define GUI_TASK_RATE_HZ 25
 #define OLED_FREQ 1000000
 
@@ -49,8 +48,8 @@ typedef struct
 	ButtonEvent event;
 } InputEvent;
 
-xQueueHandle inputEventQueue;
-Activity* unitActivity;
+static xQueueHandle inputEventQueue;
+static Activity* unitActivity;
 
 char CLEAR_ROW [PX_HORZ] = "                      ";
 
@@ -158,7 +157,7 @@ void vGuiRefreshTask(void *pvParameters)
 
 	// initialize FreeRTOS sleep parameters
 	portTickType xLastWakeTime;
-	const portTickType xTickIncrement  = configTICK_RATE_HZ / GUI_TASK_RATE_HZ;
+	const portTickType xTimeIncrement = configTICK_RATE_HZ / GUI_TASK_RATE_HZ;
 	xLastWakeTime = xTaskGetTickCount();
 
 	// initialize screen
@@ -168,7 +167,7 @@ void vGuiRefreshTask(void *pvParameters)
 	for (;;)
 	{
 		// wait for next cycle
-		vTaskDelayUntil( &xLastWakeTime, xTickIncrement );
+		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
 		// updates read only values
 		refreshReadonlyValues(unitActivity);

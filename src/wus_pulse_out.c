@@ -35,9 +35,12 @@
 #include "task.h"
 
 #include "shared_pulse.h"
+#include "shared_parameters.h"
 
-#define TASK_STACK_DEPTH 100
-#define TASK_PROIRITY 5
+#define PULSE_OUT_TASK_STACK_DEPTH 100
+#define PULSE_OUT_TASK_PROIRITY 5
+
+#define PULSE_OUT_TASK_MIN_RATE_HZ 1
 
 #define PULSE_OUT_PERIPH SYSCTL_PERIPH_GPIOB
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
@@ -61,7 +64,7 @@ void initPulseOut() {
 	GPIOPadConfigSet(PULSE_OUT_PORT, PULSE_OUT_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 	GPIOPinTypeGPIOOutput(PULSE_OUT_PORT, PULSE_OUT_PIN);
 
-	xTaskCreate(vPulseOutTask, "Pulse Out", TASK_STACK_DEPTH, NULL, TASK_PROIRITY, NULL);
+	xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
 void setPulseSpeed(int speed) {
@@ -76,11 +79,14 @@ void vPulseOutTask(void *pvParams) {
 	pxPreviousWakeTime = xTaskGetTickCount();
 
 	for (;;) {
-		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
+		if (_speed == 0) {
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / PULSE_OUT_TASK_MIN_RATE_HZ);
+		} else {
+			GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 
-		isPulseHigh = ~isPulseHigh;
+			isPulseHigh = ~isPulseHigh;
 
-		portTickType xTimeIncrement = configTICK_RATE_HZ / (PULSES_PER_SECOND_PER_TENTH_KPH * _speed * 2);
-		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (10 * PULSES_PER_REV * _speed * 2 FROM_FP));
+		}
 	}
 }
