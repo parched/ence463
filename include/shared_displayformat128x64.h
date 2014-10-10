@@ -38,7 +38,7 @@
 typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
 
 /* General View parameters */
-#define UNSELECTED_BRIGHTNESS 9
+#define UNSELECTED_BRIGHTNESS 7
 #define SELECTED_BRIGHTNESS 15
 
 /* View parameters */

@@ -52,7 +52,7 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	TraceView roadSurface = traceView("Surface", NULL);
+	TraceView roadSurface = traceView("Surface", NULL, TRACE_ZERO_CENTER, 1, 1, 1);
 	//TODO: Road surface stuff
 
 	ListView telemetry = listView("Telemetry", 4);

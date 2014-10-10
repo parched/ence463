@@ -268,8 +268,9 @@ void moveCursor(Activity* activity, VertDir dir)
 						}
 						break;
 					case(VIEWTYPE_TRACE):
+						// user has deselected the trace and is now selecting title
 						drawViewTitle(activity);
-						//TODO: dim the trace as it is no longer being selected
+						drawTraceViewPlot(((TraceView*) activity->menus[page]), false);
 						break;
 				}
 			}
@@ -282,9 +283,9 @@ void moveCursor(Activity* activity, VertDir dir)
 					// if in TraceView and not currently in zoom context, enter it
 					activity->cursorContext++;
 
-					// update display
+					// user has now deselected the title and is now selecting the trace
 					drawViewTitle(activity);
-					//TODO: Brighten trace as it is now being selected
+					drawTraceViewPlot(((TraceView*) activity->menus[page]), true);
 				}
 			}
 			else if (activity->menuTypes[page] == VIEWTYPE_LIST)
@@ -558,20 +559,22 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 {
 	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
 
-	view->head = writing->next;
-	TraceNode* plotting = view->head;
-	int headX = view->head->x;
+	TraceNode* plotting = getLatestNode(view->buffer);
+	unsigned int headX = plotting->x;		// latest node appears rightmost of the trace
 
-	// draw until screen is full or up to one being written
+	unsigned int dispPosX;
+	unsigned int dispPosY;
+	// draw until screen is full or up to one being written,
+	// note: return value of getLatestNode() could change while buffer is being drawn
 	do
 	{
-		unsigned int dispPosX = (plotting->x - headX)/(view->dispHorzScale);
-		unsigned int dispPosY = view->zeroLine + (plotting->y/view->vertScale)*CHAR_HEIGHT;
+		dispPosX = (plotting->x - headX + PX_HORZ)/view->dispHorzScale;
+		dispPosY = view->zeroLine - plotting->y/view->vertScale;
+
 		drawPoint(dispPosX, dispPosY, brightness);
 
-		// increment to next node for next iteration
-		plotting = plotting->next;
-	} while(dispPosX >= PX_HORZ || plotting == writing);
+		plotting = plotting->prev;			// draw the previous node
+	} while(dispPosX > 0 || plotting == getLatestNode(view->buffer));
 }
 
 void drawPoint(unsigned int x, unsigned int y, char level)
