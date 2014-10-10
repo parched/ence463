@@ -120,11 +120,7 @@ void setDuty(char pwmPin, int value, int minValue, int maxValue) {
 	}
 
 	if(value > minValue) {
-		unsigned long dutyCycle = ((value - minValue) * PWM_RES) / (maxValue - minValue); // PWM_RES = 100%
-		if(dutyCycle > MAX_VOLT_DUTY) {
-			dutyCycle = MAX_VOLT_DUTY;
-		}
-		unsigned long pulseWidth = (dutyCycle* ulPeriod)/PWM_RES;
+		unsigned long pulseWidth = ulPeriod * (value - minValue) * DESIRED_MAX_VOLTAGE / ((maxValue - minValue) * REAL_MAX_VOLTAGE);
 		//unsigned long pulseWidth = testDuty * ulPeriod * REAL_MAX_VOLTAGE / (DESIRED_MAX_VOLTAGE * MAX_DUTY);
 		PWMPulseWidthSet(PWM_BASE, pwmToChange.pwmOut, pulseWidth);
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, true);

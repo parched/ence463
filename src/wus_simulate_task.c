@@ -119,9 +119,13 @@ void vSimulateTask(void *params) {
 		coilExtension = getCoilExtension(&wusSimState);
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
-		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+		//setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
+		//setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
+		//setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+
+		setDuty(ACC_SPRUNG_PWM, 20,0,100);
+		setDuty(ACC_UNSPRUNG_PWM, 20,0,100);
+		setDuty(COIL_EXTENSION_PWM, 20,0,100);
 		
 		if (errorCode != 0) {
 			/* TODO */
