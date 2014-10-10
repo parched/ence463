@@ -37,7 +37,8 @@
 
 /*Task Modules*/
 #include "asc_control_task.h"
-#include "asc_gui_task.h"
+#include "shared_guilayout.h"
+#include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
@@ -54,11 +55,10 @@ int main(void)
     /*Continously determines the actuator force needed*/
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
 	/*Inits the display and refreshes display*/
-	xTaskCreate(vAscUiTask, "UI task", 240,(void*) placeholder , 1, NULL);
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vSharedUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+	xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vSharedButtonTask.h, "Button polling task", 240,(void*) placeholder , 1, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
 
 
