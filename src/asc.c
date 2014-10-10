@@ -56,7 +56,7 @@ int main(void)
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
 	/*Inits the display and refreshes display*/
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+	//xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
 	/*Inits button polling and checks for button pushes*/
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
