@@ -68,7 +68,7 @@ static int aRNoise = 0;                /**< The road acceleration noise (m/s/s).
 /**
  * \brief Resets the simulation.
  */
-void resetSimulation();
+static void resetSimulation();
 
 /**
  * \brief Simulates and updates the state.
@@ -81,7 +81,7 @@ void resetSimulation();
  *
  * \return The error statuses of the car.
  */
-char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
+static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
  * \brief Reads the road type from a message.
@@ -90,7 +90,7 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
  *
  * \return The road type.
  */
-char getRoadType(char *msg);
+static char getRoadType(char *msg);
 
 /**
  * \brief Reads the throttle from a message.
@@ -99,7 +99,7 @@ char getRoadType(char *msg);
  *
  * \return The throttle.
  */
-int getThrottle(char *msg);
+static int getThrottle(char *msg);
 
 /**
  * \brief Generates a psuedo random number.
@@ -113,7 +113,7 @@ int getRandom();
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-void readMessage(UartFrame uartFrame) {
+static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
 			roadType = getRoadType(uartFrame.frameWise.msg);
@@ -154,10 +154,10 @@ void vSimulateTask(void *params) {
 		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc);
-		setDuty(COIL_EXTENSION_PWM, coilExtension);
-		
+		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
+		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+
 		if (errorCode != 0) {
 			/* TODO */
 		}
