@@ -94,8 +94,8 @@ void vControlTask(void *params)
 		dampingCoefficient = getDampingCoefficient();
 		
 		// Set Control Outputs
-		setDuty(ACTUATOR_FORCE_PWM, actuatorForce)
-		setDuty(DAMPING_COEFF_PWM, dampingCoefficient)
+		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
+		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 	}
 }
 
