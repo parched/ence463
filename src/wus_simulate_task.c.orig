@@ -45,10 +45,14 @@
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
+<<<<<<< HEAD
 static int roadType = 0;
+=======
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
+static char roadType = 0;
+>>>>>>> origin/master
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static int speed = 0;                  /**< The car speed (m/s). */
@@ -115,7 +119,7 @@ static void readMessage(UartFrame uartFrame) {
 			resetSimulation();
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'M':
 			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
@@ -230,6 +234,7 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	return 0;
 }
 
+<<<<<<< HEAD
 int getThrottle(char *msg) {
 	char intThrottlePartString[2];
 	char decThrottlePartString[3];
@@ -238,12 +243,12 @@ int getThrottle(char *msg) {
 	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
 	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
 	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
-}
-
+=======
 int getRandom() {
 	static unsigned int b = 12903;
 
 	b = 18000 * (b & 65535) + (b >> 16);
 
 	return b & ((1 TO_FP) - 1);
+>>>>>>> origin/master
 }
