@@ -29,6 +29,12 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+<<<<<<< HEAD
+=======
+#include <ustdlib.h>
+
+#include "wus_simulator.h"
+>>>>>>> 119_Finish_Simulate_Task_Message_Interpretation
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
@@ -36,7 +42,9 @@
 #include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
+#define ROAD_TYPE_MESSAGE_SIZE 2
 
+<<<<<<< HEAD
 #define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
@@ -93,6 +101,18 @@ static char getRoadType(char *msg);
  * \return The throttle.
  */
 static int getThrottle(char *msg);
+=======
+static SimState wusSimState;
+static int roadType = 0;
+static int dampingFactor = 0;
+static int throttle = 0;
+static int speed = 0;
+static int sprungAcc = 0;
+static int unsprungAcc = 0;
+static int coilExtension = 0;
+static int wusStatusEcho = 0;
+
+>>>>>>> 119_Finish_Simulate_Task_Message_Interpretation
 
 /**
  * \brief Reads an incoming UART message.
@@ -102,16 +122,16 @@ static int getThrottle(char *msg);
 static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation();
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
@@ -167,6 +187,7 @@ int getDisplayCoilExtension() {
 	return coilExtension FROM_FP;
 }
 
+<<<<<<< HEAD
 char getRoadType(char *msg) {
 	/* TODO */
 	return 0;
@@ -209,4 +230,8 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	
 	/* TODO: error check */
 	return 0;
+=======
+int getWusStatusEcho() {
+	return wusStatusEcho;
+>>>>>>> 119_Finish_Simulate_Task_Message_Interpretation
 }
