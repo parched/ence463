@@ -30,7 +30,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "asc_controller.h"
 #include "asc_pulse_in.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
