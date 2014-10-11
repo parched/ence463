@@ -56,13 +56,13 @@ int getDampingCoefficient (void)
 	switch (rideMode)
 	{
 		case SEDATE:
-			return DAMPING_SEDATE; break;
+			return DAMPING_SEDATE;
 		case NORMAL:
-			return DAMPING_NORMAL; break;
+			return DAMPING_NORMAL;
 		case SPORT:
-			return DAMPING_SPORT; break;
+			return DAMPING_SPORT;
 		case RALLY:
-			return DAMPING_RALLY; break;
+			return DAMPING_RALLY;
 	}
 	
 	return -1;
