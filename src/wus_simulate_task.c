@@ -86,7 +86,7 @@ void readMessage(UartFrame uartFrame) {
 			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'M':
-			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 	}
 }
