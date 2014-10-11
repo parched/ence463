@@ -149,14 +149,6 @@ int getDisplayCoilExtension() {
 	return coilExtension;
 }
 
-int getRoadType() {
-	return roadType;
-}
-
-int getThrottle() {
-	 return throttle;
-}
-
 int getWusStatusEcho() {
 	return wusStatusEcho;
 }

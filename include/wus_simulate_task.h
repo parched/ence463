@@ -71,19 +71,6 @@ int getDisplayCoilExtension();
  */
 int getWusStatusEcho();
 
-/**
- * \brief get throttle
- *
- * \return throttle
- */
-int getThrottle();
-
-/**
- * \brief get roadType
- *
- * \return roadType
- */
-int getRoadType();
 
 #endif
 
