@@ -29,6 +29,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <ustdlib.h>
+
 #include "wus_simulator.h"
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
@@ -37,15 +39,17 @@
 #include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
+#define ROAD_TYPE_MESSAGE_SIZE 2
 
 static SimState wusSimState;
-static char roadType = 0;
+static int roadType = 0;
 static int dampingFactor = 0;
 static int throttle = 0;
 static int speed = 0;
 static int sprungAcc = 0;
 static int unsprungAcc = 0;
 static int coilExtension = 0;
+static int wusStatusEcho = 0;
 
 /**
  * \brief Reads the road type from a message.
@@ -54,7 +58,7 @@ static int coilExtension = 0;
  *
  * \return The road type.
  */
-char getRoadType(char *msg);
+int getRoadType();
 
 /**
  * \brief Reads the throttle from a message.
@@ -63,7 +67,7 @@ char getRoadType(char *msg);
  *
  * \return The throttle.
  */
-int getThrottle(char *msg);
+int getThrottle();
 
 /**
  * \brief Reads an incoming UART message.
@@ -73,16 +77,16 @@ int getThrottle(char *msg);
 void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation(&wusSimState);
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
@@ -145,10 +149,14 @@ int getDisplayCoilExtension() {
 	return coilExtension;
 }
 
-char getRoadType(char *msg) {
-	return 0;
+int getRoadType() {
+	return roadType;
 }
 
-int getThrottle(char *msg) {
-	return 0;
+int getThrottle() {
+	 return throttle;
+}
+
+int getWusStatusEcho() {
+	return wusStatusEcho;
 }
