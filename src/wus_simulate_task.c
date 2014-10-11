@@ -100,7 +100,7 @@ void vSimulateTask(void *params) {
 
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
-    initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
+	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
 	attachOnReceiveCallback(readMessage);
 
 	// initialize FreeRTOS sleep parameters
