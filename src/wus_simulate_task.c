@@ -104,9 +104,9 @@ static int getThrottle(char *msg);
 /**
  * \brief Generates a psuedo random number.
  *
- * \return A random number.
+ * \return A random number between 0.0 and 1.0 fixed point..
  */
-int getRandom();
+static int getRandom();
 
 /**
  * \brief Reads an incoming UART message.
