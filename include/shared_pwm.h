@@ -27,6 +27,8 @@
 #ifndef SHARED_PWM_H
 #define SHARED_PWM_H
 
+#include "shared_iqmath.h"
+
 #define ACC_SPRUNG_PWM 0x01      /**< The sprung acceleration PWM. */
 #define ACC_UNSPRUNG_PWM 0x02    /**< The unsprung acceleration PWM. */
 #define COIL_EXTENSION_PWM 0x04  /**< The coil extension PWM. */
@@ -48,6 +50,6 @@ void initPwmModule(char pwmOuts);
  * \param minValue minimum value for value
  * \param maxValue maximum value for value
  */
-void setDuty(char pwmPin, int value, int minValue, int maxValue);
+void setDuty(char pwmPin, _iq value, _iq minValue, _iq maxValue);
 
 #endif
