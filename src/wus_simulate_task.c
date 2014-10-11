@@ -46,9 +46,13 @@
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
 static int roadType = 0;
+#define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
+#define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
+
+static char roadType = 0;
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
-static int speed = 0;                  /**< The car speed (kph). */
+static int speed = 0;                  /**< The car speed (m/s). */
 static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static int coilExtension = 0;          /**< The coil extension (mm). */
@@ -61,6 +65,10 @@ static int zS = 0;                     /**< The sprung mass dispalcement (mm). *
 static int vR = 0;                     /**< The road velocity (m/s). */
 static int vU = 0;                     /**< The unsprung mass velocity (m/s). */
 static int vS = 0;                     /**< The sprung mass velocity (m/s). */
+
+static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
+static int aR = 0;                     /**< The road acceleration (m/s/s). */
+static int aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 /**
  * \brief Resets the simulation.
@@ -86,6 +94,13 @@ static char simulate(int force, int throttle, int dampingFactor, char roadType, 
  * \param msg The throttle UART message
  */
 int getThrottle(char *msg);
+
+/**
+ * \brief Generates a psuedo random number.
+ *
+ * \return A random number between 0.0 and 1.0 fixed point..
+ */
+static int getRandom();
 
 /**
  * \brief Reads an incoming UART message.
@@ -118,7 +133,6 @@ throttle = (a TO_FP) + (b TO_FP)/1000
 */
 void vSimulateTask(void *params) {
 	int force = 0;
-	int dTime = 0;
 	char errorCode = 0;
 
 	initPulseOut();
@@ -138,7 +152,7 @@ void vSimulateTask(void *params) {
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
 		/* TODO: find dTime */
-		errorCode = simulate(force, throttle, dampingFactor, roadType, dTime);
+		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
@@ -181,8 +195,23 @@ void resetSimulation() {
 }
 
 char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
-	int aR = 0;
-	/* TODO: aR pusedo random noise proportional to speed */
+	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
+	int amplitudeFactor = 100000;
+	int halfRoadWavelength = 250;
+
+	if (speed == 0) {
+		aRNoise = 0;
+	} else {
+		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / (speed FROM_FP);
+
+		if (timeFromLastNoise >= noisePeroid) {
+			timeFromLastNoise -= noisePeroid;
+			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * amplitudeFactor;
+		}
+		timeFromLastNoise += dTime;
+	}
+
+	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
 
 	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
 	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
@@ -210,4 +239,12 @@ int getThrottle(char *msg) {
 	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
 	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
 	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
+}
+
+int getRandom() {
+	static unsigned int b = 12903;
+
+	b = 18000 * (b & 65535) + (b >> 16);
+
+	return b & ((1 TO_FP) - 1);
 }
