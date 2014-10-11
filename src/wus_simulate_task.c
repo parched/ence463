@@ -29,6 +29,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <ustdlib.h>
+
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
@@ -77,22 +79,11 @@ static void resetSimulation();
 static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
- * \brief Reads the road type from a message.
+ * \brief Convert throttle message to numeric value
  *
- * \param msg The message to read.
- *
- * \return The road type.
+ * \param msg The throttle UART message
  */
-static char getRoadType(char *msg);
-
-/**
- * \brief Reads the throttle from a message.
- *
- * \param msg The message to read.
- *
- * \return The throttle.
- */
-static int getThrottle(char *msg);
+int getThrottle(char *msg);
 
 /**
  * \brief Reads an incoming UART message.
@@ -102,7 +93,7 @@ static int getThrottle(char *msg);
 static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation();
@@ -115,7 +106,14 @@ static void readMessage(UartFrame uartFrame) {
 			break;
 	}
 }
+/*
+To do this you need to:
+first extract the first 2 bytes (0 and 1) convert to an int call it a, (before the decimal point)
+second extract the last 3 bytes (3, 4 and 5) convert to an int call it b, (the part after the decimal point)
 
+throttle is in fixed point notation so
+throttle = (a TO_FP) + (b TO_FP)/1000
+*/
 void vSimulateTask(void *params) {
 	int force = 0;
 	int dTime = 0;
@@ -167,15 +165,6 @@ int getDisplayCoilExtension() {
 	return coilExtension FROM_FP;
 }
 
-char getRoadType(char *msg) {
-	/* TODO */
-	return 0;
-}
-
-int getThrottle(char *msg) {
-	/* TODO */
-	return 0;
-}
 
 void resetSimulation() {
 	speed = 0;
@@ -209,4 +198,14 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	
 	/* TODO: error check */
 	return 0;
+}
+
+int getThrottle(char *msg) {
+	char intThrottlePartString[2];
+	char decThrottlePartString[3];
+	ustrncpy(intThrottlePartString, msg, 2);
+	ustrncpy(decThrottlePartString, &msg[3], 3);
+	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
+	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
+	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
 }
