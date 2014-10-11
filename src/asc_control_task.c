@@ -71,11 +71,6 @@ int getDampingCoefficient (void)
 
 void vControlTask(void *params)
 {
-
-	int dTime = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
-
-	ascControlState =  controllerState();
-
 	// Initialise Controller Modules
 	initPulseIn();
 	initAdcModule(ACC_SPRUNG_ADC | ACC_UNSPRUNG_ADC | COIL_EXTENSION_ADC);
@@ -98,9 +93,6 @@ void vControlTask(void *params)
 		speed = getPulseSpeed();
 		dampingCoefficient = getDampingCoefficient();
 		
-		//Calculate Control Outputs
-		actuatorForce = getActuatorForce(&ascControlState, sprungAcc, unsprungAcc, coilExtension, speed, dampingCoefficient, dTime);
-
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce)
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient)
