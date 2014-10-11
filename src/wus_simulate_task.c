@@ -77,16 +77,16 @@ int getThrottle();
 void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
+			roadType = (int) ustrtoul(&uartFrame.frameWise.msg[1], NULL, 10);
 			break;
 		case 'S':
 			resetSimulation(&wusSimState);
 			break;
 		case 'A':
-			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
+			throttle = (int) ustrtoul(&uartFrame.frameWise.msg[1], NULL, 10);
 			break;
 		case 'M':
-			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
+			wusStatusEcho = (int) ustrtoul(&uartFrame.frameWise.msg[1], NULL, 16);
 			break;
 	}
 }
