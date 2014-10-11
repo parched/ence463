@@ -51,23 +51,6 @@ static int unsprungAcc = 0;
 static int coilExtension = 0;
 static int wusStatusEcho = 0;
 
-/**
- * \brief Reads the road type from a message.
- *
- * \param msg The message to read.
- *
- * \return The road type.
- */
-int getRoadType();
-
-/**
- * \brief Reads the throttle from a message.
- *
- * \param msg The message to read.
- *
- * \return The throttle.
- */
-int getThrottle();
 
 /**
  * \brief Reads an incoming UART message.
