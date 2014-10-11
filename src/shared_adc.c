@@ -135,7 +135,7 @@ void initAdcModule(char adcs)
 }
 
 
-int getSmoothAdc(char adc, int minValue, int Maxvalue)
+int getSmoothAdc(char adc, int minValue, int maxValue)
 {
 	int adcOutput = -1;
 
@@ -149,7 +149,7 @@ int getSmoothAdc(char adc, int minValue, int Maxvalue)
 		adcOutput = (int) ADCout[2] & ADC_DATA_MASK; break;
 	}
 
-	return minValue + ((maxValue-maxValue) * adcOutput / ADC_MAX);
+	return minValue + ((maxValue - minValue) * adcOutput / ADC_MAX);
 }
 
 

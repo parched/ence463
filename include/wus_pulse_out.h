@@ -37,6 +37,6 @@ void initPulseOut();
  *
  * \param speed The speed.
  */
-void setPulseSpeed(long speed);
+void setPulseSpeed(int speed);
 
 #endif
