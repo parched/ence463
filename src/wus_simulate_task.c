@@ -38,19 +38,21 @@
 #include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
+#define ROAD_TYPE_MESSAGE_SIZE 2
 
 #define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
-static char roadType = 0;
+static int roadType = 0;
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static int speed = 0;                  /**< The car speed (kph). */
 static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static int coilExtension = 0;          /**< The coil extension (mm). */
+static int wusStatusEcho = 0;
 
 /* simulation states */
 static int zR = 0;                     /**< The road displacement (mm). */
@@ -99,10 +101,10 @@ static void readMessage(UartFrame uartFrame) {
 			resetSimulation();
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
