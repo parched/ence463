@@ -43,7 +43,7 @@
 #define ADC_PRIORITY	0
 #define ADC_MAX			(1023 * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE)
 
-static unsigned long ADCout[3];
+static unsigned long ADCout[8];
 
 void adcISR (void);
 
