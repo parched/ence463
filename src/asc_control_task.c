@@ -87,9 +87,9 @@ void vControlTask(void *params)
 		vTaskDelayUntil(&pxPreviousWakeTime, xTimeIncrement);
 
 		// Get Sensor Values
-		sprungAcc = getSmoothADC(ACC_SPRUNG_ADC, MIN_ACC_SPRUNG, MAX_ACC_SPRUNG);
-		unsprungAcc = getSmoothADC(ACC_UNSPRUNG_ADC, MIN_ACC_UNSPRUNG, MAX_ACC_UNSPRUNG);
-		coilExtension = getSmoothADC(COIL_EXTENSION_ADC, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
+		sprungAcc = getSmoothAdc(ACC_SPRUNG_ADC, MIN_ACC_SPRUNG, MAX_ACC_SPRUNG);
+		unsprungAcc = getSmoothAdc(ACC_UNSPRUNG_ADC, MIN_ACC_UNSPRUNG, MAX_ACC_UNSPRUNG);
+		coilExtension = getSmoothAdc(COIL_EXTENSION_ADC, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
 		speed = getPulseSpeed();
 		dampingCoefficient = getDampingCoefficient();
 		
