@@ -84,10 +84,8 @@ int main(void)
 
 	mainActivity = activity(1);
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
-
 	/*
-	mainActivity.menus[1] = &roadSurface;
-	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
 	*/
 	attachActivity(&mainActivity);
 
