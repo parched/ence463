@@ -83,11 +83,9 @@ int main(void)
 	telemetry.items[3] = coilExtensionItem;
 
 	mainActivity = activity(1);
-	mainActivity.menus[0] = &telemetry;
-	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
+	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
 	/*
-	mainActivity.menus[1] = &roadSurface;
-	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
 	*/
 	attachActivity(&mainActivity);
 
