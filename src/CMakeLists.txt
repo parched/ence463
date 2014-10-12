@@ -34,7 +34,6 @@ add_library(asc
 # Add WUS c files to this list
 add_library(wus
 	wus_pulse_out.c
-	wus_simulator.c
 	wus_simulate_task.c
 	)
 
@@ -48,6 +47,10 @@ add_executable(wus.axf
 	wus.c
 	)
 
+add_executable(asc.axf
+	startup_gcc.c
+	asc.c
+	)
 target_link_libraries(wus.axf
 	wus
 	shared
@@ -55,14 +58,35 @@ target_link_libraries(wus.axf
 	StellarisWare
 	)
 
+
+target_link_libraries(asc.axf
+	asc
+	shared
+	FreeRTOS
+	StellarisWare
+	)
 set_target_properties(wus.axf PROPERTIES
        LINK_FLAGS "${LINK_FLAGS} -Xlinker -M -Xlinker -Map=wus.map"
+       )
+
+
+set_target_properties(asc.axf PROPERTIES
+       LINK_FLAGS "${LINK_FLAGS} -Xlinker -M -Xlinker -Map=asc.map"
        )
 
 add_custom_command(
 	TARGET wus.axf
 	COMMAND arm-none-eabi-objcopy wus.axf -O binary wus.bin
-	COMMENT "Creating bin."
+	COMMENT "Creating wus bin."
 	)
 
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES wus.bin)
+add_custom_command(
+	TARGET asc.axf
+	COMMAND arm-none-eabi-objcopy asc.axf -O binary asc.bin
+	COMMENT "Creating asc bin."
+	)
+
+set_directory_properties(PROPERTIES
+	ADDITIONAL_MAKE_CLEAN_FILES wus.bin
+	ADDITIONAL_MAKE_CLEAN_FILES asc.bin
+	)

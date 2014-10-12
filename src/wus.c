@@ -83,11 +83,9 @@ int main(void)
 	telemetry.items[3] = coilExtensionItem;
 
 	mainActivity = activity(1);
-	mainActivity.menus[0] = &telemetry;
-	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
+	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
 	/*
-	mainActivity.menus[1] = &roadSurface;
-	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
 	*/
 	attachActivity(&mainActivity);
 
@@ -110,7 +108,7 @@ int main(void)
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();	
+	vTaskStartScheduler();
 	
 	/* If all is well we will never reach here as the scheduler will now be
 	running.  If we do reach here then it is likely that there was insufficient

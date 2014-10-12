@@ -30,13 +30,14 @@
 #include "task.h"
 
 /* Stellaris library includes. */
-#include "inc\hw_types.h"
-#include "inc\hw_memmap.h"
-#include "driverlib\sysctl.h"
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "driverlib/sysctl.h"
 
 
 /*Task Modules*/
 #include "asc_control_task.h"
+#include "shared_guilayout.h"
 #include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
@@ -51,15 +52,14 @@ int main(void)
 	whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-    /*Continously determines the actuator force needed*/
+	/*Continously determines the actuator force needed*/
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
-	/*Inits the display and refreshes display*/
-	xTaskCreate(vAscUiTask, "UI task", 240,(void*) placeholder , 1, NULL);
-	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vSharedUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
-	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vSharedButtonTask.h, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
+	/*Inits UART, continously reads and writes UART messages*/
+	//xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+
+	/*Inits button polling and checks for button pushes*/
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
 
 	/* Start the scheduler so our tasks start executing. */
