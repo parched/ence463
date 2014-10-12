@@ -38,7 +38,6 @@
 #include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
-#define ROAD_TYPE_MESSAGE_SIZE 2
 
 #define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
