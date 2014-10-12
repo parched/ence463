@@ -43,8 +43,8 @@
 #include "driverlib/gpio.h"
 
 
-volatile TickType_t lastPulseTick;
-volatile TickType_t lastTickDuration;
+static volatile TickType_t lastPulseTick;
+static volatile TickType_t lastTickDuration;
 
 void isrPortF(void);
 
@@ -64,7 +64,8 @@ void initPulseIn()
 
 int getPulseSpeed()
 {
-	return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV);	
+	return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV);
+	//return (configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M TO_FP) / (lastTickDuration * PULSES_PER_REV);
 }
 
 void isrPortF(void)
