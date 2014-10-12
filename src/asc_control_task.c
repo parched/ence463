@@ -36,8 +36,6 @@
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 
-#include "shared_errors.h"
-
 #include <ustdlib.h>
 
 #define CONTROL_TASK_RATE_HZ 1000
@@ -54,24 +52,6 @@ static int coilExtension = 0;
 static int speed = 0;
 static int actuatorForce = 0;
 static int dampingCoefficient = 0;
-
-
-void setError(char *msg);
-
-
-/**
- * \brief Reads an incoming UART message.
- *
- * \param uartFrame Pointer to the uartFrame to read.
- */
-static void readMessage(UartFrame uartFrame) {
-	switch (uartFrame.frameWise.msgType) {
-		case 'W':
-			setError(uartFrame.frameWise.msg);
-			break;
-	}
-}
-
 
 int getDampingCoefficient (void)
 {
@@ -165,33 +145,3 @@ int getDisplayDampingCoefficient()
 	return dampingCoefficient;
 }
 
-
-void setError(char *msg) {
-	int errorType = (int) ustrtoul(msg, NULL, 16);
-	switch(errorType) {
-		case 0:
-
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 10:
-			break;
-		case 20:
-			break;
-		case 40:
-			break;
-		case 80:
-			break;
-	}
-}
-
-/*
-int okStatus = 0;
-int powerFailure = 0;
-int sprungAccExceeded = 0;
-int unsprungAccExceeded = 0;
-int heightExceeded = 0;
-int speedExceeded = 0;
-*/

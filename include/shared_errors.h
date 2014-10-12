@@ -27,11 +27,4 @@
 #ifndef SHARED_ERRORS_H_
 #define SHARED_ERRORS_H_
 
-int okStatus = 0;
-int powerFailure = 0;
-int sprungAccExceeded = 0;
-int unsprungAccExceeded = 0;
-int heightExceeded = 0;
-int speedExceeded = 0;
-
 #endif /* SHARED_ERRORS_H_ */

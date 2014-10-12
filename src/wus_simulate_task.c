@@ -122,6 +122,16 @@ static void readMessage(UartFrame uartFrame) {
 	}
 }
 
+int errorCheck() {
+	static int combinedError = 0;
+	if(speed >= MAX_SPEED) {
+		combinedError = combinedError | 0x80;
+	} else {
+		combinedError = combinedError & ~0x80;
+	}
+	return combinedError;
+}
+
 void vSimulateTask(void *params) {
 	int force = 0;
 	char errorCode = 0;
