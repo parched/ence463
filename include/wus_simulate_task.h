@@ -62,13 +62,6 @@ int getDisplayUnsprungAcc();
  */
 int getDisplayCoilExtension();
 
-/**
- * \brief get WUS status echo from ASC
- *
- * \return WUS status
- */
-int getWusStatusEcho();
-
 
 #endif
 
