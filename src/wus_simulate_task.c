@@ -207,9 +207,9 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
 	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
 
-	zR += vR * dTime / configTICK_RATE_HZ;
-	zU += vU * dTime / configTICK_RATE_HZ;
-	zS += vS * dTime / configTICK_RATE_HZ;
+	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
+	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
+	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
 	vR += aR * dTime / configTICK_RATE_HZ;
 	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
 	vS += sprungAcc * dTime / configTICK_RATE_HZ;
