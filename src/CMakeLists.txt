@@ -27,7 +27,6 @@ add_library(shared
 # Add ASC c files to this list
 add_library(asc
 	asc_pulse_in.c
-	asc_controller.c
 	asc_control_task.c
 	)
 
