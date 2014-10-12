@@ -142,7 +142,7 @@ void drawPointRtoL(unsigned int x, unsigned int y, char level);
  * \brief Clears the trace plot for a new trace
  *
  */
-void clearTrace();
+void clearTracePlot(void);
 
 /**
  * \brief Gets the horizontal position of text given alignment and margins
@@ -382,13 +382,24 @@ void changeOption(Activity* activity, HorzDir dir)
 	}
 	else if (activity->menuTypes[page] == VIEWTYPE_TRACE)
 	{
+		TraceView* view = (TraceView*) activity->menus[page];
 		switch(dir)
 		{
 			case(HORZDIR_RIGHT):
-				//TODO: Zoom in
+				if (view->dispHorzScale > view->minZoomHorzScale)
+				{
+					// zoom in
+					clearTracePlot();
+					view->dispHorzScale -= view->horzScaleStep;
+				}
 				break;
 			case(HORZDIR_LEFT):
-				//TODO: Zoom out
+				if (view->dispHorzScale < view->maxZoomHorzScale)
+				{
+					// zoom out
+					clearTracePlot();
+					view->dispHorzScale += view->horzScaleStep;
+				}
 				break;
 		}
 	}
@@ -570,7 +581,7 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 	int headX = plotting->x;		// latest node appears rightmost of the trace
 
 	static int prevYPos[128];
-	int dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-1);
+	int dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-2);
 	int dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
 	// draw until screen is full or up to one being written,
 	// note: return value of getLatestNode() will change while buffer is being drawn
@@ -600,6 +611,19 @@ void drawPointRtoL(unsigned int x, unsigned int y, char level)
 	dot[0] = level | (level << 4);
 
 	RIT128x96x4ImageDraw(dot, x, y, 2, 1);	// draw do
+}
+
+void clearTracePlot(void)
+{
+	unsigned int i=0;
+	for (i=TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP; i<TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT; i+=CHAR_HEIGHT)
+	{
+		unsigned int j=0;
+		for (j=0; j<PX_HORZ; j+=CHAR_WIDTH)
+		{
+			RIT128x96x4StringDraw(" ", j, i, 0);
+		}
+	}
 }
 
 unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin)

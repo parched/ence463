@@ -57,6 +57,10 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 	traceView.buffer = buffer;
 	traceView.horzScaleStep = 1;
 	traceView.minZoomHorzScale = minHorzScale;
+	if (maxHorzScale < minHorzScale)
+	{
+		maxHorzScale = minHorzScale;
+	}
 	traceView.maxZoomHorzScale = maxHorzScale;
 	traceView.dispHorzScale = traceView.minZoomHorzScale;
 
