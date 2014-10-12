@@ -52,6 +52,13 @@ static int actuatorForce = 0;
 static int dampingCoefficient = 0;
 
 /**
+ * \brief Gets the damping coefficient.
+ *
+ * \return The damping coefficient.
+ */
+int getDampingCoefficient();
+
+/**
  * \brief Calculates the required actuator force.
  *
  * \param dTime The time in ticks since the last calculation.
@@ -59,24 +66,6 @@ static int dampingCoefficient = 0;
  * \return The actuator force.
  */
 int getControlForce(int dTime);
-
-int getDampingCoefficient (void)
-{
-	switch (rideMode)
-	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
-	}
-	
-	return -1;
-}
-
 
 void vControlTask(void *params)
 {
@@ -109,6 +98,23 @@ void vControlTask(void *params)
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 	}
+}
+
+int getDampingCoefficient()
+{
+	switch (rideMode)
+	{
+		case SEDATE:
+			return DAMPING_SEDATE;
+		case NORMAL:
+			return DAMPING_NORMAL;
+		case SPORT:
+			return DAMPING_SPORT;
+		case RALLY:
+			return DAMPING_RALLY;
+	}
+	
+	return -1;
 }
 
 int getControlForce(int dTime)
