@@ -81,7 +81,7 @@ int main(void)
 	telemetry.items[2] = unsprungAccItem;
 	telemetry.items[3] = coilExtensionItem;
 
-	mainActivity = activity(1);
+	mainActivity = activity(2);
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
 	attachActivity(&mainActivity);
