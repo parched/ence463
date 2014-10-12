@@ -28,7 +28,7 @@
 #define ASC_PULSE_IN_H
 
 /**
- * \brief Initialises the pulse train redaer module.
+ * \brief Initialises the pulse train reader module.
  */
 void initPulseIn();
 
