@@ -33,7 +33,7 @@
 #include "queue.h"
 #include "task.h"
 #include "shared_guilayout.h"
-#include "shared_displayformat128x64.h"
+#include "shared_displayformat128x96.h"
 
 #define INPUTEVENT_QUEUE_SIZE 10
 #define GUI_TASK_RATE_HZ 25
@@ -564,28 +564,31 @@ void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 
 void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 {
-	//clearTrace();
 	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
 
 	TraceNode* plotting = getLatestNode(view->buffer);
-	unsigned int headX = plotting->x;		// latest node appears rightmost of the trace
+	int headX = plotting->x;		// latest node appears rightmost of the trace
 
+	static int prevYPos[128];
 	int dispPosX;
 	int dispPosY;
 	// draw until screen is full or up to one being written,
-	// note: return value of getLatestNode() could change while buffer is being drawn
+	// note: return value of getLatestNode() will change while buffer is being drawn
 	do
 	{
-		dispPosX = (plotting->x - headX)/(view->dispHorzScale) + PX_HORZ;
+		dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + PX_HORZ;
 		dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
 
 		if ((dispPosY > (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP)) && (dispPosY < (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT)))
 		{
+			drawPoint(dispPosX, prevYPos[dispPosX], 0);						// clear the previous dot in this x position
+			prevYPos[dispPosX] = dispPosY;									// store the current dot position to clear next time
 			drawPoint(dispPosX, dispPosY, brightness);
 		}
 
 		plotting = plotting->prev;			// draw the previous node
 	} while(plotting != NULL && dispPosX >= 0 && plotting != getLatestNode(view->buffer));
+
 }
 
 void drawPoint(unsigned int x, unsigned int y, char level)
@@ -606,19 +609,6 @@ void drawPoint(unsigned int x, unsigned int y, char level)
 	{
 		dot[0] = (level);
 		RIT128x96x4ImageDraw(dot, x-1, y-1, 2, 1);	// draw dot
-	}
-}
-
-void clearTrace()
-{
-	unsigned int i;
-	for (i=TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP; i<TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT; i+=6)
-	{
-		unsigned int j;
-		for (j=0; j<PX_HORZ; j+=6)
-		{
-			RIT128x96x4StringDraw(" ", j, i, 15);
-		}
 	}
 }
 
