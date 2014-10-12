@@ -27,7 +27,7 @@
 #define BIT(x) 		(1 << x)
 #define PRIORITY(x) (x << 5)
 
-#define PULSE_PIN BIT(7);
+#define PULSE_PIN BIT(7)
 
 #include "asc_pulse_in.h"
 #include "shared_pulse.h"
@@ -35,14 +35,18 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
+
 
 volatile TickType_t lastPulseTick;
 volatile TickType_t lastTickDuration;
+
+void isrPortF(void);
 
 void initPulseIn()
 {
@@ -55,7 +59,7 @@ void initPulseIn()
 	GPIOPortIntRegister (GPIO_PORTF_BASE, isrPortF);
 	GPIOIntTypeSet (GPIO_PORTF_BASE, PULSE_PIN, GPIO_RISING_EDGE);
 	GPIOPinIntEnable (GPIO_PORTF_BASE, PULSE_PIN);
-	IntPrioritySet (INT_GPIOF, PRIORITY(1))
+	IntPrioritySet (INT_GPIOF, PRIORITY(1));
 }
 
 int getPulseSpeed()
