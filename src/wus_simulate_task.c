@@ -223,8 +223,8 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 }
 
 int getThrottle(char *msg) {
-	char intThrottlePartString[2];
-	char decThrottlePartString[3];
+	char intThrottlePartString[3];
+	char decThrottlePartString[4];
 	ustrncpy(intThrottlePartString, msg, 2);
 	ustrncpy(decThrottlePartString, &msg[3], 3);
 	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
