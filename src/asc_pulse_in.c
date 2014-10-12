@@ -64,8 +64,8 @@ void initPulseIn()
 
 int getPulseSpeed()
 {
-	return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV);
-	//return (configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M TO_FP) / (lastTickDuration * PULSES_PER_REV);
+	//return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV); // Original Return
+	return (configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M) / (lastTickDuration * PULSES_PER_REV);	// TODO: Convert to fixed point
 }
 
 void isrPortF(void)
