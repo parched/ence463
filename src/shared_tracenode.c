@@ -36,20 +36,23 @@ CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, B
 
 	// setup the other nodes
 	unsigned int i;
-	for (i=0; i<size-1; i++)
+	for (i=0; i<size-1; i++)			// handle everything except for the last node
 	{
-		(head+i)->next = head+i+1;
 		(head+i)->prev = prev;
-		prev = head+i;
+		(head+i)->next = head + i + 1;
+
+		// advance the prev pointer
+		prev = (head+i);
 	}
-
-	(head+size-1)->next = head;			// last node is special case, the first node
-
+	// last node special case
+	(head+size-1)->next = head;			// first node
+	(head+size-1)->prev = head+size-2;
 
 	CircularBufferHandler handler;
-	handler.lastRead = head;
-	handler.lastWritten = head->next;
+	handler.lastRead = head->prev->prev;
+	handler.lastWritten = head->prev;
 	handler.fullMode = mode;
+	handler.size = size;
 
 	return handler;
 }

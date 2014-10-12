@@ -139,6 +139,12 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected);
 void drawPoint(unsigned int x, unsigned int y, char level);
 
 /**
+ * \brief Clears the trace plot for a new trace
+ *
+ */
+void clearTrace();
+
+/**
  * \brief Gets the horizontal position of text given alignment and margins
  *
  * \param str String to draw
@@ -419,6 +425,7 @@ void refreshReadonlyValues(const Activity* activity)
 	}
 	else if (activity->menuTypes[activity->pageContext] == VIEWTYPE_TRACE)
 	{
+		// Redraw trace view plot only
 		tBoolean selected = (activity->cursorContext) > 0;
 		TraceView* traceView = (TraceView*) activity->menus[activity->pageContext];
 		drawTraceViewPlot(traceView, selected);
@@ -557,24 +564,28 @@ void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 
 void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 {
+	//clearTrace();
 	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
 
 	TraceNode* plotting = getLatestNode(view->buffer);
 	unsigned int headX = plotting->x;		// latest node appears rightmost of the trace
 
-	unsigned int dispPosX;
-	unsigned int dispPosY;
+	int dispPosX;
+	int dispPosY;
 	// draw until screen is full or up to one being written,
 	// note: return value of getLatestNode() could change while buffer is being drawn
 	do
 	{
-		dispPosX = (plotting->x - headX + PX_HORZ)/view->dispHorzScale;
-		dispPosY = view->zeroLine - plotting->y/view->vertScale;
+		dispPosX = (plotting->x - headX)/(view->dispHorzScale) + PX_HORZ;
+		dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
 
-		drawPoint(dispPosX, dispPosY, brightness);
+		if ((dispPosY > (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP)) && (dispPosY < (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT)))
+		{
+			drawPoint(dispPosX, dispPosY, brightness);
+		}
 
 		plotting = plotting->prev;			// draw the previous node
-	} while(dispPosX > 0 || plotting == getLatestNode(view->buffer));
+	} while(plotting != NULL && dispPosX >= 0 && plotting != getLatestNode(view->buffer));
 }
 
 void drawPoint(unsigned int x, unsigned int y, char level)
@@ -595,6 +606,19 @@ void drawPoint(unsigned int x, unsigned int y, char level)
 	{
 		dot[0] = (level);
 		RIT128x96x4ImageDraw(dot, x-1, y-1, 2, 1);	// draw dot
+	}
+}
+
+void clearTrace()
+{
+	unsigned int i;
+	for (i=TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP; i<TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT; i+=6)
+	{
+		unsigned int j;
+		for (j=0; j<PX_HORZ; j+=6)
+		{
+			RIT128x96x4StringDraw(" ", j, i, 15);
+		}
 	}
 }
 
