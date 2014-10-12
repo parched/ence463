@@ -56,7 +56,7 @@ static int dampingCoefficient = 0;
  *
  * \return The damping coefficient.
  */
-int getDampingCoefficient();
+static int getDampingCoefficient();
 
 /**
  * \brief Calculates the required actuator force.
@@ -65,7 +65,7 @@ int getDampingCoefficient();
  *
  * \return The actuator force.
  */
-int getControlForce(int dTime);
+static int getControlForce(int dTime);
 
 void vControlTask(void *params)
 {
