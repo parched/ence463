@@ -83,9 +83,7 @@ int main(void)
 
 	mainActivity = activity(1);
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
-	/*
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
-	*/
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
