@@ -45,7 +45,7 @@ struct TraceNode
 };
 
 /**
- * \struct CircularBuffer
+ * \struct CircularBufferHandler
  *
  * \brief Handler for circular buffers
  */
