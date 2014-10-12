@@ -22,6 +22,7 @@ add_library(shared
 	shared_button_task.c
 	shared_guidraw_task.c
 	shared_guilayout.c
+	shared_tracenode.c
 	)
 
 # Add ASC c files to this list
