@@ -43,7 +43,7 @@
 #define ADC_PRIORITY	0
 #define ADC_MAX			(1023 * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE)
 
-static unsigned long ADCout[3];
+static unsigned long ADCout[8];
 
 void adcISR (void);
 
@@ -62,14 +62,6 @@ static void initAdcTimer(void)
 
 void initAdcModule(char adcs)
 {
-	// Determine Number of Enabled ADC Pins
-	int maxSteps = 0;
-	if (adcs == 0x01 || adcs == 0x02 || adcs == 0x04)
-		maxSteps = 1;
-	else if (adcs == 0x03 || adcs == 0x05 || adcs == 0x06)
-		maxSteps = 2;
-	else if (adcs == 0x07)
-		maxSteps = 3;
 
 	// Configure Timer for ADC Triggering
 	initAdcTimer();
@@ -88,37 +80,11 @@ void initAdcModule(char adcs)
 	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
 	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
-	// Configure ADC Processors
-	int step;
-	for (step = 0; step < 3; step ++)
-	{
-		// Check if ADC pin is required
-		if (BIT(step) & adcs)
-		{
-			// Create ADC Config Flags.
-			int adcConfig = 0;
+	//
 
-			// Select ADC Input
-			switch (step)
-			{
-				case 0:
-					adcConfig |= ADC_CTL_CH0; break;
-				case 1:
-					adcConfig |= ADC_CTL_CH1; break;
-				case 2:
-					adcConfig |= ADC_CTL_CH2; break;
-			}
-
-			// Check if an interrupt should be configured
-			if (step == maxSteps - 1)
-			{
-				adcConfig |= ADC_CTL_IE | ADC_CTL_END;
-			}
-
-			// Configure ADC Sample Step
-			ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, step, adcConfig);
-		}
-	}
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 0, ADC_CTL_CH0);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
 
 	// Enable ADC Sequence
 	ADCSequenceEnable(ADC_BASE, ADC_SEQ);

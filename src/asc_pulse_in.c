@@ -1,13 +1,13 @@
 /**
  * \file asc_pulse_in.c
  * \brief Active suspension controller pulse train reader implementation.
- * \author James Duley
+ * \author Tom Walsh
  * \version 
  * \date 2014-09-02
  */
 
 /* Copyright (C) 
- * 2014 - James Duley
+ * 2014 - Tom Walsh
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -24,11 +24,61 @@
  * 
  */
 
-#include "asc_pulse_in.h"
+#define BIT(x) 		(1 << x)
+#define PRIORITY(x) (x << 5)
 
-void initPulseIn() {
+#define PULSE_PIN BIT(7)
+
+#include "asc_pulse_in.h"
+#include "shared_pulse.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+
+
+static volatile TickType_t lastPulseTick;
+static volatile TickType_t lastTickDuration;
+
+void isrPortF(void);
+
+void initPulseIn()
+{
+	// Enable PortF Peripheral
+	SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOF);
+	SysCtlDelay (SysCtlClockGet() / 3000);
+
+	// Set Pulse Pin as Input and Configure Rising-Edge 
+	GPIOPinTypeGPIOInput (GPIO_PORTF_BASE, PULSE_PIN);
+	GPIOPortIntRegister (GPIO_PORTF_BASE, isrPortF);
+	GPIOIntTypeSet (GPIO_PORTF_BASE, PULSE_PIN, GPIO_RISING_EDGE);
+	GPIOPinIntEnable (GPIO_PORTF_BASE, PULSE_PIN);
+	IntPrioritySet (INT_GPIOF, PRIORITY(1));
 }
 
-int getPulseSpeed() {
-	return 500;
+int getPulseSpeed()
+{
+	//return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV); // Original Return
+	return (configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M) / (lastTickDuration * PULSES_PER_REV);	// TODO: Convert to fixed point
+}
+
+void isrPortF(void)
+{
+	// Clear Interrupt Flag
+	GPIOPinIntClear (GPIO_PORTF_BASE, 0xFF);
+
+	// Get Current Time
+	TickType_t newPulseTick = xTaskGetTickCountFromISR();
+
+	// Store Pulse Length
+	lastTickDuration = newPulseTick - lastPulseTick;
+
+	// Store Current Time
+	lastPulseTick = newPulseTick;
 }

@@ -29,6 +29,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <ustdlib.h>
+
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
@@ -46,13 +48,14 @@
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
-static char roadType = 0;
+static int roadType = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static _iq speed = 0;                  /**< The car speed (m/s). */
 static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static _iq unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static _iq coilExtension = 0;          /**< The coil extension (mm). */
+static int wusStatusEcho = 0;
 
 /* simulation states */
 static _iq zR = 0;                     /**< The road displacement (mm). */
@@ -85,15 +88,6 @@ static void resetSimulation();
 static char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime);
 
 /**
- * \brief Reads the road type from a message.
- *
- * \param msg The message to read.
- *
- * \return The road type.
- */
-static char getRoadType(char *msg);
-
-/**
  * \brief Reads the throttle from a message.
  *
  * \param msg The message to read.
@@ -117,7 +111,7 @@ static _iq getRandom();
 static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation();
@@ -126,7 +120,7 @@ static void readMessage(UartFrame uartFrame) {
 			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
@@ -181,16 +175,6 @@ int getDisplayCoilExtension() {
 	return _IQint(coilExtension);
 }
 
-char getRoadType(char *msg) {
-	/* TODO */
-	return 0;
-}
-
-_iq getThrottle(char *msg) {
-	/* TODO */
-	return 0;
-}
-
 void resetSimulation() {
 	speed = 0;
 	zR = 0;
@@ -225,9 +209,9 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
 	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
 
-	zR += vR * dTime / configTICK_RATE_HZ;
-	zU += vU * dTime / configTICK_RATE_HZ;
-	zS += vS * dTime / configTICK_RATE_HZ;
+	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
+	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
+	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
 	vR += aR * dTime / configTICK_RATE_HZ;
 	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
 	vS += sprungAcc * dTime / configTICK_RATE_HZ;
@@ -238,6 +222,16 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	
 	/* TODO: error check */
 	return 0;
+}
+
+_iq getThrottle(char *msg) {
+	char intThrottlePartString[3];
+	char decThrottlePartString[4];
+	ustrncpy(intThrottlePartString, msg, 2);
+	ustrncpy(decThrottlePartString, &msg[3], 3);
+	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
+	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
+	return _IQ(throttleIntPart) + _IQ(throttleDecPart )/1000;
 }
 
 _iq getRandom() {
