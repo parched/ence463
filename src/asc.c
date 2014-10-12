@@ -85,13 +85,14 @@ int main(void)
 	configureButtonEvent(BUTTON_LEFT, BUTTON_EVENT_RISING_EDGE);
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
-    /*Continously determines the actuator force needed*/
+	/*Continously determines the actuator force needed*/
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
 
-	/*Inits the display and refreshes display*/
-	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
-
 	/*Inits UART, continously reads and writes UART messages*/
+	//xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+
+	/*Inits button polling and checks for button pushes*/
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
 	/*Inits button polling and checks for button pushes*/
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);

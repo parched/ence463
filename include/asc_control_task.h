@@ -27,11 +27,69 @@
 #ifndef ASC_CONTROL_TASK_H
 #define ASC_CONTROL_TASK_H
 
+typedef enum {SEDATE, NORMAL, SPORT, RALLY} rideType;
+
 /**
  * \brief The active suspension control task.
  *
  * \param params Unused parameters.
  */
 void vControlTask(void *params);
+
+/**
+ * \brief Sets the car ride type.
+ *
+ * \param rideType Ride Type.
+ */
+void setRideMode(rideType rideModeIn);
+
+/**
+ * \brief Returns the car ride type.
+ *
+ * \return Ride Type (enum).
+ */
+rideType getDisplayRideMode();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Car Speed (m/s).
+ */
+int getDisplaySpeed();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Sprung Acceleration.
+ */
+int getDisplaySprungAcc();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Unsprung Acceleration.
+ */
+int getDisplayUnsprungAcc();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Coil Extension.
+ */
+int getDisplayCoilExtension();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Actuator Force (N).
+ */
+int getDisplayForce();
+
+/**
+ * \brief Returns the car speed.
+ *
+ * \return Damping Coefficient (Nm/s).
+ */
+int getDisplayDampingCoefficient();
 
 #endif

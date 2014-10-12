@@ -25,6 +25,8 @@
  */
 
 #include "shared_guilayout.h"
+
+#include "shared_displayformat128x96.h"
 #include <ustdlib.h>
 
 Options option(int minIndex, int maxIndex) {
@@ -49,11 +51,32 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 	return item;
 }
 
-TraceView traceView(char *name, TraceNode *head) {
+TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale) {
 	TraceView traceView;
 
-	traceView.head = head;							//sets head of traceView to head of TraceNode circular buffer
-	traceView.sparseIndex = TRACEVIEW_MAX_ZOOM;		// defaults to most zoomed out
+	traceView.buffer = buffer;
+	traceView.horzScaleStep = 1;
+	traceView.minZoomHorzScale = minHorzScale;
+	if (maxHorzScale < minHorzScale)
+	{
+		maxHorzScale = minHorzScale;
+	}
+	traceView.maxZoomHorzScale = maxHorzScale;
+	traceView.dispHorzScale = traceView.minZoomHorzScale;
+
+	// convert height from bottom of trace to screen position
+	if (zeroHeight > TRACE_HEIGHT || zeroHeight < 0)
+	{
+		// if zero height outside of drawable range, make it center of trace plot
+		traceView.zeroLine = TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP + TRACE_HEIGHT/2;
+	}
+	else
+	{
+		// convert pixel height from bottom of plot to pixel index from top of screen
+		traceView.zeroLine = PX_VERT - TRACE_MARGIN_BOTTOM - zeroHeight;
+	}
+	traceView.vertScale = vertScale;
+
 	ustrncpy(traceView.name, name, VIEW_NAME_SIZE);
 	
 	return traceView;
@@ -76,4 +99,15 @@ Activity activity(unsigned int numPages) {
 	newActivity.cursorContext= 0;  //set default value
 
 	return newActivity;
+}
+
+
+int addView(Activity* activity, void* view, ViewType type, unsigned int index) {
+	int success = 1;   //bad input flag by default
+	if(index < activity->numPages) {
+		activity->menus[index] = view;
+		activity->menuTypes[index] = type;
+		success = 0; //success, set flag to reflect
+	}
+	return success;
 }

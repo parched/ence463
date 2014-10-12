@@ -27,7 +27,7 @@
 #ifndef WUS_SIMULATE_TASK_H
 #define WUS_SIMULATE_TASK_H
 
-#include "wus_simulator.h"
+#include "shared_tracenode.h"
 
 /**
  * \brief The simulation task.
@@ -63,6 +63,13 @@ int getDisplayUnsprungAcc();
  * \return The coil extension.
  */
 int getDisplayCoilExtension();
+
+/**
+ * \brief Set the road buffer for writing to.
+ *
+ * \param roadBuffer A pointer to the buffer.
+ */
+void setRoadBuffer(CircularBufferHandler *roadBuffer);
 
 #endif
 
