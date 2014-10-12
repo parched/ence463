@@ -121,14 +121,7 @@ static void readMessage(UartFrame uartFrame) {
 			break;
 	}
 }
-/*
-To do this you need to:
-first extract the first 2 bytes (0 and 1) convert to an int call it a, (before the decimal point)
-second extract the last 3 bytes (3, 4 and 5) convert to an int call it b, (the part after the decimal point)
 
-throttle is in fixed point notation so
-throttle = (a TO_FP) + (b TO_FP)/1000
-*/
 void vSimulateTask(void *params) {
 	int force = 0;
 	char errorCode = 0;
