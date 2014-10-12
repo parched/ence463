@@ -27,4 +27,9 @@
 #ifndef SHARED_ERRORS_H_
 #define SHARED_ERRORS_H_
 
+#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
+#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
+#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
+#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
+
 #endif /* SHARED_ERRORS_H_ */

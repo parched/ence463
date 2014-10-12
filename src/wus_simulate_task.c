@@ -37,12 +37,9 @@
 #include "shared_uart_task.h"
 #include "shared_parameters.h"
 
-#define SIMULATE_TASK_RATE_HZ 1000
+#include "shared_errors.h"
 
-#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
-#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
-#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
-#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
+#define SIMULATE_TASK_RATE_HZ 1000
 
 static int roadType = 0;
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
@@ -122,12 +119,36 @@ static void readMessage(UartFrame uartFrame) {
 	}
 }
 
+/**
+ * \brief Checks all error shated and returns the combined ORed error state
+ *
+ * \param
+ */
 int errorCheck() {
 	static int combinedError = 0;
-	if(speed >= MAX_SPEED) {
-		combinedError = combinedError | 0x80;
+	//max speed error check
+	if(speed > MAX_SPEED) {
+		combinedError = combinedError | CAR_SPEED_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~0x80;
+		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
+	}
+	//max coil extension check
+	if(coilExtension > MAX_COIL_EXTENSION) {
+		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+	}
+	//max sprung acceration check
+	if(sprungAcc > MAX_ACC_SPRUNG) {
+		combinedError = combinedError | ACC_SPRUNG_EXCEEDED ;
+	} else {
+		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
+	}
+	//max unsprung acceration check
+	if(unsprungAcc > MAX_ACC_UNSPRUNG) {
+		combinedError = combinedError | ACC_UNSPRUNG_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
 	}
 	return combinedError;
 }
