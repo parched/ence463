@@ -29,6 +29,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <ustdlib.h>
+
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
@@ -42,16 +44,17 @@
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
+static int roadType = 0;
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
-static char roadType = 0;
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static int speed = 0;                  /**< The car speed (m/s). */
 static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static int coilExtension = 0;          /**< The coil extension (mm). */
+static int wusStatusEcho = 0;
 
 /* simulation states */
 static int zR = 0;                     /**< The road displacement (mm). */
@@ -84,22 +87,11 @@ static void resetSimulation();
 static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
 
 /**
- * \brief Reads the road type from a message.
+ * \brief Convert throttle message to numeric value
  *
- * \param msg The message to read.
- *
- * \return The road type.
+ * \param msg The throttle UART message
  */
-static char getRoadType(char *msg);
-
-/**
- * \brief Reads the throttle from a message.
- *
- * \param msg The message to read.
- *
- * \return The throttle.
- */
-static int getThrottle(char *msg);
+int getThrottle(char *msg);
 
 /**
  * \brief Generates a psuedo random number.
@@ -116,7 +108,7 @@ static int getRandom();
 static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation();
@@ -125,7 +117,7 @@ static void readMessage(UartFrame uartFrame) {
 			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
@@ -180,15 +172,6 @@ int getDisplayCoilExtension() {
 	return coilExtension FROM_FP;
 }
 
-char getRoadType(char *msg) {
-	/* TODO */
-	return 0;
-}
-
-int getThrottle(char *msg) {
-	/* TODO */
-	return 0;
-}
 
 void resetSimulation() {
 	speed = 0;
@@ -237,6 +220,16 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	
 	/* TODO: error check */
 	return 0;
+}
+
+int getThrottle(char *msg) {
+	char intThrottlePartString[3];
+	char decThrottlePartString[4];
+	ustrncpy(intThrottlePartString, msg, 2);
+	ustrncpy(decThrottlePartString, &msg[3], 3);
+	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
+	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
+	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
 }
 
 int getRandom() {
