@@ -34,6 +34,8 @@
 #define CHAR_WIDTH 6
 #define CHAR_HEIGHT 6
 
+#define MAX_BRIGHT_LEVEL 15
+
 /* Formatting parameter selections */
 typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
 
