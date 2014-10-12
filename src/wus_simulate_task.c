@@ -37,6 +37,7 @@
 #include "shared_uart_task.h"
 #include "shared_parameters.h"
 #include "shared_iqmath.h"
+#include "shared_tracenode.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
@@ -56,6 +57,8 @@ static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s)
 static _iq unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static _iq coilExtension = 0;          /**< The coil extension (mm). */
 static int wusStatusEcho = 0;
+
+static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the road to. */
 
 /* simulation states */
 static _iq zR = 0;                     /**< The road displacement (mm). */
@@ -153,6 +156,8 @@ void vSimulateTask(void *params) {
 		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
 		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
 
+		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
+
 		if (errorCode != 0) {
 			/* TODO */
 		}
@@ -173,6 +178,10 @@ int getDisplayUnsprungAcc() {
 
 int getDisplayCoilExtension() {
 	return _IQint(coilExtension);
+}
+
+void setRoadBuffer(CircularBufferHandler *buffer) {
+	roadBuffer = buffer;
 }
 
 void resetSimulation() {

@@ -24,26 +24,31 @@
  *
  */
 
-#ifndef SHARED_DISPLAYFORMAT128x64_H
+#ifndef SHARED_DISPLAYFORMAT128x96_H
+#define SHARED_DISPLAYFORMAT128x96_H
 
 /* Display parameters */
 #define PX_HORZ 128
-#define PX_VERT 64
+#define PX_VERT 96
 
 #define CHAR_WIDTH 6
+#define CHAR_HEIGHT 6
+
+#define MAX_BRIGHT_LEVEL 15
 
 /* Formatting parameter selections */
 typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
 
 /* General View parameters */
-#define UNSELECTED_BRIGHTNESS 6
+#define UNSELECTED_BRIGHTNESS 7
 #define SELECTED_BRIGHTNESS 15
 
-/* ListView parameters */
+/* View parameters */
 #define TITLE_PADDINGTOP 5
 #define TITLE_TEXTALIGN TEXTALIGN_CENTER
 #define TITLE_MARGIN 0
 
+/* ListView parameters */
 #define TITLE_ITEM_SEP 10
 #define ITEM_HEIGHT 10
 #define ITEM_TEXTALIGN TEXTALIGN_LEFT
@@ -53,6 +58,11 @@ typedef enum {TEXTALIGN_LEFT, TEXTALIGN_CENTER, TEXTALIGN_RIGHT} TextAlign;
 #define OPTION_MARGIN 15
 #define OPTION_MODFIABLEINDICATOR_MARGIN 4
 
+/* TraceView parameters */
+#define TITLE_TRACE_SEP 10
+#define TRACE_MARGIN_BOTTOM 4
+
+#define TRACE_HEIGHT (PX_VERT - TITLE_PADDINGTOP - CHAR_HEIGHT - TITLE_TRACE_SEP - TRACE_MARGIN_BOTTOM)
 
 #endif
 
