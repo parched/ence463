@@ -49,7 +49,7 @@ typedef struct ButtonSwitch
 	int 		total;		// Total of previous switch values for oversampled debouncing.
 } ButtonSwitch;
 
-ButtonSwitch ButtonSet[5];
+static ButtonSwitch ButtonSet[5];
 
 
 // Configures GPIO Port for Onboard Switches (and LED)

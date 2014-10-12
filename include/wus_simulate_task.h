@@ -27,8 +27,6 @@
 #ifndef WUS_SIMULATE_TASK_H
 #define WUS_SIMULATE_TASK_H
 
-#include "wus_simulator.h"
-
 /**
  * \brief The simulation task.
  *
@@ -63,6 +61,7 @@ int getDisplayUnsprungAcc();
  * \return The coil extension.
  */
 int getDisplayCoilExtension();
+
 
 #endif
 

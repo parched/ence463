@@ -29,69 +29,102 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "wus_simulator.h"
+#include <ustdlib.h>
+
 #include "wus_pulse_out.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
+#include "shared_parameters.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
 
-static SimState wusSimState;
-static char roadType = 0;
-static int dampingFactor = 0;
-static int throttle = 0;
-static int speed = 0;
-static int sprungAcc = 0;
-static int unsprungAcc = 0;
-static int coilExtension = 0;
+#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
+#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
+#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
+#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
+
+static int roadType = 0;
+#define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
+#define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
+
+static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
+static int speed = 0;                  /**< The car speed (m/s). */
+static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
+static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
+static int coilExtension = 0;          /**< The coil extension (mm). */
+static int wusStatusEcho = 0;
+
+/* simulation states */
+static int zR = 0;                     /**< The road displacement (mm). */
+static int zU = 0;                     /**< The unsprung mass displacement (mm). */
+static int zS = 0;                     /**< The sprung mass dispalcement (mm). */
+static int vR = 0;                     /**< The road velocity (m/s). */
+static int vU = 0;                     /**< The unsprung mass velocity (m/s). */
+static int vS = 0;                     /**< The sprung mass velocity (m/s). */
+
+static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
+static int aR = 0;                     /**< The road acceleration (m/s/s). */
+static int aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 /**
- * \brief Reads the road type from a message.
- *
- * \param msg The message to read.
- *
- * \return The road type.
+ * \brief Resets the simulation.
  */
-char getRoadType(char *msg);
+static void resetSimulation();
 
 /**
- * \brief Reads the throttle from a message.
+ * \brief Simulates and updates the state.
  *
- * \param msg The message to read.
+ * \param force The applied force from the controller.
+ * \param throttle The forward acceleration from the driver.
+ * \param dampingFactor The set damping factor.
+ * \param roadType The road type.
+ * \param dTime The time since the last state.
  *
- * \return The throttle.
+ * \return The error statuses of the car.
+ */
+static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
+
+/**
+ * \brief Convert throttle message to numeric value
+ *
+ * \param msg The throttle UART message
  */
 int getThrottle(char *msg);
+
+/**
+ * \brief Generates a psuedo random number.
+ *
+ * \return A random number between 0.0 and 1.0 fixed point..
+ */
+static int getRandom();
 
 /**
  * \brief Reads an incoming UART message.
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-void readMessage(UartFrame uartFrame) {
+static void readMessage(UartFrame uartFrame) {
 	switch (uartFrame.frameWise.msgType) {
 		case 'R':
-			roadType = getRoadType(uartFrame.frameWise.msg);
+			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
 			break;
 		case 'S':
-			resetSimulation(&wusSimState);
+			resetSimulation();
 			break;
 		case 'A':
 			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
-			/* TODO */
+			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
 			break;
 	}
 }
 
 void vSimulateTask(void *params) {
 	int force = 0;
-	int dTime = 0;
 	char errorCode = 0;
-
-	wusSimState = simState();
 
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
@@ -106,22 +139,17 @@ void vSimulateTask(void *params) {
 	for (;;) {
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
-		force = getSmoothAdc(ACTUATOR_FORCE_ADC);
-		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC);
+		force = getSmoothAdc(ACTUATOR_FORCE_ADC, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
+		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
 		/* TODO: find dTime */
-		errorCode = simulate(&wusSimState, force, throttle, dampingFactor, roadType, dTime);
-
-		speed = getSpeed(&wusSimState);
-		sprungAcc = getSprungAcc(&wusSimState);
-		unsprungAcc = getUnsprungAcc(&wusSimState);
-		coilExtension = getCoilExtension(&wusSimState);
+		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc);
-		setDuty(COIL_EXTENSION_PWM, coilExtension);
-		
+		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
+		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+
 		if (errorCode != 0) {
 			/* TODO */
 		}
@@ -129,25 +157,85 @@ void vSimulateTask(void *params) {
 }
 
 int getDisplaySpeed() {
-	return speed / 10;
+	return speed FROM_FP;
 }
 
 int getDisplaySprungAcc() {
-	return sprungAcc;
+	return sprungAcc FROM_FP;
 }
 
 int getDisplayUnsprungAcc() {
-	return unsprungAcc;
+	return unsprungAcc FROM_FP;
 }
 
 int getDisplayCoilExtension() {
-	return coilExtension;
+	return coilExtension FROM_FP;
 }
 
-char getRoadType(char *msg) {
+
+void resetSimulation() {
+	speed = 0;
+	zR = 0;
+	zU = 0;
+	zS = 0;
+	vR = 0;
+	vU = 0;
+	vS = 0;
+	sprungAcc = 0;
+	unsprungAcc = 0;
+}
+
+char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
+	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
+	int amplitudeFactor = 100000;
+	int halfRoadWavelength = 250;
+
+	if (speed == 0) {
+		aRNoise = 0;
+	} else {
+		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / (speed FROM_FP);
+
+		if (timeFromLastNoise >= noisePeroid) {
+			timeFromLastNoise -= noisePeroid;
+			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * amplitudeFactor;
+		}
+		timeFromLastNoise += dTime;
+	}
+
+	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
+
+	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
+	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
+
+	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
+	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
+	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
+	vR += aR * dTime / configTICK_RATE_HZ;
+	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
+	vS += sprungAcc * dTime / configTICK_RATE_HZ;
+
+	speed += throttle * dTime / configTICK_RATE_HZ;
+
+	coilExtension = zU - zS;
+	
+	/* TODO: error check */
 	return 0;
 }
 
 int getThrottle(char *msg) {
-	return 0;
+	char intThrottlePartString[3];
+	char decThrottlePartString[4];
+	ustrncpy(intThrottlePartString, msg, 2);
+	ustrncpy(decThrottlePartString, &msg[3], 3);
+	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
+	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
+	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
+}
+
+int getRandom() {
+	static unsigned int b = 12903;
+
+	b = 18000 * (b & 65535) + (b >> 16);
+
+	return b & ((1 TO_FP) - 1);
 }

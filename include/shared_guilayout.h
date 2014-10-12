@@ -178,6 +178,16 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
  */
 Activity activity(unsigned int numPages);
 
+/**
+ * \brief Assigns a view to an Activity forcing the user to correctry init a view to an activity.
+ * \returns 0 for sucess, 1 for index out of bound
+ *
+ * \param activity The Activity to attach the view to
+ * \param view The View that will be attached to the Activity
+ * \param type The type of view
+ * \param index The index of the view being attached to
+ */
+int addView(Activity* activity, void* view, ViewType type, unsigned int index);
 
 #endif /* UI_TASK_H_ */
 

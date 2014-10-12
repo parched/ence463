@@ -41,11 +41,13 @@
 void initPwmModule(char pwmOuts);
 
 /**
- * \brief Sets the PWM duty.
+ * \brief set the pwm dutycycle for the PWM of (value - minValue) / (maxValue - minValue) for the PWM pin passed to it
  *
- * \param pwmOut The PWM output of which to set.
- * \param duty The PWM duty cycle times 1000.
+ * \param pwmPin The PWM output of which to set.
+ * \param value must be inbetween minValue and maxValue.
+ * \param minValue minimum value for value
+ * \param maxValue maximum value for value
  */
-void setDuty(char pwmOut, int duty);
+void setDuty(char pwmPin, int value, int minValue, int maxValue);
 
 #endif

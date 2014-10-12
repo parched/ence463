@@ -41,8 +41,21 @@
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 
-const char *placeholder = "test";
+static const char *placeholder = "test";
 
+static Activity mainActivity;
+
+static TraceView roadSurface;
+
+static ListView telemetry;
+static Options speedOption;
+static Item speedItem;
+static Options sprungAccOption;
+static Item sprungAccItem;
+static Options unsprungAccOption;
+static Item unsprungAccItem;
+static Options coilExtensionOption;
+static Item coilExtensionItem;
 /*-----------------------------------------------------------*/
 
 int main(void)
@@ -52,28 +65,27 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	TraceView roadSurface = traceView("Surface", NULL, TRACE_ZERO_CENTER, 1, 1, 1);
-	//TODO: Road surface stuff
+	roadSurface = traceView("Surface", NULL, TRACE_ZERO_CENTER, 1, 1, 1);
 
-	ListView telemetry = listView("Telemetry", 4);
-	Options speedOption = option(-999, 999);
-	Item speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
-	Options sprungAccOption = option(-9999, 9999);
-	Item sprungAccItem = item("Sp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
-	Options unsprungAccOption = option(-9999, 9999);
-	Item unsprungAccItem = item("Unsp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
-	Options coilExtensionOption = option(-9999, 9999);
-	Item coilExtensionItem = item("Coil Ext.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
+	telemetry = listView("Telemetry", 4);
+	speedOption = option(-999, 999);
+	speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
+	sprungAccOption = option(-9999, 9999);
+	sprungAccItem = item("Sp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
+	unsprungAccOption = option(-9999, 9999);
+	unsprungAccItem = item("Unsp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
+	coilExtensionOption = option(-9999, 9999);
+	coilExtensionItem = item("Coil Ext.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
 	telemetry.items[0] = speedItem;
 	telemetry.items[1] = sprungAccItem;
 	telemetry.items[2] = unsprungAccItem;
 	telemetry.items[3] = coilExtensionItem;
 
-	Activity mainActivity = activity(2);
-	mainActivity.menus[0] = &telemetry;
-	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
-	mainActivity.menus[1] = &roadSurface;
-	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	mainActivity = activity(1);
+	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
+	/*
+	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
+	*/
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
@@ -83,7 +95,7 @@ int main(void)
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
 	/* Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension */
-	//xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 3, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
 	//xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
@@ -95,7 +107,7 @@ int main(void)
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();	
+	vTaskStartScheduler();
 	
 	/* If all is well we will never reach here as the scheduler will now be
 	running.  If we do reach here then it is likely that there was insufficient
