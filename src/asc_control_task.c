@@ -34,6 +34,7 @@
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
+#include "shared_parameters.h"
 
 #define CONTROL_TASK_RATE_HZ 1000
 
@@ -49,6 +50,15 @@ static int coilExtension = 0;
 static int speed = 0;
 static int actuatorForce = 0;
 static int dampingCoefficient = 0;
+
+/**
+ * \brief Calculates the required actuator force.
+ *
+ * \param dTime The time in ticks since the last calculation.
+ *
+ * \return The actuator force.
+ */
+int getControlForce(int dTime);
 
 int getDampingCoefficient (void)
 {
@@ -91,11 +101,19 @@ void vControlTask(void *params)
 		coilExtension = getSmoothAdc(COIL_EXTENSION_ADC, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
 		speed = getPulseSpeed();
 		dampingCoefficient = getDampingCoefficient();
+
+		// Do control
+		actuatorForce = getControlForce(xTimeIncrement);
 		
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 	}
+}
+
+int getControlForce(int dTime)
+{
+	return STIFFNESS_SPRING * coilExtension;
 }
 
 /* SETTERS */
