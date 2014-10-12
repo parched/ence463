@@ -136,7 +136,7 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected);
  * \param y Vertical position to draw dot
  * \param level Brightness to draw dot
  */
-void drawPoint(unsigned int x, unsigned int y, char level);
+void drawPointRtoL(unsigned int x, unsigned int y, char level);
 
 /**
  * \brief Clears the trace plot for a new trace
@@ -577,9 +577,9 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 	do {
 		if ((dispPosY > (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP)) && (dispPosY < (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT)))
 		{
-			drawPoint(dispPosX, prevYPos[dispPosX], 0);						// clear the previous dot in this x position
-			prevYPos[dispPosX] = dispPosY;									// store the current dot position to clear next time
-			drawPoint(dispPosX, dispPosY, brightness);
+			drawPointRtoL(dispPosX, prevYPos[dispPosX], 0);				// clear the previous dot in this x position
+			prevYPos[dispPosX] = dispPosY;								// store the current dot position to clear next time
+			drawPointRtoL(dispPosX, dispPosY, brightness);
 		}
 
 		plotting = plotting->prev;			// draw the previous node
@@ -590,25 +590,16 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 
 }
 
-void drawPoint(unsigned int x, unsigned int y, char level)
+void drawPointRtoL(unsigned int x, unsigned int y, char level)
 {
-	unsigned char dot[] = {0x00};
+	if (level > MAX_BRIGHT_LEVEL)
+	{
+		level = MAX_BRIGHT_LEVEL;	// limit brightness
+	}
+	unsigned char dot[1];
+	dot[0] = level | (level << 4);
 
-	if (level > 15)
-	{
-		level = 15;	// limit brightness
-	}
-
-	if (x % 2)
-	{
-		dot[0] = (level << 4);	// set brightness and position of point
-		RIT128x96x4ImageDraw(dot, x, y, 2, 1);	// draw dot
-	}
-	else
-	{
-		dot[0] = (level);
-		RIT128x96x4ImageDraw(dot, x-1, y-1, 2, 1);	// draw dot
-	}
+	RIT128x96x4ImageDraw(dot, x, y, 2, 1);	// draw do
 }
 
 unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin)
