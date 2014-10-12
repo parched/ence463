@@ -26,7 +26,7 @@
 
 #include "shared_guilayout.h"
 
-#include "shared_displayformat128x64.h"
+#include "shared_displayformat128x96.h"
 #include <ustdlib.h>
 
 Options option(int minIndex, int maxIndex) {
@@ -56,6 +56,9 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 
 	traceView.buffer = buffer;
 	traceView.horzScaleStep = 1;
+	traceView.minZoomHorzScale = minHorzScale;
+	traceView.maxZoomHorzScale = maxHorzScale;
+	traceView.dispHorzScale = traceView.minZoomHorzScale;
 
 	// convert height from bottom of trace to screen position
 	if (zeroHeight > TRACE_HEIGHT || zeroHeight < 0)

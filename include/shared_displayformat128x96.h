@@ -24,12 +24,12 @@
  *
  */
 
-#ifndef SHARED_DISPLAYFORMAT128x64_H
-#define SHARED_DISPLAYFORMAT128x64_H
+#ifndef SHARED_DISPLAYFORMAT128x96_H
+#define SHARED_DISPLAYFORMAT128x96_H
 
 /* Display parameters */
 #define PX_HORZ 128
-#define PX_VERT 64
+#define PX_VERT 96
 
 #define CHAR_WIDTH 6
 #define CHAR_HEIGHT 6
