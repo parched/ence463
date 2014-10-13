@@ -219,13 +219,6 @@ void resetSimulation() {
 char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
-	//max coil extension check
-	if(coilExtension > MAX_COIL_EXTENSION) {
-		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
-	} else {
-		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
-	}
-
 	int amplitudeFactor = 100000;
 	int halfRoadWavelength = 250;
 
@@ -257,6 +250,13 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 
 	coilExtension = zU - zS;
 	
+	// max coil extension check
+	if(coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
+		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+	}
+
 	/* TODO: error check */
 	return 0;
 }
