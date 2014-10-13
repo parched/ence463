@@ -130,7 +130,6 @@ typedef struct  {
 	unsigned int pageContext;                 /**<displayed page context*/
 	unsigned int cursorContext;               /**<cursor position context*/
 	unsigned int numPages;                    /**<number of pages in this activity*/
-	unsigned int currPage;
 } Activity;
 
 /**
