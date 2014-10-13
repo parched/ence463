@@ -144,7 +144,7 @@ void updateStatus() {
 	}
 	//max sprung acceration check
 	if(sprungAcc > MAX_ACC_SPRUNG) {
-		combinedError = combinedError | ACC_SPRUNG_EXCEEDED ;
+		combinedError = combinedError | ACC_SPRUNG_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
 	}
