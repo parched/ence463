@@ -31,6 +31,7 @@
 #include "task.h"
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 
@@ -39,7 +40,7 @@
 #endif
 
 #define SENDMESSAGE_QUEUE_SIZE 10
-#define UART_TASK_RATE_HZ 15000
+#define UART_TASK_RATE_HZ 10000
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
@@ -48,6 +49,10 @@ static QueueHandle_t uartSendQueue;
 
 void vUartTask(void* pvParameters) {
 	// setup Uart peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_3 | GPIO_PIN_2);
+
 	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), UART_BAUD, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
 
 	// initialize queue
