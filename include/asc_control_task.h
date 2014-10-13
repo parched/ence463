@@ -51,7 +51,7 @@ void setRideMode(int rideModeIn);
 void setAscOn(int isOn);
 
 /**
- * \brief Sets roadType.
+ * \brief Sets rideType.
  *
  * \param rideType Ride Type.
  */
