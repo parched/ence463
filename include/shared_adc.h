@@ -27,6 +27,8 @@
 #ifndef SHARED_ADC_H
 #define SHARED_ADC_H
 
+#include "shared_iqmath.h"
+
 #define ACC_SPRUNG_ADC 0x01       /**< The sprung acceleration ADC. */
 #define ACC_UNSPRUNG_ADC 0x02     /**< The unsprung acceleration ADC. */
 #define COIL_EXTENSION_ADC 0x04   /**< The coil extension ADC. */
@@ -49,7 +51,7 @@ void initAdcModule(char adcs);
  *
  * \return The smoothed value from the ADC.
  */
-int getSmoothAdc(char adc, int minValue, int maxValue);
+_iq getSmoothAdc(char adc, _iq minValue, _iq maxValue);
 
 #endif
 

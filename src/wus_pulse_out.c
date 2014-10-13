@@ -46,7 +46,7 @@
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
 
-static volatile int _speed = 0; /**< The internally stored speed. */
+static volatile _iq _speed = 0; /**< The internally stored speed. */
 
 /**
  * \brief The pulse output task.
@@ -67,7 +67,7 @@ void initPulseOut() {
 	xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
-void setPulseSpeed(int speed) {
+void setPulseSpeed(_iq speed) {
 	_speed = speed;
 }
 
@@ -86,7 +86,7 @@ void vPulseOutTask(void *pvParams) {
 
 			isPulseHigh = ~isPulseHigh;
 
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (10 * PULSES_PER_REV * _speed * 2 FROM_FP));
+			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M / _IQint(PULSES_PER_REV * _speed * 2));
 		}
 	}
 }

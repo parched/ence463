@@ -30,11 +30,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "asc_controller.h"
 #include "asc_pulse_in.h"
 #include "shared_pwm.h"
 #include "shared_adc.h"
 #include "shared_uart_task.h"
+#include "shared_parameters.h"
+#include "shared_iqmath.h"
+
 
 #define CONTROL_TASK_RATE_HZ 1000
 
@@ -43,31 +45,30 @@
 #define DAMPING_SPORT	350
 #define DAMPING_RALLY	500
 
+static int isOn;                      /**< Sets whether the active suspension is on or off. */
 static rideType rideMode = SEDATE;
-static int sprungAcc = 0;
-static int unsprungAcc = 0;
-static int coilExtension = 0;
-static int speed = 0;
-static int actuatorForce = 0;
-static int dampingCoefficient = 0;
+static _iq sprungAcc = 0;
+static _iq unsprungAcc = 0;
+static _iq coilExtension = 0;
+static _iq speed = 0;
+static _iq actuatorForce = 0;
+static _iq dampingCoefficient = 0;
 
-int getDampingCoefficient (void)
-{
-	switch (rideMode)
-	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
-	}
-	
-	return -1;
-}
+/**
+ * \brief Gets the damping coefficient.
+ *
+ * \return The damping coefficient.
+ */
+static _iq getDampingCoefficient();
 
+/**
+ * \brief Calculates the required actuator force.
+ *
+ * \param dTime The time in ticks since the last calculation.
+ *
+ * \return The actuator force.
+ */
+static _iq getControlForce(int dTime);
 
 void vControlTask(void *params)
 {
@@ -92,6 +93,9 @@ void vControlTask(void *params)
 		coilExtension = getSmoothAdc(COIL_EXTENSION_ADC, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
 		speed = getPulseSpeed();
 		dampingCoefficient = getDampingCoefficient();
+
+		// Do control
+		actuatorForce = getControlForce(xTimeIncrement);
 		
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
@@ -99,11 +103,42 @@ void vControlTask(void *params)
 	}
 }
 
+_iq getDampingCoefficient()
+{
+	switch (rideMode)
+	{
+		case SEDATE:
+			return DAMPING_SEDATE;
+		case NORMAL:
+			return DAMPING_NORMAL;
+		case SPORT:
+			return DAMPING_SPORT;
+		case RALLY:
+			return DAMPING_RALLY;
+	}
+	
+	return -1;
+}
+
+_iq getControlForce(int dTime)
+{
+	if (isOn == 0) {
+		return 0;
+	}
+
+	return STIFFNESS_SPRING * coilExtension;
+}
+
 /* SETTERS */
 
 void setRideMode(rideType rideModeIn)
 {
 	rideMode = rideModeIn;
+}
+
+void setAscOn(int isAscOn)
+{
+	isOn = isAscOn;
 }
 
 /* GETTERS */
@@ -142,3 +177,4 @@ int getDisplayDampingCoefficient()
 {
 	return dampingCoefficient;
 }
+

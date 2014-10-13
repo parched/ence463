@@ -1,9 +1,9 @@
 /**
- * \file wus_pulse_out.h
- * \brief Wheel unit simulator pulse train module.
+ * \file shared_iqmath.h
+ * \brief Shared IQmath header.
  * \author James Duley
  * \version 1.0
- * \date 2014-08-20
+ * \date 2014-10-11
  */
 
 /* Copyright (C) 
@@ -24,21 +24,11 @@
  * 
  */
 
-#ifndef WUS_PULSE_OUT_H
-#define WUS_PULSE_OUT_H
+#ifndef SHARED_IQMATH_H
+#define SHARED_IQMATH_H
 
-#include "shared_iqmath.h"
+#define GLOBAL_Q 10 /**< Number of fractional bits to use for fixed point. */
 
-/**
- * \brief Initialises the pulse train generator.
- */
-void initPulseOut();
+#include "IQmath/IQmathLib.h"
 
-/**
- * \brief Sets the car speed.
- *
- * \param speed The speed.
- */
-void setPulseSpeed(_iq speed);
-
-#endif
+#endif /* SHARED_IQMATH_H */
