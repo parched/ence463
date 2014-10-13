@@ -51,6 +51,8 @@ static ListView controls;
 
 static ListView statuses;
 
+static ListView statuses2;
+
 static Item roadTypeItem;
 static Options roadTypeOption;
 static Item rideTypeItem;
@@ -66,6 +68,14 @@ static Item throttleItem;
 static Options throttleOption;
 static Item resetItem;
 static Options resetOption;
+static Item coilExtensionItem;
+static Options coilExtensionOption;
+
+static Item unsprungAccItem;
+static Options unsprungAccOption;
+static Item sprungAccItem;
+static Options sprungAccOption;
+
 
 int main(void)
 {
@@ -75,7 +85,8 @@ int main(void)
 
 	/* Marking up GUI */
 	controls = listView("Controls", 4);
-	statuses = listView("Status View", 3);
+	statuses = listView("Status View", 5);
+	statuses2 = listView("Status2 View", 1);
 
 	roadTypeOption = option(0, 8);
 	roadTypeOption.skip = 1;
@@ -105,28 +116,50 @@ int main(void)
 
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
+
 	statusMessageOption = option(0, 2);
 	statusMessageOption.values[0] = "Kat";
 	statusMessageOption.values[1] = "Sew";
-	statusMessageItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, getDisplayWusStatus);
+	statusMessageItem = item("Status", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, getDisplayWusStatus);
 	statusMessageOption = option(-999, 999);
-	actuatorForceItem = item("ControlForce", OPTIONTYPE_INT, OPTIONACCESS_READONLY, statusMessageOption, getDisplayForce);
+
+	actuatorForceOption = option(-999,999);
+	actuatorForceItem = item("ControlForce", OPTIONTYPE_INT, OPTIONACCESS_READONLY, actuatorForceOption, getDisplayForce);
+
+	coilExtensionOption = option(-3000,3000);
+	coilExtensionItem = item("CoilEx", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
+
+	unsprungAccOption = option(-3000,3000);
+	unsprungAccItem = item("unsprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
+
+	sprungAccOption = option(-3000,3000);
+	sprungAccItem = item("sprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
+
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
 	controls.items[2] = throttleItem;
 	controls.items[3] = resetItem;
+
 	//controls.items[2] = carSpeedItem;
 	//controls.items[3] = statusMessageItem;
 	//controls.items[4] = actuatorForceItem;
 
 	statuses.items[0] = carSpeedItem;
-	statuses.items[1] = statusMessageItem;
-	statuses.items[2] = actuatorForceItem;
+	//statuses.items[1] = statusMessageItem;
+	statuses.items[1] = actuatorForceItem;
+	statuses.items[2] = coilExtensionItem;
+	statuses.items[3] = unsprungAccItem;
+	statuses.items[4] = sprungAccItem;
+
+	//statuses2.items[0] = unsprungAccItem;
+	//statuses2.items[1] = sprungAccItem;
+	statuses2.items[0] = statusMessageItem;
 
 	mainActivity = activity();
 
 	addView(&mainActivity, &controls, VIEWTYPE_LIST);
 	addView(&mainActivity, &statuses, VIEWTYPE_LIST);
+	addView(&mainActivity, &statuses2, VIEWTYPE_LIST);
 
 	attachActivity(&mainActivity);
 
