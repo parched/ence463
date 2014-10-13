@@ -228,7 +228,7 @@ int getResetState() {
 }
 
 int getCoilExError() {
-	if(wusStatus & (1 << COIL_EXT_STATUS_BIT)) {
+	if(wusStatus & (1 << COIL_EXTENSION_EXCEEDED)) {
 		return 1;
 	} else {
 		return 0;
@@ -236,7 +236,7 @@ int getCoilExError() {
 }
 
 int getUnsprungAccError() {
-	if(wusStatus & (1 << UNSPRUNG_ACC_STATUS_BIT)) {
+	if(wusStatus & (1 << ACC_UNSPRUNG_EXCEEDED)) {
 		return 1;
 	} else {
 		return 0;
@@ -244,7 +244,7 @@ int getUnsprungAccError() {
 }
 
 int getSprungAccError() {
-	if(wusStatus & (1 << SPRUNG_ACC_STATUS_BIT)) {
+	if(wusStatus & (1 << ACC_SPRUNG_EXCEEDED)) {
 		return 1;
 	} else {
 		return 0;
@@ -252,7 +252,7 @@ int getSprungAccError() {
 }
 
 int getCarSpeedError() {
-	if(wusStatus & (1 << SPEED_STATUS_BIT)) {
+	if(wusStatus & (1 << CAR_SPEED_EXCEEDED)) {
 		return 1;
 	} else {
 		return 0;
