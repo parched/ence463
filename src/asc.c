@@ -187,9 +187,6 @@ int main(void)
 	/*Inits button polling and checks for button pushes*/
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
 
-	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
-
 	/* Refreshes GUI */
     xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
 
