@@ -55,6 +55,9 @@ static _iq actuatorForce = 0;
 static _iq dampingCoefficient = 0;
 
 static char wusStatus = 0;
+static int roadType = 0;
+static int throttle = 0;
+static int resetState = 0;
 
 /**
  * \brief Reads an incoming UART message.
@@ -69,24 +72,6 @@ static void readMessage(UartFrame uartFrame) {
 	}
 }
 
-
-
-int getDampingCoefficient (void)
-{
-	switch (rideMode)
-	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
-	}
-	
-	return -1;
-}
 
 /**
  * \brief Gets the damping coefficient.
@@ -166,19 +151,32 @@ _iq getControlForce(int dTime)
 
 /* SETTERS */
 
-void setRideMode(rideType rideModeIn)
+void setRideMode(int rideModeIn)
 {
-	rideMode = rideModeIn;
+	rideMode = (rideType) rideModeIn;
 }
+
 
 void setAscOn(int isAscOn)
 {
 	isOn = isAscOn;
 }
 
+void setRoadType(int roadTypeInput) {
+	roadType = roadTypeInput;
+}
+
+void setThrottle(int throttleInput) {
+	throttle = throttleInput;
+}
+
+void setResetState(int resetStateInput) {
+	resetState = resetStateInput;
+}
+
 /* GETTERS */
 
-rideType getDisplayRideMode()
+int getDisplayRideMode()
 {
 	return rideMode;
 }
@@ -211,4 +209,23 @@ int getDisplayForce()
 int getDisplayDampingCoefficient()
 {
 	return dampingCoefficient;
+}
+
+int getDisplayWusStatus()
+{
+	return 0;
+}
+
+int getRoadType()
+{
+	return roadType;
+}
+
+int getThrottle()
+{
+	return throttle;
+}
+
+int getResetState() {
+	return resetState;
 }

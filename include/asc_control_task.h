@@ -41,7 +41,7 @@ void vControlTask(void *params);
  *
  * \param rideType Ride Type.
  */
-void setRideMode(rideType rideModeIn);
+void setRideMode(int rideModeIn);
 
 /**
  * \brief Sets active suspension on or off.
@@ -55,7 +55,14 @@ void setAscOn(int isOn);
  *
  * \return Ride Type (enum).
  */
-rideType getDisplayRideMode();
+
+void setRoadType(int roadTypeInput);
+
+void setThrottle(int throttleInput);
+
+void setResetState(int resetStateInput);
+
+int getDisplayRideMode();
 
 /**
  * \brief Returns the car speed.
@@ -98,5 +105,13 @@ int getDisplayForce();
  * \return Damping Coefficient (Nm/s).
  */
 int getDisplayDampingCoefficient();
+
+int getDisplayWusStatus();
+
+int getRoadType();
+
+int getThrottle();
+
+int getResetState();
 
 #endif

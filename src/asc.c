@@ -48,6 +48,9 @@ const char *placeholder = "test";
 
 static Activity mainActivity;
 static ListView controls;
+
+static ListView statuses;
+
 static Item roadTypeItem;
 static Options roadTypeOption;
 static Item rideTypeItem;
@@ -57,6 +60,12 @@ static Options carSpeedOption;
 
 static Item statusMessageItem;
 static Options statusMessageOption;
+static Item actuatorForceItem;
+static Options actuatorForceOption;
+static Item throttleItem;
+static Options throttleOption;
+static Item resetItem;
+static Options resetOption;
 
 int main(void)
 {
@@ -66,23 +75,58 @@ int main(void)
 
 	/* Marking up GUI */
 	controls = listView("Controls", 4);
-	roadTypeOption = option(0, 4);
-	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getDisplaySpeed);
-	rideTypeOption = option(0, 4);
-	rideTypeItem = item("Ride Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, rideTypeOption, getDisplaySpeed);
+	statuses = listView("Status View", 3);
+
+	roadTypeOption = option(0, 8);
+	roadTypeOption.skip = 1;
+	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, roadTypeOption, getRoadType);
+	roadTypeItem.setter = setRoadType;
+
+	rideTypeOption = option(0, 3);
+	rideTypeOption.skip = 1;
+	rideTypeOption.values[0]  = "SEDATE";
+	rideTypeOption.values[1]  = "NORMAL";
+	rideTypeOption.values[2]  = "SPORT";
+	rideTypeOption.values[3]  = "RALLY";
+	rideTypeItem = item("Ride Type", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, rideTypeOption, getDisplayRideMode);
+	rideTypeItem.setter = setRideMode;
+
+	throttleOption = option(0,100);
+	throttleOption.skip = 1;
+	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, throttleOption, getThrottle);
+	throttleItem.setter = setThrottle;
+
+	resetOption = option(0,1);
+	resetOption.skip = 1;
+	resetOption.values[0]  = "INACTIVE";
+	resetOption.values[1]  = "ACTIVE";
+	resetItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, resetOption, getResetState);
+	resetItem.setter = setResetState;
+
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
 	statusMessageOption = option(0, 2);
 	statusMessageOption.values[0] = "Kat";
 	statusMessageOption.values[1] = "Sew";
-	statusMessageItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, test1);
+	statusMessageItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, getDisplayWusStatus);
+	statusMessageOption = option(-999, 999);
+	actuatorForceItem = item("ControlForce", OPTIONTYPE_INT, OPTIONACCESS_READONLY, statusMessageOption, getDisplayForce);
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
-	controls.items[2] = carSpeedItem;
-	controls.items[3] = statusMessageItem;
+	controls.items[2] = throttleItem;
+	controls.items[3] = resetItem;
+	//controls.items[2] = carSpeedItem;
+	//controls.items[3] = statusMessageItem;
+	//controls.items[4] = actuatorForceItem;
 
-	mainActivity = activity(1);
-	addView(&mainActivity, &controls, VIEWTYPE_LIST, 0);
+	statuses.items[0] = carSpeedItem;
+	statuses.items[1] = statusMessageItem;
+	statuses.items[2] = actuatorForceItem;
+
+	mainActivity = activity();
+
+	addView(&mainActivity, &controls, VIEWTYPE_LIST);
+	addView(&mainActivity, &statuses, VIEWTYPE_LIST);
 
 	attachActivity(&mainActivity);
 
