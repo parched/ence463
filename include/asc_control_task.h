@@ -169,4 +169,11 @@ int getSprungAccError();
  */
 int getCarSpeedError();
 
+/**
+ * \brief Returns Asc on state
+ *
+ * \return Asc on state.
+ */
+int getAscOn();
+
 #endif

@@ -58,7 +58,7 @@ static _iq dampingCoefficient = 0;
 
 static char wusStatus = 0;
 static int roadType = 0;
-static int throttle = 0;
+static _iq throttle = 0;
 static int resetState = 0;
 
 /**
@@ -169,7 +169,7 @@ void setRoadType(int roadTypeInput) {
 }
 
 void setThrottle(int throttleInput) {
-	throttle = throttleInput;
+	throttle = _IQ(throttleInput);
 }
 
 void setResetState(int resetStateInput) {
@@ -220,7 +220,7 @@ int getRoadType()
 
 int getThrottle()
 {
-	return throttle;
+	return  _IQint(throttle);
 }
 
 int getResetState() {
@@ -257,4 +257,8 @@ int getCarSpeedError() {
 	} else {
 		return 0;
 	}
+}
+
+int getAscOn() {
+	return isOn;
 }

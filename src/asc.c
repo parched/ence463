@@ -60,6 +60,8 @@ static Item throttleItem;
 static Options throttleOption;
 static Item resetItem;
 static Options resetOption;
+static Item actControlItem;
+static Options actControlOption;
 /*status options and items*/
 static Item carSpeedItem;
 static Options carSpeedOption;
@@ -88,7 +90,7 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	controls = listView("Controls", 4);
+	controls = listView("Controls", 5);
 	statuses = listView("Status", 5);
 	statuses2 = listView("WUS Errors", 4);
 	/*controls menu GUI*/
@@ -114,6 +116,12 @@ int main(void)
 	resetOption.values[1]  = "On";
 	resetItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, resetOption, getResetState);
 	resetItem.setter = setResetState;
+	actControlOption = option(0,1);
+	actControlOption.skip = 1;
+	actControlOption.values[0]  = "Off";
+	actControlOption.values[1]  = "On";
+	actControlItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, actControlOption, getAscOn);
+	actControlItem.setter = setAscOn;
 	/*Status Menu GUI*/
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
@@ -147,6 +155,7 @@ int main(void)
 	controls.items[1] = rideTypeItem;
 	controls.items[2] = throttleItem;
 	controls.items[3] = resetItem;
+	controls.items[4] = actControlItem;
 	statuses.items[0] = carSpeedItem;
 	statuses.items[1] = actuatorForceItem;
 	statuses.items[2] = coilExtensionItem;
