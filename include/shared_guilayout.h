@@ -130,6 +130,7 @@ typedef struct  {
 	unsigned int pageContext;                 /**<displayed page context*/
 	unsigned int cursorContext;               /**<cursor position context*/
 	unsigned int numPages;                    /**<number of pages in this activity*/
+	unsigned int currPage;
 } Activity;
 
 /**
@@ -187,7 +188,7 @@ Activity activity(unsigned int numPages);
  * \param type The type of view
  * \param index The index of the view being attached to
  */
-int addView(Activity* activity, void* view, ViewType type, unsigned int index);
+int addView(Activity* activity, void* view, ViewType type);
 
 #endif /* UI_TASK_H_ */
 

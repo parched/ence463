@@ -97,16 +97,18 @@ Activity activity(unsigned int numPages) {
 	newActivity.numPages = numPages;
 	newActivity.pageContext = 0;   //set default value
 	newActivity.cursorContext= 0;  //set default value
+	newActivity.currPage = 0;
 
 	return newActivity;
 }
 
 
-int addView(Activity* activity, void* view, ViewType type, unsigned int index) {
+int addView(Activity* activity, void* view, ViewType type) {
 	int success = 1;   //bad input flag by default
-	if(index < activity->numPages) {
-		activity->menus[index] = view;
-		activity->menuTypes[index] = type;
+	if(activity->currPage < activity->numPages) {
+		activity->menus[activity->currPage] = view;
+		activity->menuTypes[activity->currPage] = type;
+		activity->currPage = activity->currPage + 1;
 		success = 0; //success, set flag to reflect
 	}
 	return success;
