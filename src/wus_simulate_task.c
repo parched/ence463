@@ -150,7 +150,8 @@ void updateStatus() {
 	}
 
 	errorStatusSend.byteWise[0] = 'W';
-	ustrncpy(&errorStatusSend.byteWise[1], &combinedError, STATUS_MESSAGE_SIZE); //no null termaination with a message size of 9 and error codes specified in Learn Documentation. Is this a problem?
+	errorStatusSend.byteWise[1] = combinedError;
+	queueMsgToSend(errorStatusSend);
 }
 
 void vSimulateTask(void *params) {
