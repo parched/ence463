@@ -91,13 +91,12 @@ ListView listView(char *name, unsigned int numItems) {
 	return newListView;
 }
 
-Activity activity(unsigned int numPages) {
+Activity activity() {
 	Activity newActivity;
 
-	newActivity.numPages = numPages;
+	newActivity.numPages = 0;
 	newActivity.pageContext = 0;   //set default value
 	newActivity.cursorContext= 0;  //set default value
-	newActivity.currPage = 0;
 
 	return newActivity;
 }
@@ -105,10 +104,10 @@ Activity activity(unsigned int numPages) {
 
 int addView(Activity* activity, void* view, ViewType type) {
 	int success = 1;   //bad input flag by default
-	if(activity->currPage < activity->numPages) {
-		activity->menus[activity->currPage] = view;
-		activity->menuTypes[activity->currPage] = type;
-		activity->currPage = activity->currPage + 1;
+	if(activity->numPages < LISTVIEW_MAX_ITEMS) {
+		activity->menus[activity->numPages] = view;
+		activity->menuTypes[activity->numPages] = type;
+		activity->numPages = activity->numPages + 1;
 		success = 0; //success, set flag to reflect
 	}
 	return success;

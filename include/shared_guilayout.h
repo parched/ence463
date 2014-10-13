@@ -175,9 +175,8 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 /**
  * \brief Constructs an Activity with compulsory values set set and context initialized
  *
- * \param numPages Number of pages for this activity
  */
-Activity activity(unsigned int numPages);
+Activity activity();
 
 /**
  * \brief Assigns a view to an Activity forcing the user to correctry init a view to an activity.
@@ -186,7 +185,6 @@ Activity activity(unsigned int numPages);
  * \param activity The Activity to attach the view to
  * \param view The View that will be attached to the Activity
  * \param type The type of view
- * \param index The index of the view being attached to
  */
 int addView(Activity* activity, void* view, ViewType type);
 
