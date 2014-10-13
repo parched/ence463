@@ -54,6 +54,40 @@ static _iq speed = 0;
 static _iq actuatorForce = 0;
 static _iq dampingCoefficient = 0;
 
+static char wusStatus = 0;
+
+/**
+ * \brief Reads an incoming UART message.
+ *
+ * \param uartFrame Pointer to the uartFrame to read.
+ */
+static void readMessage(UartFrame uartFrame) {
+	switch (uartFrame.frameWise.msgType) {
+		case 'W':
+			wusStatus = uartFrame.frameWise.msg[0];
+			break;
+	}
+}
+
+
+
+int getDampingCoefficient (void)
+{
+	switch (rideMode)
+	{
+		case SEDATE:
+			return DAMPING_SEDATE;
+		case NORMAL:
+			return DAMPING_NORMAL;
+		case SPORT:
+			return DAMPING_SPORT;
+		case RALLY:
+			return DAMPING_RALLY;
+	}
+	
+	return -1;
+}
+
 /**
  * \brief Gets the damping coefficient.
  *
@@ -77,6 +111,7 @@ void vControlTask(void *params)
 	initAdcModule(ACC_SPRUNG_ADC | ACC_UNSPRUNG_ADC | COIL_EXTENSION_ADC);
 	initPwmModule(ACTUATOR_FORCE_PWM | DAMPING_COEFF_PWM);
 
+	attachOnReceiveCallback(readMessage);
 	// Initialise FreeRTOS Sleep Parameters
 	portTickType pxPreviousWakeTime;
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
@@ -177,4 +212,3 @@ int getDisplayDampingCoefficient()
 {
 	return dampingCoefficient;
 }
-
