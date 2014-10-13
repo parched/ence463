@@ -129,19 +129,19 @@ void updateStatus() {
 	UartFrame errorStatusSend;
 
 	//max speed error check
-	if(speed > MAX_SPEED) {
+	if(speed > MAX_SPEED || speed < MAX_SPEED) {
 		combinedError = combinedError | CAR_SPEED_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
 	}
 	//max sprung acceration check
-	if(sprungAcc > MAX_ACC_SPRUNG) {
+	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
 		combinedError = combinedError | ACC_SPRUNG_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
 	}
 	//max unsprung acceration check
-	if(unsprungAcc > MAX_ACC_UNSPRUNG) {
+	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
 		combinedError = combinedError | ACC_UNSPRUNG_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
