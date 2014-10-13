@@ -62,10 +62,9 @@ void initPulseIn()
 	IntPrioritySet (INT_GPIOF, PRIORITY(1));
 }
 
-int getPulseSpeed()
+_iq getPulseSpeed()
 {
-	//return configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M * 36 / (lastTickDuration * PULSES_PER_REV); // Original Return
-	return (configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M) / (lastTickDuration * PULSES_PER_REV);	// TODO: Convert to fixed point
+	return _IQ(configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M) / (lastTickDuration * PULSES_PER_REV);
 }
 
 void isrPortF(void)

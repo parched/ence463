@@ -35,6 +35,7 @@
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 #include "shared_parameters.h"
+#include "shared_iqmath.h"
 
 #define CONTROL_TASK_RATE_HZ 1000
 
@@ -44,19 +45,19 @@
 #define DAMPING_RALLY	500
 
 static rideType rideMode = SEDATE;
-static int sprungAcc = 0;
-static int unsprungAcc = 0;
-static int coilExtension = 0;
-static int speed = 0;
-static int actuatorForce = 0;
-static int dampingCoefficient = 0;
+static _iq sprungAcc = 0;
+static _iq unsprungAcc = 0;
+static _iq coilExtension = 0;
+static _iq speed = 0;
+static _iq actuatorForce = 0;
+static _iq dampingCoefficient = 0;
 
 /**
  * \brief Gets the damping coefficient.
  *
  * \return The damping coefficient.
  */
-static int getDampingCoefficient();
+static _iq getDampingCoefficient();
 
 /**
  * \brief Calculates the required actuator force.
@@ -65,7 +66,7 @@ static int getDampingCoefficient();
  *
  * \return The actuator force.
  */
-static int getControlForce(int dTime);
+static _iq getControlForce(int dTime);
 
 void vControlTask(void *params)
 {
@@ -100,7 +101,7 @@ void vControlTask(void *params)
 	}
 }
 
-int getDampingCoefficient()
+_iq getDampingCoefficient()
 {
 	switch (rideMode)
 	{
@@ -117,7 +118,7 @@ int getDampingCoefficient()
 	return -1;
 }
 
-int getControlForce(int dTime)
+_iq getControlForce(int dTime)
 {
 	return STIFFNESS_SPRING * coilExtension;
 }
