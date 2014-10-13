@@ -129,7 +129,7 @@ void updateStatus() {
 	UartFrame errorStatusSend;
 
 	//max speed error check
-	if(speed > MAX_SPEED || speed < MAX_SPEED) {
+	if(speed > MAX_SPEED || speed < MIN_SPEED) {
 		combinedError = combinedError | CAR_SPEED_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
