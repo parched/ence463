@@ -126,7 +126,6 @@ static void readMessage(UartFrame uartFrame) {
 /**
  * \brief Checks all error shated and sends status to ASC
  *
- * \param
  */
 void updateStatus() {
 	UartFrame errorStatusSend;
