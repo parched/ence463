@@ -160,4 +160,3 @@ int getDisplayDampingCoefficient()
 {
 	return dampingCoefficient;
 }
-
