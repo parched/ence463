@@ -52,6 +52,22 @@ static int speed = 0;
 static int actuatorForce = 0;
 static int dampingCoefficient = 0;
 
+static char wusStatus = 0;
+/**
+ * \brief Reads an incoming UART message.
+ *
+ * \param uartFrame Pointer to the uartFrame to read.
+ */
+static void readMessage(UartFrame uartFrame) {
+	switch (uartFrame.frameWise.msgType) {
+		case 'W':
+			wusStatus = uartFrame.frameWise.msg[0];
+			break;
+	}
+}
+
+
+
 int getDampingCoefficient (void)
 {
 	switch (rideMode)
@@ -77,6 +93,7 @@ void vControlTask(void *params)
 	initAdcModule(ACC_SPRUNG_ADC | ACC_UNSPRUNG_ADC | COIL_EXTENSION_ADC);
 	initPwmModule(ACTUATOR_FORCE_PWM | DAMPING_COEFF_PWM);
 
+	attachOnReceiveCallback(readMessage);
 	// Initialise FreeRTOS Sleep Parameters
 	portTickType pxPreviousWakeTime;
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;

@@ -113,7 +113,7 @@ static void readMessage(UartFrame uartFrame) {
 			resetSimulation();
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = getfThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
 			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
