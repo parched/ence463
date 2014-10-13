@@ -1,6 +1,6 @@
 /**
  * \file shared_errors.h
- * \brief file that first runs in the wheel unit simulator
+ * \brief file List of shared error codes common to WUS and ASC
  * \author Hugh Bisset
  * \version 1.0
  * \date 2014-10-12
