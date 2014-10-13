@@ -37,6 +37,8 @@
 #include "shared_parameters.h"
 #include "shared_iqmath.h"
 
+#include "shared_errors.h"
+
 
 #define CONTROL_TASK_RATE_HZ 1000
 
@@ -226,7 +228,7 @@ int getResetState() {
 }
 
 int getCoilExError() {
-	if(wusStatus & (1 << 7)) {
+	if(wusStatus & (1 << COIL_EXT_STATUS_BIT)) {
 		return 1;
 	} else {
 		return 0;
@@ -234,7 +236,7 @@ int getCoilExError() {
 }
 
 int getUnsprungAccError() {
-	if(wusStatus & (1 << 6)) {
+	if(wusStatus & (1 << UNSPRUNG_ACC_STATUS_BIT)) {
 		return 1;
 	} else {
 		return 0;
@@ -242,7 +244,7 @@ int getUnsprungAccError() {
 }
 
 int getSprungAccError() {
-	if(wusStatus & (1 << 5)) {
+	if(wusStatus & (1 << SPRUNG_ACC_STATUS_BIT)) {
 		return 1;
 	} else {
 		return 0;
@@ -250,7 +252,7 @@ int getSprungAccError() {
 }
 
 int getCarSpeedError() {
-	if(wusStatus & (1 << 8)) {
+	if(wusStatus & (1 << SPEED_STATUS_BIT)) {
 		return 1;
 	} else {
 		return 0;

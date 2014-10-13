@@ -32,4 +32,9 @@
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
+#define SPRUNG_ACC_STATUS_BIT 5		/**< Sprung acceration status bit*/
+#define UNSPRUNG_ACC_STATUS_BIT 6	/**< Unsprung acceration status bit*/
+#define SPEED_STATUS_BIT 8			/**< Speed status bit*/
+#define COIL_EXT_STATUS_BIT 7		/**< Coil Extension status bit*/
+
 #endif /* SHARED_ERRORS_H_ */
