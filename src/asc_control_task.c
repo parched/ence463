@@ -211,11 +211,6 @@ int getDisplayDampingCoefficient()
 	return dampingCoefficient;
 }
 
-int getDisplayWusStatus()
-{
-	return 0;
-}
-
 int getRoadType()
 {
 	return roadType;
