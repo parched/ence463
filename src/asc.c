@@ -60,8 +60,14 @@ static Options rideTypeOption;
 static Item carSpeedItem;
 static Options carSpeedOption;
 
-static Item statusMessageItem;
-static Options statusMessageOption;
+static Item wusStatusCoilItem;
+static Options wusStatusCoilOption;
+static Item wusStatusSprungItem;
+static Options wusStatusSprungOption;
+static Item wusStatusUnsprungItem;
+static Options wusStatusUnsprungOption;
+
+
 static Item actuatorForceItem;
 static Options actuatorForceOption;
 static Item throttleItem;
@@ -75,6 +81,8 @@ static Item unsprungAccItem;
 static Options unsprungAccOption;
 static Item sprungAccItem;
 static Options sprungAccOption;
+static Item speedExceededItem;
+static Options speedExceededOption;
 
 
 int main(void)
@@ -85,8 +93,8 @@ int main(void)
 
 	/* Marking up GUI */
 	controls = listView("Controls", 4);
-	statuses = listView("Status View", 5);
-	statuses2 = listView("Status2 View", 1);
+	statuses = listView("Status", 5);
+	statuses2 = listView("WUS outa bound", 4);
 
 	roadTypeOption = option(0, 8);
 	roadTypeOption.skip = 1;
@@ -117,11 +125,26 @@ int main(void)
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
 
-	statusMessageOption = option(0, 2);
-	statusMessageOption.values[0] = "Kat";
-	statusMessageOption.values[1] = "Sew";
-	statusMessageItem = item("Status", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, getDisplayWusStatus);
-	statusMessageOption = option(-999, 999);
+	wusStatusCoilOption = option(0, 1);
+	wusStatusCoilOption.values[0] = "Ok";
+	wusStatusCoilOption.values[1] = "Bad";
+	wusStatusCoilItem = item("Coil Ext", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusCoilOption, getCoilExError);
+
+
+	wusStatusSprungOption = option(0, 1);
+	wusStatusSprungOption.values[0] = "Ok";
+	wusStatusSprungOption.values[1] = "Bad";
+	wusStatusSprungItem = item("Sprung Acc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusSprungOption, getSprungAccError);
+
+	wusStatusUnsprungOption = option(0, 1);
+	wusStatusUnsprungOption.values[0] = "Ok";
+	wusStatusUnsprungOption.values[1] = "Bad";
+	wusStatusUnsprungItem = item("Unsprung Acc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusUnsprungOption, getUnsprungAccError);
+
+	speedExceededOption = option(0,1);
+	speedExceededOption.values[0] = "Ok";
+	speedExceededOption.values[1] = "Bad";
+	speedExceededItem = item("speedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedError);
 
 	actuatorForceOption = option(-999,999);
 	actuatorForceItem = item("ControlForce", OPTIONTYPE_INT, OPTIONACCESS_READONLY, actuatorForceOption, getDisplayForce);
@@ -153,7 +176,10 @@ int main(void)
 
 	//statuses2.items[0] = unsprungAccItem;
 	//statuses2.items[1] = sprungAccItem;
-	statuses2.items[0] = statusMessageItem;
+	statuses2.items[0] = wusStatusCoilItem;
+	statuses2.items[1] = wusStatusSprungItem;
+	statuses2.items[2] = wusStatusUnsprungItem;
+	statuses2.items[3] = speedExceededItem;
 
 	mainActivity = activity();
 

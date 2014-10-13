@@ -114,4 +114,12 @@ int getThrottle();
 
 int getResetState();
 
+int getCoilExError();
+
+int getUnsprungAccError();
+
+int getSprungAccError();
+
+int getCarSpeedError();
+
 #endif

@@ -229,3 +229,35 @@ int getThrottle()
 int getResetState() {
 	return resetState;
 }
+
+int getCoilExError() {
+	if(wusStatus & (1 << 7)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getUnsprungAccError() {
+	if(wusStatus & (1 << 6)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getSprungAccError() {
+	if(wusStatus & (1 << 5)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getCarSpeedError() {
+	if(wusStatus & (1 << 8)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
