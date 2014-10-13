@@ -41,7 +41,7 @@ void vControlTask(void *params);
  *
  * \param rideType Ride Type.
  */
-void setRideMode(rideType rideModeIn);
+void setRideMode(int rideModeIn);
 
 /**
  * \brief Sets active suspension on or off.
@@ -51,52 +51,129 @@ void setRideMode(rideType rideModeIn);
 void setAscOn(int isOn);
 
 /**
- * \brief Returns the car ride type.
+ * \brief Sets rideType.
  *
- * \return Ride Type (enum).
+ * \param rideType Ride Type.
  */
-rideType getDisplayRideMode();
+void setRoadType(int roadTypeInput);
 
 /**
- * \brief Returns the car speed.
+ * \brief Sets throttle.
+ *
+ * \param int roadType.
+ */
+void setThrottle(int throttleInput);
+
+/**
+ * \brief Sets the reset state.
+ *
+ * \param int throttleInput.
+ */
+void setResetState(int resetStateInput);
+
+/**
+ * \brief Gets active suspension on or off.
+ *
+ * \param rideType Ride Type.
+ */
+int getDisplayRideMode();
+
+/**
+ * \brief Gets the car speed.
  *
  * \return Car Speed (m/s).
  */
 int getDisplaySpeed();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets Sprung Acceration.
  *
  * \return Sprung Acceleration.
  */
 int getDisplaySprungAcc();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets the unsprung acceration
  *
  * \return Unsprung Acceleration.
  */
 int getDisplayUnsprungAcc();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets the coil extension
  *
  * \return Coil Extension.
  */
 int getDisplayCoilExtension();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets the actuator force
  *
  * \return Actuator Force (N).
  */
 int getDisplayForce();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets the damping coeffient
  *
  * \return Damping Coefficient (Nm/s).
  */
 int getDisplayDampingCoefficient();
+
+/**
+ * \brief Gets the road type.
+ *
+ * \return The road type.
+ */
+int getRoadType();
+
+/**
+ * \brief Gets throttle.
+ *
+ * \return throttle
+ */
+int getThrottle();
+
+/**
+ * \brief Gets the resetState
+ *
+ * \return Reset state
+ */
+int getResetState();
+
+/**
+ * \brief Gets the coil extenstion error status
+ *
+ * \return Coil extension error state
+ */
+int getCoilExError();
+
+/**
+ * \brief Gets unspurng acceration error state.
+ *
+ * \return Unsprung acceration error state.
+ */
+int getUnsprungAccError();
+
+/**
+ * \brief Gets the sprung acceration error state
+ *
+ * \return Sprung acceration error state.
+ */
+int getSprungAccError();
+
+/**
+ * \brief Gets the car speed error state
+ *
+ * \return Car speed error state.
+ */
+int getCarSpeedError();
+
+/**
+ * \brief Gets Asc on state
+ *
+ * \return Asc on state.
+ */
+int getAscOn();
 
 #endif
