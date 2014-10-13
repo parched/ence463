@@ -36,6 +36,7 @@
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 #include "shared_parameters.h"
+#include "shared_iqmath.h"
 #include "shared_tracenode.h"
 
 #define SIMULATE_TASK_RATE_HZ 1000
@@ -45,31 +46,31 @@
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
 
-static int roadType = 0;
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
-static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
-static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
-static int speed = 0;                  /**< The car speed (m/s). */
-static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
-static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
-static int coilExtension = 0;          /**< The coil extension (mm). */
+static int roadType = 0;
+static _iq dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
+static _iq speed = 0;                  /**< The car speed (m/s). */
+static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
+static _iq unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
+static _iq coilExtension = 0;          /**< The coil extension (mm). */
 static char wusStatusEcho = 0;         /**< The status the needs to be echoed. */
 
 static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the road to. */
 
 /* simulation states */
-static int zR = 0;                     /**< The road displacement (mm). */
-static int zU = 0;                     /**< The unsprung mass displacement (mm). */
-static int zS = 0;                     /**< The sprung mass dispalcement (mm). */
-static int vR = 0;                     /**< The road velocity (m/s). */
-static int vU = 0;                     /**< The unsprung mass velocity (m/s). */
-static int vS = 0;                     /**< The sprung mass velocity (m/s). */
+static _iq zR = 0;                     /**< The road displacement (mm). */
+static _iq zU = 0;                     /**< The unsprung mass displacement (mm). */
+static _iq zS = 0;                     /**< The sprung mass dispalcement (mm). */
+static _iq vR = 0;                     /**< The road velocity (m/s). */
+static _iq vU = 0;                     /**< The unsprung mass velocity (m/s). */
+static _iq vS = 0;                     /**< The sprung mass velocity (m/s). */
 
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
-static int aR = 0;                     /**< The road acceleration (m/s/s). */
-static int aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
+static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
+static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 /**
  * \brief Resets the simulation.
@@ -87,21 +88,23 @@ static void resetSimulation();
  *
  * \return The error statuses of the car.
  */
-static char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime);
+static char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime);
 
 /**
- * \brief Convert throttle message to numeric value
+ * \brief Reads the throttle from a message.
  *
- * \param msg The throttle UART message
+ * \param msg The message to read.
+ *
+ * \return The throttle.
  */
-int getThrottle(char *msg);
+static _iq getThrottle(char *msg);
 
 /**
  * \brief Generates a psuedo random number.
  *
  * \return A random number between 0.0 and 1.0 fixed point..
  */
-static int getRandom();
+static _iq getRandom();
 
 /**
  * \brief Reads an incoming UART message.
@@ -126,7 +129,7 @@ static void readMessage(UartFrame uartFrame) {
 }
 
 void vSimulateTask(void *params) {
-	int force = 0;
+	_iq force = 0;
 	char errorCode = 0;
 
 	initPulseOut();
@@ -153,7 +156,7 @@ void vSimulateTask(void *params) {
 		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
 		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
 
-		circularBufferWrite(roadBuffer, xTaskGetTickCount(), zR FROM_FP);
+		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
 
 		if (errorCode != 0) {
 			/* TODO */
@@ -162,19 +165,19 @@ void vSimulateTask(void *params) {
 }
 
 int getDisplaySpeed() {
-	return speed FROM_FP;
+	return _IQint(speed);
 }
 
 int getDisplaySprungAcc() {
-	return sprungAcc FROM_FP;
+	return _IQint(sprungAcc);
 }
 
 int getDisplayUnsprungAcc() {
-	return unsprungAcc FROM_FP;
+	return _IQint(unsprungAcc);
 }
 
 int getDisplayCoilExtension() {
-	return coilExtension FROM_FP;
+	return _IQint(coilExtension);
 }
 
 void setRoadBuffer(CircularBufferHandler *buffer) {
@@ -193,7 +196,7 @@ void resetSimulation() {
 	unsprungAcc = 0;
 }
 
-char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
+char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 	int amplitudeFactor = 100000;
 	int halfRoadWavelength = 250;
@@ -201,7 +204,7 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
-		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / (speed FROM_FP);
+		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
@@ -230,20 +233,20 @@ char simulate(int force, int throttle, int dampingFactor, char roadType, int dTi
 	return 0;
 }
 
-int getThrottle(char *msg) {
+_iq getThrottle(char *msg) {
 	char intThrottlePartString[3];
 	char decThrottlePartString[4];
 	ustrncpy(intThrottlePartString, msg, 2);
 	ustrncpy(decThrottlePartString, &msg[3], 3);
 	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
 	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
-	return (throttleIntPart TO_FP) + (throttleDecPart TO_FP)/1000;
+	return _IQ(throttleIntPart) + _IQ(throttleDecPart )/1000;
 }
 
-int getRandom() {
-	static unsigned int b = 12903;
+_iq getRandom() {
+	static unsigned long b = 12903;
 
 	b = 18000 * (b & 65535) + (b >> 16);
 
-	return b & ((1 TO_FP) - 1);
+	return b & ((1 << QG) - 1);
 }
