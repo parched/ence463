@@ -55,6 +55,9 @@ static Options rideTypeOption;
 static Item carSpeedItem;
 static Options carSpeedOption;
 
+static Item statusMessageItem;
+static Options statusMessageOption;
+
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
@@ -62,20 +65,24 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	controls = listView("Controls", 3);
+	controls = listView("Controls", 4);
 	roadTypeOption = option(0, 4);
-	roadTypeItem = item("Road Type", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, roadTypeOption, NULL);
+	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getDisplaySpeed);
 	rideTypeOption = option(0, 4);
-	rideTypeItem = item("Ride Type", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, rideTypeOption, NULL);
+	rideTypeItem = item("Ride Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, rideTypeOption, getDisplaySpeed);
 	carSpeedOption = option(-999, 999);
-	carSpeedItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, carSpeedOption, NULL);
+	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
+	statusMessageOption = option(0, 2);
+	statusMessageOption.values[0] = "Kat";
+	statusMessageOption.values[1] = "Sew";
+	statusMessageItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, statusMessageOption, test1);
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
 	controls.items[2] = carSpeedItem;
+	controls.items[3] = statusMessageItem;
 
 	mainActivity = activity(1);
-	mainActivity.menus[0] = &controls;
-	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
+	addView(&mainActivity, &controls, VIEWTYPE_LIST, 0);
 
 	attachActivity(&mainActivity);
 
@@ -96,6 +103,9 @@ int main(void)
 
 	/*Inits button polling and checks for button pushes*/
 	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
+
+	/* Refreshes GUI */
+    xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
 	vTaskStartScheduler();	
