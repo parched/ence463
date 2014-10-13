@@ -55,7 +55,7 @@ static int speed = 0;                  /**< The car speed (m/s). */
 static int sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
 static int unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
 static int coilExtension = 0;          /**< The coil extension (mm). */
-static int wusStatusEcho = 0;
+static char wusStatusEcho = 0;         /**< The status the needs to be echoed. */
 
 static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the road to. */
 
@@ -120,7 +120,7 @@ static void readMessage(UartFrame uartFrame) {
 			throttle = getThrottle(uartFrame.frameWise.msg);
 			break;
 		case 'M':
-			wusStatusEcho = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 16);
+			wusStatusEcho = uartFrame.frameWise.msg[0];
 			break;
 	}
 }
