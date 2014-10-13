@@ -37,6 +37,7 @@
 #include "shared_parameters.h"
 #include "shared_iqmath.h"
 
+
 #define CONTROL_TASK_RATE_HZ 1000
 
 #define DAMPING_SEDATE 	100
@@ -166,3 +167,4 @@ int getDisplayDampingCoefficient()
 {
 	return dampingCoefficient;
 }
+

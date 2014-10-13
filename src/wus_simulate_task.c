@@ -39,12 +39,9 @@
 #include "shared_iqmath.h"
 #include "shared_tracenode.h"
 
-#define SIMULATE_TASK_RATE_HZ 1000
+#include "shared_errors.h"
 
-#define ACC_SPRUNG_EXCEEDED 0x10        /**< Sprung acceleration limit exceeded error. */
-#define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
-#define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
-#define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
+#define SIMULATE_TASK_RATE_HZ 1000
 
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
@@ -71,6 +68,8 @@ static _iq vS = 0;                     /**< The sprung mass velocity (m/s). */
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
 static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
+
+static char combinedError = 0; /**<current error status */
 
 /**
  * \brief Resets the simulation.
@@ -128,6 +127,37 @@ static void readMessage(UartFrame uartFrame) {
 	}
 }
 
+/**
+ * \brief Checks all error shated and sends status to ASC
+ *
+ */
+void updateStatus() {
+	UartFrame errorStatusSend;
+
+	//max speed error check
+	if(speed > MAX_SPEED || speed < MIN_SPEED) {
+		combinedError = combinedError | CAR_SPEED_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
+	}
+	//max sprung acceration check
+	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
+		combinedError = combinedError | ACC_SPRUNG_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
+	}
+	//max unsprung acceration check
+	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
+		combinedError = combinedError | ACC_UNSPRUNG_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
+	}
+
+	errorStatusSend.frameWise.msgType = 'W';
+	errorStatusSend.frameWise.msg[0] = combinedError;
+	queueMsgToSend(errorStatusSend);
+}
+
 void vSimulateTask(void *params) {
 	_iq force = 0;
 	char errorCode = 0;
@@ -161,6 +191,7 @@ void vSimulateTask(void *params) {
 		if (errorCode != 0) {
 			/* TODO */
 		}
+		updateStatus();
 	}
 }
 
@@ -198,6 +229,7 @@ void resetSimulation() {
 
 char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
+
 	int amplitudeFactor = 100000;
 	int halfRoadWavelength = 250;
 
@@ -229,6 +261,13 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 
 	coilExtension = zU - zS;
 	
+	// max coil extension check
+	if(coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
+		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+	}
+
 	/* TODO: error check */
 	return 0;
 }
