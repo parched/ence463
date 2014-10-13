@@ -36,7 +36,6 @@
 #include "shared_adc.h"
 #include "shared_uart_task.h"
 
-#include <ustdlib.h>
 
 #define CONTROL_TASK_RATE_HZ 1000
 
