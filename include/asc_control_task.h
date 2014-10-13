@@ -51,7 +51,7 @@ void setRideMode(int rideModeIn);
 void setAscOn(int isOn);
 
 /**
- * \brief Sets active suspension on or off.
+ * \brief Sets roadType.
  *
  * \param rideType Ride Type.
  */
