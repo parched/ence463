@@ -70,24 +70,6 @@ static void readMessage(UartFrame uartFrame) {
 }
 
 
-
-int getDampingCoefficient (void)
-{
-	switch (rideMode)
-	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
-	}
-	
-	return -1;
-}
-
 /**
  * \brief Gets the damping coefficient.
  *
