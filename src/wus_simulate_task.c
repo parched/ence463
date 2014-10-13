@@ -67,6 +67,8 @@ static int timeFromLastNoise = 0;      /**< The time since the last noise inject
 static int aR = 0;                     /**< The road acceleration (m/s/s). */
 static int aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
+static char combinedError = 0; /**<current error status */
+
 /**
  * \brief Resets the simulation.
  */
@@ -127,7 +129,6 @@ static void readMessage(UartFrame uartFrame) {
  * \param
  */
 void updateStatus() {
-	static char combinedError = 0;
 	UartFrame errorStatusSend;
 
 	//max speed error check
@@ -135,12 +136,6 @@ void updateStatus() {
 		combinedError = combinedError | CAR_SPEED_EXCEEDED;
 	} else {
 		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
-	}
-	//max coil extension check
-	if(coilExtension > MAX_COIL_EXTENSION) {
-		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
-	} else {
-		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
 	}
 	//max sprung acceration check
 	if(sprungAcc > MAX_ACC_SPRUNG) {
@@ -225,6 +220,14 @@ void resetSimulation() {
 
 char simulate(int force, int throttle, int dampingFactor, char roadType, int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
+
+	//max coil extension check
+	if(coilExtension > MAX_COIL_EXTENSION) {
+		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
+	} else {
+		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+	}
+
 	int amplitudeFactor = 100000;
 	int halfRoadWavelength = 250;
 
