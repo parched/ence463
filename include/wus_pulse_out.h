@@ -27,6 +27,8 @@
 #ifndef WUS_PULSE_OUT_H
 #define WUS_PULSE_OUT_H
 
+#include "shared_iqmath.h"
+
 /**
  * \brief Initialises the pulse train generator.
  */
@@ -37,6 +39,6 @@ void initPulseOut();
  *
  * \param speed The speed.
  */
-void setPulseSpeed(int speed);
+void setPulseSpeed(_iq speed);
 
 #endif

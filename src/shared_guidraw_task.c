@@ -33,7 +33,7 @@
 #include "queue.h"
 #include "task.h"
 #include "shared_guilayout.h"
-#include "shared_displayformat128x64.h"
+#include "shared_displayformat128x96.h"
 
 #define INPUTEVENT_QUEUE_SIZE 10
 #define GUI_TASK_RATE_HZ 25
@@ -51,7 +51,7 @@ typedef struct
 static xQueueHandle inputEventQueue;
 static Activity* unitActivity;
 
-char CLEAR_ROW [PX_HORZ] = "                      ";
+static char CLEAR_ROW [PX_HORZ] = "                      ";
 
 /**
  * \brief Moves the cursor up or down
@@ -82,28 +82,35 @@ void changeOption(Activity* activity, HorzDir dir);
  *
  * \param activity Pointer to the activity that holds the context
  */
-void refreshReadonlyValues(Activity* activity);
+void refreshReadonlyValues(const Activity* activity);
 
 /**
  * \brief Determines what type of View to redraw and redraws
  *
  * \param activity Pointer to the activity
  */
-void redrawView(Activity* activity);
+void redrawView(const Activity* activity);
 
 /**
  * \brief Draws a new ListView upon switching to a different one
  *
- * \param view Pointer to the ListView to draw
+ * \param view Pointer to the activity hosting the view
  */
-void redrawListView(Activity* view);
+void redrawListView(const Activity* activity);
+
+/**
+ * \brief Draws a new TraceView upon switching to a different one
+ *
+ * \param activity Pointer to the activity hosting the view
+ */
+void redrawTraceView(const Activity* activity);
 
 /**
  * \brief Draws given string formatted as title in a ListView
  *
  * \param activity Pointer to activity containing title to draw
  */
-void drawListViewTitle(Activity* activity);
+void drawViewTitle(const Activity* activity);
 
 /**
  * \brief Draws the given Item in a ListView
@@ -112,7 +119,30 @@ void drawListViewTitle(Activity* activity);
  * \param index The place this item is in the ListView where 0 is top
  * \param selected Is Item selected
  */
-void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
+void drawListViewItem(const Item* item, unsigned int index, tBoolean selected);
+
+/**
+ * \brief Draws the plot area of TraceView
+ *
+ * \param view Pointer to the TraceView to draw
+ * \param selected Is the plot selected
+ */
+void drawTraceViewPlot(const TraceView* view, tBoolean selected);
+
+/**
+ * \brief Draws a single point on the display
+ *
+ * \param x Horizontal position to draw dot
+ * \param y Vertical position to draw dot
+ * \param level Brightness to draw dot
+ */
+void drawPointRtoL(unsigned int x, unsigned int y, char level);
+
+/**
+ * \brief Clears the trace plot for a new trace
+ *
+ */
+void clearTracePlot(void);
 
 /**
  * \brief Gets the horizontal position of text given alignment and margins
@@ -121,7 +151,7 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected);
  * \param type Type of alignment
  * \param margin Offset given alignment type
  */
-unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin);
+unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin);
 
 
 void attachActivity(Activity* activity)
@@ -235,7 +265,7 @@ void moveCursor(Activity* activity, VertDir dir)
 						if (activity->cursorContext == 0)
 						{
 							// user is now selecting the title, brighten title
-							drawListViewTitle(activity);
+							drawViewTitle(activity);
 						}
 						else
 						{
@@ -244,8 +274,9 @@ void moveCursor(Activity* activity, VertDir dir)
 						}
 						break;
 					case(VIEWTYPE_TRACE):
-						drawListViewTitle(activity);
-						//TODO: dim the trace as it is no longer being selected
+						// user has deselected the trace and is now selecting title
+						drawViewTitle(activity);
+						drawTraceViewPlot(((TraceView*) activity->menus[page]), false);
 						break;
 				}
 			}
@@ -258,9 +289,9 @@ void moveCursor(Activity* activity, VertDir dir)
 					// if in TraceView and not currently in zoom context, enter it
 					activity->cursorContext++;
 
-					// update display
-					drawListViewTitle(activity);
-					//TODO: Brighten trace as it is now being selected
+					// user has now deselected the title and is now selecting the trace
+					drawViewTitle(activity);
+					drawTraceViewPlot(((TraceView*) activity->menus[page]), true);
 				}
 			}
 			else if (activity->menuTypes[page] == VIEWTYPE_LIST)
@@ -275,7 +306,7 @@ void moveCursor(Activity* activity, VertDir dir)
 					if (activity->cursorContext-1 == 0)
 					{
 						// user was previously selected title, dim title
-						drawListViewTitle(activity);
+						drawViewTitle(activity);
 					}
 					else
 					{
@@ -351,29 +382,30 @@ void changeOption(Activity* activity, HorzDir dir)
 	}
 	else if (activity->menuTypes[page] == VIEWTYPE_TRACE)
 	{
+		TraceView* view = (TraceView*) activity->menus[page];
 		switch(dir)
 		{
 			case(HORZDIR_RIGHT):
-				if (((TraceView*) activity->menus[page])->sparseIndex <= 1)
+				if (view->dispHorzScale > view->minZoomHorzScale)
 				{
 					// zoom in
-					((TraceView*) activity->menus[page])->sparseIndex /= 2;
-					//TODO: Redraw trace
+					clearTracePlot();
+					view->dispHorzScale -= view->horzScaleStep;
 				}
 				break;
 			case(HORZDIR_LEFT):
-				if (((TraceView*) activity->menus[page])->sparseIndex >= TRACEVIEW_MAX_ZOOM)
+				if (view->dispHorzScale < view->maxZoomHorzScale)
 				{
 					// zoom out
-					((TraceView*) activity->menus[page])->sparseIndex *= 2;
-					//TODO: Redraw trace
+					clearTracePlot();
+					view->dispHorzScale += view->horzScaleStep;
 				}
 				break;
 		}
 	}
 }
 
-void redrawView(Activity* activity)
+void redrawView(const Activity* activity)
 {
 	switch (activity->menuTypes[activity->pageContext])
 	{
@@ -381,12 +413,12 @@ void redrawView(Activity* activity)
 			redrawListView(activity);
 			break;
 		case(VIEWTYPE_TRACE):
-			//TODO: Implement initial TraceView draw
+			redrawTraceView(activity);
 			break;
 	}
 }
 
-void refreshReadonlyValues(Activity* activity)
+void refreshReadonlyValues(const Activity* activity)
 {
 	unsigned int i;
 	if (activity->menuTypes[activity->pageContext] == VIEWTYPE_LIST)
@@ -404,17 +436,19 @@ void refreshReadonlyValues(Activity* activity)
 	}
 	else if (activity->menuTypes[activity->pageContext] == VIEWTYPE_TRACE)
 	{
+		// Redraw trace view plot only
+		tBoolean selected = (activity->cursorContext) > 0;
 		TraceView* traceView = (TraceView*) activity->menus[activity->pageContext];
-		//TODO: Redraw trace only
+		drawTraceViewPlot(traceView, selected);
 	}
 }
 
-void redrawListView(Activity* activity)
+void redrawListView(const Activity* activity)
 {
 	RIT128x96x4Clear();
 
 	// draw title (is selected when coming to new page)
-	drawListViewTitle(activity);
+	drawViewTitle(activity);
 
 	// draw items (none are selected when coming to new page)
 	ListView* listView = (ListView*) activity->menus[activity->pageContext];
@@ -425,7 +459,18 @@ void redrawListView(Activity* activity)
 	}
 }
 
-void drawListViewTitle(Activity* activity)
+void redrawTraceView(const Activity* activity)
+{
+	RIT128x96x4Clear();
+
+	// draw title (is selected when coming to new page)
+	drawViewTitle(activity);
+
+	// draw plot (not selected when coming to new page
+	drawTraceViewPlot((TraceView*) activity->menus[activity->pageContext], false);
+}
+
+void drawViewTitle(const Activity* activity)
 {
 	RIT128x96x4StringDraw(CLEAR_ROW, 0, TITLE_PADDINGTOP, 0);
 
@@ -462,7 +507,7 @@ void drawListViewTitle(Activity* activity)
 	}
 }
 
-void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
+void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 {
 	// draw item label
 	unsigned int posX = getHorzAlignment(item->name, ITEM_TEXTALIGN, ITEM_MARGIN);
@@ -528,7 +573,60 @@ void drawListViewItem(Item* item, unsigned int index, tBoolean selected)
 	}
 }
 
-unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin)
+void drawTraceViewPlot(const TraceView* view, tBoolean selected)
+{
+	unsigned char brightness = selected ? SELECTED_BRIGHTNESS : UNSELECTED_BRIGHTNESS;
+
+	TraceNode* plotting = getLatestNode(view->buffer);
+	int headX = plotting->x;		// latest node appears rightmost of the trace
+
+	static int prevYPos[128];
+	int dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-2);
+	int dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+	// draw until screen is full or up to one being written,
+	// note: return value of getLatestNode() will change while buffer is being drawn
+	do {
+		if ((dispPosY > (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP)) && (dispPosY < (TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT)))
+		{
+			drawPointRtoL(dispPosX, prevYPos[dispPosX], 0);				// clear the previous dot in this x position
+			prevYPos[dispPosX] = dispPosY;								// store the current dot position to clear next time
+			drawPointRtoL(dispPosX, dispPosY, brightness);
+		}
+
+		plotting = plotting->prev;			// draw the previous node
+
+		dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-1);
+		dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+	} while(plotting != NULL && dispPosX >= 0 && plotting != getLatestNode(view->buffer));
+
+}
+
+void drawPointRtoL(unsigned int x, unsigned int y, char level)
+{
+	if (level > MAX_BRIGHT_LEVEL)
+	{
+		level = MAX_BRIGHT_LEVEL;	// limit brightness
+	}
+	unsigned char dot[1];
+	dot[0] = level | (level << 4);
+
+	RIT128x96x4ImageDraw(dot, x, y, 2, 1);	// draw do
+}
+
+void clearTracePlot(void)
+{
+	unsigned int i=0;
+	for (i=TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP; i<TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP+TRACE_HEIGHT; i+=CHAR_HEIGHT)
+	{
+		unsigned int j=0;
+		for (j=0; j<PX_HORZ; j+=CHAR_WIDTH)
+		{
+			RIT128x96x4StringDraw(" ", j, i, 0);
+		}
+	}
+}
+
+unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin)
 {
 	unsigned int pos;
 	switch (align)
@@ -545,4 +643,5 @@ unsigned int getHorzAlignment(char* str, TextAlign align, unsigned int margin)
 	}
 	return pos;
 }
+
 

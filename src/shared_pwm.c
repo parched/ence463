@@ -97,7 +97,7 @@ void initPwmModule(char pwmORed) {
 
 
 //set the pwm dutycycle for the PWM of (value - minValue) / (maxValue - minValue) for the PWM pin passed to it
-void setDuty(char pwmPin, int value, int minValue, int maxValue) {
+void setDuty(char pwmPin, _iq value, _iq minValue, _iq maxValue) {
 	PwmPin pwmToChange;
 	if(pwmPin == 1 && pwm1.enableFlag == 1) {
 		pwmToChange = pwm1;

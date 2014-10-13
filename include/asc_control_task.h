@@ -44,6 +44,13 @@ void vControlTask(void *params);
 void setRideMode(rideType rideModeIn);
 
 /**
+ * \brief Sets active suspension on or off.
+ *
+ * \param rideType Ride Type.
+ */
+void setAscOn(int isOn);
+
+/**
  * \brief Returns the car ride type.
  *
  * \return Ride Type (enum).

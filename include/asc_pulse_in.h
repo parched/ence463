@@ -27,16 +27,18 @@
 #ifndef ASC_PULSE_IN_H
 #define ASC_PULSE_IN_H
 
+#include "shared_iqmath.h"
+
 /**
- * \brief Initialises the pulse train redaer module.
+ * \brief Initialises the pulse train reader module.
  */
 void initPulseIn();
 
 /**
  * \brief Gets the car speed.
  *
- * \return The car's speed in 0.1 kph.
+ * \return The car's speed in m/s.
  */
-int getPulseSpeed();
+_iq getPulseSpeed();
 
 #endif

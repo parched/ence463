@@ -40,7 +40,7 @@
 #define OPTION_NAME_SIZE 6		/**<maximum string size allowed for string Options */
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
-#define TRACEVIEW_MAX_ZOOM 8	/**<maximum sparse index allowed */
+#define TRACE_ZERO_CENTER -1    /**<specifies the zero height of the TraceView to be center */
 
 
 /**
@@ -109,8 +109,14 @@ typedef struct  {
  */
 typedef struct {
 	char name[VIEW_NAME_SIZE];                /**<name of the view*/
-	TraceNode* head;                          /**<pointer to head node of the buffer to draw*/
-	unsigned int sparseIndex;                 /**<number of data points to skip when drawing the trace*/
+	CircularBufferHandler* buffer;            /**<pointer to circular buffer handler*/
+
+	unsigned int zeroLine;                    /**<position on screen representing y value of 0*/
+	unsigned int minZoomHorzScale;			  /**<change in horizontal trace position in pixels per change in x value of TraceNode while zoomed out*/
+	unsigned int maxZoomHorzScale;            /**<change in horizontal trace position in pixels per change in x value of TraceNode while zoomed in*/
+	int vertScale;                            /**<change in vertical trace position in CHAR_HEIGHT per change in y value of TraceNode*/
+	unsigned int horzScaleStep;               /**<change in dispHorzScale with every button press*/
+	unsigned int dispHorzScale;               /**<horizontal scale the trace is currently drawn at*/
 } TraceView;
 
 /**
@@ -157,10 +163,13 @@ ListView listView(char *name, unsigned int numItems);
  * \brief Constructs a TraceView with compulsory values as set and context initialized
  *
  * \param name Label of the view
- * \param sparseIndex Number of TraceNodes to skip when drawing trace
- * \param head The node the represents the first data point of the trace
+ * \param buffer Pointer to the handler of the circular buffer to draw
+ * \param zeroHeight Pixel height the value 0 from bottom of trace plot
+ * \param minHorzScale Change in horizontal trace position in pixels per x value of TraceNode while zoomed out
+ * \param maxHorzScale Change in horizontal trace position in pixels per x value of TraceNode while zoomed in
+ * \param vertScale Change in vertical trace position in CHAR_HEIGHT per y value of TraceNode
  */
-TraceView traceView(char *name, TraceNode *head);
+TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale);
 
 /**
  * \brief Constructs an Activity with compulsory values set set and context initialized

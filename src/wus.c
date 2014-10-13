@@ -40,12 +40,17 @@
 #include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
+#include "shared_tracenode.h"
+
+#define NUM_ROAD_NODES 200
 
 static const char *placeholder = "test";
 
 static Activity mainActivity;
 
 static TraceView roadSurface;
+static TraceNode roadNodes[NUM_ROAD_NODES];
+static CircularBufferHandler roadHandler;
 
 static ListView telemetry;
 static Options speedOption;
@@ -65,8 +70,9 @@ int main(void)
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	//roadSurface = traceView("Surface", NULL);
-	//TODO: Road surface stuff
+	roadHandler = createCircularBuffer(roadNodes, NUM_ROAD_NODES, BUFFERFULLMODE_OVERWRITE);
+	setRoadBuffer(&roadHandler); // pass it to the sim task
+	roadSurface = traceView("Surface", &roadHandler, TRACE_ZERO_CENTER, 1, 1, 1);
 
 	telemetry = listView("Telemetry", 4);
 	speedOption = option(-999, 999);
@@ -82,11 +88,9 @@ int main(void)
 	telemetry.items[2] = unsprungAccItem;
 	telemetry.items[3] = coilExtensionItem;
 
-	mainActivity = activity(1);
+	mainActivity = activity(2);
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST, 0);
-	/*
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE, 1);
-	*/
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
