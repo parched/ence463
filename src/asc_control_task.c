@@ -45,7 +45,7 @@
 #define DAMPING_SPORT	350
 #define DAMPING_RALLY	500
 
-static int isOn;                      /**< Sets whether tje active suspension is on or off. */
+static int isOn;                      /**< Sets whether the active suspension is on or off. */
 static rideType rideMode = SEDATE;
 static _iq sprungAcc = 0;
 static _iq unsprungAcc = 0;
