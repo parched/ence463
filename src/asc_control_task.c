@@ -45,6 +45,7 @@
 #define DAMPING_SPORT	350
 #define DAMPING_RALLY	500
 
+static int isOn;                      /**< Sets whether the active suspension is on or off. */
 static rideType rideMode = SEDATE;
 static _iq sprungAcc = 0;
 static _iq unsprungAcc = 0;
@@ -121,6 +122,10 @@ _iq getDampingCoefficient()
 
 _iq getControlForce(int dTime)
 {
+	if (isOn == 0) {
+		return 0;
+	}
+
 	return STIFFNESS_SPRING * coilExtension;
 }
 
@@ -129,6 +134,11 @@ _iq getControlForce(int dTime)
 void setRideMode(rideType rideModeIn)
 {
 	rideMode = rideModeIn;
+}
+
+void setAscOn(int isAscOn)
+{
+	isOn = isAscOn;
 }
 
 /* GETTERS */
