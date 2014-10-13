@@ -45,6 +45,8 @@ static int roadType = 0;
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
+#define STATUS_MESSAGE_SIZE 8
+
 static int dampingFactor = 0;          /**< The damping factor (N.s/m). */
 static int throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static int speed = 0;                  /**< The car speed (m/s). */
@@ -120,12 +122,14 @@ static void readMessage(UartFrame uartFrame) {
 }
 
 /**
- * \brief Checks all error shated and returns the combined ORed error state
+ * \brief Checks all error shated and sends status to ASC
  *
  * \param
  */
-int errorCheck() {
-	static int combinedError = 0;
+void updateStatus() {
+	static char combinedError = 0;
+	UartFrame errorStatusSend;
+
 	//max speed error check
 	if(speed > MAX_SPEED) {
 		combinedError = combinedError | CAR_SPEED_EXCEEDED;
@@ -150,7 +154,9 @@ int errorCheck() {
 	} else {
 		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
 	}
-	return combinedError;
+
+	errorStatusSend.byteWise[0] = 'W';
+	ustrncpy(&errorStatusSend.byteWise[1], &combinedError, STATUS_MESSAGE_SIZE); //no null termaination with a message size of 9 and error codes specified in Learn Documentation. Is this a problem?
 }
 
 void vSimulateTask(void *params) {
@@ -184,6 +190,7 @@ void vSimulateTask(void *params) {
 		if (errorCode != 0) {
 			/* TODO */
 		}
+		updateStatus();
 	}
 }
 
