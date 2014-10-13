@@ -42,50 +42,8 @@
 #define UART_TASK_RATE_HZ 15000
 #define UART_BAUD 625000
 
-typedef struct UartFrameNode UartFrameNode;
-
-/**
- * \struct UartFrameNode
- *
- * \brief Wrapper for UartFrame to be used as linked list or circular buffer
- */
-struct UartFrameNode {
-	UartFrame frame;
-	UartFrameNode* next;
-};
-
-/**
- * \struct UartFrameBufferHandler
- *
- * \brief Handler for UartFrame queues
- */
-typedef struct {
-	UartFrameNode* head;
-	UartFrameNode* tail;
-	unsigned int unsent;
-	unsigned int size;
-} UartFrameQueueHandler;
-
-/**
- * \brief Creates a queue from an array of UartFrameNodes
- *
- * \param head Pointer to the first item
- * \param size Size of the queue desired
- */
-UartFrameQueueHandler createUartFrameQueue(UartFrameNode* head, unsigned int size);
-
-/**
- * \brief Writes the pointer to the UartFrame at the head of the queue
- *
- * \param head The buffer to write the pointer value to
- * \return 0 for success, -1 for empty queue
- */
-int uartQueuePop(UartFrame* head);
-
-
 static uartCallback receivedCallback;
-static UartFrameNode uartNodes[SENDMESSAGE_QUEUE_SIZE];
-static UartFrameQueueHandler uartQueue;
+static QueueHandle_t uartSendQueue;
 
 
 void vUartTask(void* pvParameters) {
@@ -93,7 +51,7 @@ void vUartTask(void* pvParameters) {
 	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), UART_BAUD, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
 
 	// initialize queue
-	uartQueue = createUartFrameQueue(uartNodes, SENDMESSAGE_QUEUE_SIZE);
+	uartSendQueue = xQueueCreate(SENDMESSAGE_QUEUE_SIZE, sizeof(UartFrame));
 
 	// initialize FreeRTOS sleep parameters
 	portTickType xLastWakeTime;
@@ -104,10 +62,10 @@ void vUartTask(void* pvParameters) {
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
 		// process message send queue
-		UartFrame* toSend;
-		while (uartQueuePop(toSend) == 0) {
+		UartFrame toSend;
+		while (xQueueReceive(uartSendQueue, &toSend, 0) == pdTRUE) {
 			unsigned int msgLen = 0;
-			switch(toSend->frameWise.msgType)
+			switch(toSend.frameWise.msgType)
 			{
 				case('W'):
 					msgLen = 2;
@@ -131,7 +89,7 @@ void vUartTask(void* pvParameters) {
 			unsigned int i = 0;
 			for (i=0; i<msgLen; i++) {
 				// send characters individually
-				UARTCharPut(UART1_BASE, toSend->byteWise[i]);
+				UARTCharPut(UART1_BASE, toSend.byteWise[i]);
 			}
 		}
 
@@ -151,55 +109,17 @@ void attachOnReceiveCallback(void (*callback)(UartFrame*)) {
 }
 
 int queueMsgToSend(UartFrame* uartFrame) {
-	if (uartQueue.unsent < uartQueue.size) {
-		// copy frame to send into buffer
-		uartQueue.tail->frame = *uartFrame;
+	if (uartSendQueue == 0) {
+		return -2;	// queue has not been created
+	}
 
-		// advance the queue pointer
-		uartQueue.tail = uartQueue.tail->next;
-		uartQueue.unsent++;
-
+	if (xQueueSendToBack(uartSendQueue, (void*) uartFrame, 0) == pdTRUE) {
 		return 0;
 	} else {
-		return -1;		// queue full
+		return -1;	// queue full
 	}
 }
 
 int getSendQueueAvailSpaces(void) {
-	return uartQueue.size - uartQueue.unsent;
-}
-
-
-UartFrameQueueHandler createUartFrameQueue(UartFrameNode* head, unsigned int size) {
-	unsigned int i;
-	for (i=0; i<size-1; i++)		// handle everything except for the last node
-	{
-		(head+i)->next = head + i + 1;
-	}
-	// last node special case
-	(head+size-1)->next = head;		// first node
-
-	UartFrameQueueHandler handler;
-	handler.head = head;
-	handler.tail = head;
-	handler.unsent = 0;
-	handler.size = size;
-
-	return handler;
-}
-
-int uartQueuePop(UartFrame* head) {
-	if (uartQueue.unsent > 0) {
-		// write the pointer of the frame at the queue head
-		head = &(uartQueue.head->frame);
-
-		// advance the queue pointer
-		uartQueue.head = uartQueue.head->next;
-		uartQueue.unsent--;
-
-		return 0;
-	} else {
-		head = NULL;
-		return -1;		// queue is empty
-	}
+	return uxQueueMessagesWaiting(uartSendQueue);
 }
