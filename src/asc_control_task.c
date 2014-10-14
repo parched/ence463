@@ -27,6 +27,8 @@
 #include "asc_control_task.h"
 #include "shared_parameters.h"
 
+#include <ustdlib.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -60,6 +62,7 @@ static char wusStatus = 0;
 static int roadType = 0;
 static _iq throttle = 0;
 static int resetState = 0;
+static char errorState = 0;
 
 /**
  * \brief Reads an incoming UART message.
@@ -90,6 +93,42 @@ static _iq getDampingCoefficient();
  * \return The actuator force.
  */
 static _iq getControlForce(int dTime);
+
+/**
+ * \brief Formats and Transmits data over serial to simulator
+ *
+ */
+static void sendSerialMessages()
+{
+	// Throttle Transmission
+	UartFrame throttleSend;
+
+	throttleSend.frameWise.msgType = 'A'; // Accel Message Type
+	usprintf(throttleSend.frameWise.msg, "%2d.%03d", throttle >> QG, _IQint(1000 * ((1 << QG) - 1) & throttle));
+	queueMsgToSend(&throttleSend);
+
+	// Road Type Transmission
+	UartFrame roadSend;
+
+	roadSend.frameWise.msgType = 'R';	// Road Message Type
+	usprintf(roadSend.frameWise.msg, "%2d", roadType);
+	queueMsgToSend(&roadSend);
+
+	// Reset Transmission
+	if (resetState)
+	{
+		UartFrame resetSend;
+		resetSend.frameWise.msgType = 'S';	// Reset Message Type
+		queueMsgToSend(&resetSend);
+	}
+
+	// Status Transmission
+	UartFrame statusSend;
+	statusSend.frameWise.msgType = 'M';
+	statusSend.frameWise.msg[0] = errorState;
+	queueMsgToSend(&statusSend);
+
+}
 
 void vControlTask(void *params)
 {
@@ -122,6 +161,8 @@ void vControlTask(void *params)
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
+
+		sendSerialMessages();
 	}
 }
 
@@ -159,7 +200,6 @@ void setRideMode(int rideModeIn)
 	rideMode = (rideType) rideModeIn;
 }
 
-
 void setAscOn(int isAscOn)
 {
 	isOn = isAscOn;
@@ -185,6 +225,11 @@ void setThrottle(int throttleInput) {
 
 void setResetState(int resetStateInput) {
 	resetState = resetStateInput;
+}
+
+void setErrorState(char errorStateInput)
+{
+	errorState = errorStateInput;
 }
 
 /* GETTERS */
