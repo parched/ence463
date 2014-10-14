@@ -179,6 +179,15 @@ void setResetState(int resetStateInput) {
 	resetState = resetStateInput;
 }
 
+void setCoilError(int errorInput) {
+	invokeCoilError = errorInput;
+	if(errorInput == 1) {
+//		invokeError =
+	} else {
+//		invokeError = COIL_EXTENSION_EXCEEDED | invokeError;
+	}
+}
+
 /* GETTERS */
 
 int getDisplayRideMode()
