@@ -50,6 +50,7 @@
 #define ON_MASS_SPRUNG(x) ((x) / 250)       /**< Divide by the sprung mass (kg). */
 #define ON_MASS_UNSPRUNG(x) ((x) * 2 / 73)  /**< Divide by the unsprung mass (kg). */
 #define ON_MASS_TOTAL(x) ((x) * 2 / 573)    /**< Divide by the total mass (kg). */
+#define WEIGHT_BY_MASSES(sprung,unsprung) (((sprung) * 500  + (unsprung) * 73) / 573)       /**< Weighted average relative to the two masses. */
 #define STIFFNESS_SPRING 25                 /**< The stiffness of the spring (N/mm). */
 #define STIFFNESS_TYRE 100                  /**< The stiffness of the tyre (N/mm). */
 #define DAMPING_TYRE 50000                  /**< The damping coefficient of the tyre (N.s/m). */

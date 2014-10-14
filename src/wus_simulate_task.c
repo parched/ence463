@@ -106,6 +106,11 @@ static _iq getThrottle(char *msg);
 static _iq getRandom();
 
 /**
+ * \brief Sets the simulation on the bump stops.
+ */
+static void putSimOnStops();
+
+/**
  * \brief Reads an incoming UART message.
  *
  * \param uartFrame Pointer to the uartFrame to read.
@@ -261,6 +266,18 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	sprungAcc = ON_MASS_SPRUNG(sprungForce);
 	unsprungAcc = ON_MASS_UNSPRUNG(unsprungForce);
 
+	/* Check if on the bump stops */
+	if (combinedError & COIL_EXTENSION_EXCEEDED) {
+		if ((coilExtension == MAX_COIL_EXTENSION && sprungAcc < unsprungAcc)
+				|| (coilExtension == MIN_COIL_EXTENSION && sprungAcc > unsprungAcc)) {
+			/* We are coming off the bump stops */
+			combinedError &= ~COIL_EXTENSION_EXCEEDED;
+		} else { /* Both masses move as one unit */
+			unsprungAcc = ON_MASS_TOTAL(tyreForce);
+			sprungAcc = unsprungAcc;
+		}
+	}
+
 	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
 	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
 	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
@@ -273,14 +290,24 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	coilExtension = zU - zS;
 	
 	// max coil extension check
-	if (coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
-		combinedError |= COIL_EXTENSION_EXCEEDED;
-	} else {
-		combinedError &= ~COIL_EXTENSION_EXCEEDED;
+	if (coilExtension > MAX_COIL_EXTENSION) {
+		coilExtension = MAX_COIL_EXTENSION;
+		zS = zU + MAX_COIL_EXTENSION;
+		putSimOnStops();
+	} else if (coilExtension < MIN_COIL_EXTENSION) {
+		coilExtension = MIN_COIL_EXTENSION;
+		zS = zU + MIN_COIL_EXTENSION;
+		putSimOnStops();
 	}
 
 	/* TODO: error check */
 	return 0;
+}
+
+void putSimOnStops() {
+	combinedError |= COIL_EXTENSION_EXCEEDED;
+	vU = WEIGHT_BY_MASSES(vS,vU);
+	vS = vU;
 }
 
 _iq getThrottle(char *msg) {
