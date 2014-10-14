@@ -48,6 +48,7 @@
 
 static int roadType = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static _iq force = 0;                  /**< The actuator force (N). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static _iq speed = 0;                  /**< The car speed (m/s). */
 static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
@@ -79,15 +80,9 @@ static void resetSimulation();
 /**
  * \brief Simulates and updates the state.
  *
- * \param force The applied force from the controller.
- * \param throttle The forward acceleration from the driver.
- * \param dampingFactor The set damping factor.
- * \param roadType The road type.
  * \param dTime The time since the last state.
- *
- * \return The error statuses of the car.
  */
-static char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime);
+static void simulate(int dTime);
 
 /**
  * \brief Reads the throttle from a message.
@@ -164,9 +159,6 @@ void updateStatus() {
 }
 
 void vSimulateTask(void *params) {
-	_iq force = 0;
-	char errorCode = 0;
-
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
@@ -183,8 +175,7 @@ void vSimulateTask(void *params) {
 		force = getSmoothAdc(ACTUATOR_FORCE_ADC, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
-		/* TODO: find dTime */
-		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
+		simulate(xTimeIncrement);
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
@@ -193,9 +184,6 @@ void vSimulateTask(void *params) {
 
 		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
 
-		if (errorCode != 0) {
-			/* TODO */
-		}
 		updateStatus();
 	}
 }
@@ -232,7 +220,7 @@ void resetSimulation() {
 	unsprungAcc = 0;
 }
 
-char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime) {
+void simulate(int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
 	int amplitudeFactor = 100000;
@@ -299,9 +287,6 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 		zS = zU + MIN_COIL_EXTENSION;
 		putSimOnStops();
 	}
-
-	/* TODO: error check */
-	return 0;
 }
 
 void putSimOnStops() {
