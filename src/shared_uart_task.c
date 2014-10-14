@@ -40,7 +40,7 @@
 #endif
 
 #define SENDMESSAGE_QUEUE_SIZE 10
-#define UART_TASK_RATE_HZ 10000
+#define UART_TASK_RATE_HZ 1000
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
@@ -105,7 +105,9 @@ void vUartTask(void* pvParameters) {
 			buffer.byteWise[index] = (char) UARTCharGet(UART1_BASE);
 			index++;
 		}
-		receivedCallback(&buffer);
+		if (index > 0 && receivedCallback != NULL) {
+			receivedCallback(&buffer);
+		}
 	}
 }
 
