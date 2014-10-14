@@ -27,7 +27,7 @@
 #ifndef SHARED_UARTTASK_H
 #define SHARED_UARTTASK_H
 
-#define UART_FRAME_SIZE 9
+#define UART_FRAME_SIZE 6
 
 /**
  * \struct _UartFrame
@@ -45,14 +45,14 @@ typedef struct
  */
 typedef union
 {
-	_UartFrame frameWise;				/**< Allows access with structure */
-	char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
+	_UartFrame frameWise;						/**< Allows access with structure */
+	unsigned char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
 } UartFrame;
 
 /**
  * \brief Function type of callbacks for this module
  */
-typedef void (*uartCallback)(UartFrame);
+typedef void (*uartCallback)(UartFrame*);
 
 /**
  * \brief Function of the UART Task to be called by the FreeRTOS kernel
@@ -66,15 +66,15 @@ void vUartTask(void* pvParameters);
  *
  * \param callback			Callback to execute for receive event
  */
-void attachOnReceiveCallback(void (*callback)(UartFrame));
+void attachOnReceiveCallback(void (*callback)(UartFrame*));
 
 /**
  * \brief Queues message to be sent out via UART
  *
- * \param uartFrame			Frame to send 
+ * \param uartFrame			Pointer to the frame to send
  * \return 0 for success, -1 if queue is full
  */
-int queueMsgToSend(UartFrame uartFrame);
+int queueMsgToSend(UartFrame* uartFrame);
 
 /**
  * \brief Returns no. of slots left on the queue

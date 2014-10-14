@@ -66,10 +66,10 @@ static int resetState = 0;
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-static void readMessage(UartFrame uartFrame) {
-	switch (uartFrame.frameWise.msgType) {
+static void readMessage(UartFrame* uartFrame) {
+	switch (uartFrame->frameWise.msgType) {
 		case 'W':
-			wusStatus = uartFrame.frameWise.msg[0];
+			wusStatus = uartFrame->frameWise.msg[0];
 			break;
 	}
 }
