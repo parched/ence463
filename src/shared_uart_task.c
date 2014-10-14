@@ -97,6 +97,7 @@ void vUartTask(void* pvParameters) {
 				// send characters individually
 				UARTCharPut(UART1_BASE, (unsigned char) toSend.byteWise[i]);
 			}
+			vTaskDelay(1);		// put delay between messages
 		}
 
 		// receive messages
