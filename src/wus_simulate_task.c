@@ -111,19 +111,19 @@ static _iq getRandom();
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-static void readMessage(UartFrame uartFrame) {
-	switch (uartFrame.frameWise.msgType) {
+static void readMessage(UartFrame* uartFrame) {
+	switch (uartFrame->frameWise.msgType) {
 		case 'R':
-			roadType = (int) ustrtoul(uartFrame.frameWise.msg, NULL, 10);
+			roadType = (int) ustrtoul(uartFrame->frameWise.msg, NULL, 10);
 			break;
 		case 'S':
 			resetSimulation();
 			break;
 		case 'A':
-			throttle = getThrottle(uartFrame.frameWise.msg);
+			throttle = getThrottle(uartFrame->frameWise.msg);
 			break;
 		case 'M':
-			wusStatusEcho = uartFrame.frameWise.msg[0];
+			wusStatusEcho = uartFrame->frameWise.msg[0];
 			break;
 	}
 }
@@ -156,7 +156,7 @@ void updateStatus() {
 
 	errorStatusSend.frameWise.msgType = 'W';
 	errorStatusSend.frameWise.msg[0] = combinedError;
-	queueMsgToSend(errorStatusSend);
+	queueMsgToSend(&errorStatusSend);
 }
 
 void vSimulateTask(void *params) {

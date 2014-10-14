@@ -254,10 +254,10 @@ int main(void)
 	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 1, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	//xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
+	xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 1, NULL);
 
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240,(void*) placeholder , 1, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder , 1, NULL);
 
 	/* Refreshes GUI */
     xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
@@ -286,6 +286,7 @@ void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
 	/* This function will only be called if a task overflows its stack.  Note
 	that stack overflow checking does slow down the context switch
 	implementation. */
+
 	for(;;);
 }
 /*-----------------------------------------------------------*/
