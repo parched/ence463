@@ -142,22 +142,6 @@ _iq getDampingCoefficient()
 	return -1;
 }
 
-_iq getDampingCoefficient()
-{
-	switch (rideMode)
-	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
-	}
-
-	return -1;
-}
 
 _iq getControlForce(int dTime)
 {
@@ -245,7 +229,7 @@ int getResetState() {
 }
 
 int getCoilExError() {
-	if(wusStatus & (1 << COIL_EXTENSION_EXCEEDED)) {
+	if(wusStatus &  COIL_EXTENSION_EXCEEDED) {
 		return 1;
 	} else {
 		return 0;
@@ -253,7 +237,7 @@ int getCoilExError() {
 }
 
 int getUnsprungAccError() {
-	if(wusStatus & (1 << ACC_UNSPRUNG_EXCEEDED)) {
+	if(wusStatus & ACC_UNSPRUNG_EXCEEDED) {
 		return 1;
 	} else {
 		return 0;
@@ -261,7 +245,7 @@ int getUnsprungAccError() {
 }
 
 int getSprungAccError() {
-	if(wusStatus & (1 << ACC_SPRUNG_EXCEEDED)) {
+	if(wusStatus & ACC_SPRUNG_EXCEEDED) {
 		return 1;
 	} else {
 		return 0;
@@ -269,7 +253,7 @@ int getSprungAccError() {
 }
 
 int getCarSpeedError() {
-	if(wusStatus & (1 << CAR_SPEED_EXCEEDED)) {
+	if(wusStatus & CAR_SPEED_EXCEEDED) {
 		return 1;
 	} else {
 		return 0;
