@@ -107,7 +107,7 @@ int main(void)
 	rideTypeOption.values[3]  = "RALLY";
 	rideTypeItem = item("Ride", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, rideTypeOption, getDisplayRideMode);
 	rideTypeItem.setter = setRideMode;
-	throttleOption = option(-10,10);
+	throttleOption = option(-9,10);
 	throttleOption.skip = 1;
 	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, throttleOption, getThrottle);
 	throttleItem.setter = setThrottle;
