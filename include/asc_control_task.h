@@ -72,105 +72,105 @@ void setThrottle(int throttleInput);
 void setResetState(int resetStateInput);
 
 /**
- * \brief Sets active suspension on or off.
+ * \brief Gets active suspension on or off.
  *
  * \param rideType Ride Type.
  */
 int getDisplayRideMode();
 
 /**
- * \brief Returns the car speed.
+ * \brief Gets the car speed.
  *
  * \return Car Speed (m/s).
  */
 int getDisplaySpeed();
 
 /**
- * \brief Returns Sprung Acceration.
+ * \brief Gets Sprung Acceration.
  *
  * \return Sprung Acceleration.
  */
 int getDisplaySprungAcc();
 
 /**
- * \brief Returns the unsprung acceration
+ * \brief Gets the unsprung acceration
  *
  * \return Unsprung Acceleration.
  */
 int getDisplayUnsprungAcc();
 
 /**
- * \brief Returns the coil extension
+ * \brief Gets the coil extension
  *
  * \return Coil Extension.
  */
 int getDisplayCoilExtension();
 
 /**
- * \brief Returns the actuator force
+ * \brief Gets the actuator force
  *
  * \return Actuator Force (N).
  */
 int getDisplayForce();
 
 /**
- * \brief Returns the damping coeffient
+ * \brief Gets the damping coeffient
  *
  * \return Damping Coefficient (Nm/s).
  */
 int getDisplayDampingCoefficient();
 
 /**
- * \brief Returns the road type.
+ * \brief Gets the road type.
  *
  * \return The road type.
  */
 int getRoadType();
 
 /**
- * \brief Returns throttle.
+ * \brief Gets throttle.
  *
  * \return throttle
  */
 int getThrottle();
 
 /**
- * \brief Returns the resetState
+ * \brief Gets the resetState
  *
  * \return Reset state
  */
 int getResetState();
 
 /**
- * \brief Returns the coil extenstion error status
+ * \brief Gets the coil extenstion error status
  *
  * \return Coil extension error state
  */
 int getCoilExError();
 
 /**
- * \brief Returns unspurng acceration error state.
+ * \brief Gets unspurng acceration error state.
  *
  * \return Unsprung acceration error state.
  */
 int getUnsprungAccError();
 
 /**
- * \brief Returns the sprung acceration error state
+ * \brief Gets the sprung acceration error state
  *
  * \return Sprung acceration error state.
  */
 int getSprungAccError();
 
 /**
- * \brief Returns the car speed error state
+ * \brief Gets the car speed error state
  *
  * \return Car speed error state.
  */
 int getCarSpeedError();
 
 /**
- * \brief Returns Asc on state
+ * \brief Gets Asc on state
  *
  * \return Asc on state.
  */

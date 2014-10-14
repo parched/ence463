@@ -93,6 +93,7 @@ int main(void)
 	controls = listView("Controls", 5);
 	statuses = listView("Status", 5);
 	statuses2 = listView("WUS Errors", 4);
+
 	/*controls menu GUI*/
 	roadTypeOption = option(0, 8);
 	roadTypeOption.skip = 1;
@@ -122,6 +123,7 @@ int main(void)
 	actControlOption.values[1]  = "On";
 	actControlItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, actControlOption, getAscOn);
 	actControlItem.setter = setAscOn;
+
 	/*Status Menu GUI*/
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
@@ -133,6 +135,7 @@ int main(void)
 	unsprungAccItem = item("unsprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
 	sprungAccOption = option(-3000,3000);
 	sprungAccItem = item("sprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
+
 	/*Out of Range Errors Menu GUI*/
 	wusStatusCoilOption = option(0, 1);
 	wusStatusCoilOption.values[0] = "Ok";
@@ -150,6 +153,7 @@ int main(void)
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
 	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedError);
+
 	/*attach items to ListView*/
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
@@ -165,6 +169,7 @@ int main(void)
 	statuses2.items[1] = wusStatusSprungItem;
 	statuses2.items[2] = wusStatusUnsprungItem;
 	statuses2.items[3] = speedExceededItem;
+
 	/*init Activity and attach ListViews ot activity*/
 	mainActivity = activity();
 	addView(&mainActivity, &controls, VIEWTYPE_LIST);
