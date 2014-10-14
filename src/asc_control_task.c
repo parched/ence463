@@ -98,40 +98,36 @@ static _iq getControlForce(int dTime);
  * \brief Formats and Transmits data over serial to simulator
  *
  */
- static void sendSerialMessages()
- {
- 	// Throttle Transmission
- 	UartFrame ThrottleSend;
- 	char ThrottleStr[9];
- 	usprintf(ThrottleStr, "%2d.000", _IQint(throttle));
+static void sendSerialMessages()
+{
+	// Throttle Transmission
+	UartFrame throttleSend;
 
- 	ThrottleSend.frameWise.msgType = 'A'; // Accel Message Type
- 	ThrottleSend.frameWise.msg = ThrottleStr;
- 	queueMsgToSend(ThrottleSend);
+	throttleSend.frameWise.msgType = 'A'; // Accel Message Type
+	usprintf(throttleSend.frameWise.msg, "%2d.000", _IQint(throttle));
+	queueMsgToSend(throttleSend);
 
- 	// Road Type Transmission
- 	UartFrame RoadSend;
- 	char RoadStr[9];
- 	usprintf(RoadStr, "%2d", roadType);
+	// Road Type Transmission
+	UartFrame roadSend;
 
- 	RoadSend.framewise.msgType = 'R';	// Road Message Type
- 	RoadSend.frameWise.msg = RoadStr;
+	roadSend.frameWise.msgType = 'R';	// Road Message Type
+	usprintf(roadSend.frameWise.msg, "%2d", roadType);
 
- 	// Reset Transmission
- 	if (~resetState)
- 	{
- 		UartFrame ResetSend;
- 		ResetSend.frameWise.msgType = 'S';	// Reset Message Type
- 		queueMsgToSend(ResetSend);
- 	}
+	// Reset Transmission
+	if (~resetState)
+	{
+		UartFrame resetSend;
+		resetSend.frameWise.msgType = 'S';	// Reset Message Type
+		queueMsgToSend(resetSend);
+	}
 
- 	// Status Transmission
- 	UartFrame StatusSend;
- 	StatusSend.frameWise.msgType = 'M';
- 	StatusSend.frameWise.msg[0] = errorState;
- 	queueMsgToSend(StatusSend);
+	// Status Transmission
+	UartFrame statusSend;
+	statusSend.frameWise.msgType = 'M';
+	statusSend.frameWise.msg[0] = errorState;
+	queueMsgToSend(statusSend);
 
- }
+}
 
 void vControlTask(void *params)
 {
