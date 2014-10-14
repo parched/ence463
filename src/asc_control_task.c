@@ -115,7 +115,7 @@ static void sendSerialMessages()
 	queueMsgToSend(&roadSend);
 
 	// Reset Transmission
-	if (!resetState)
+	if (resetState)
 	{
 		UartFrame resetSend;
 		resetSend.frameWise.msgType = 'S';	// Reset Message Type
