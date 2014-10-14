@@ -37,6 +37,8 @@
 #include "shared_parameters.h"
 #include "shared_iqmath.h"
 
+#include "shared_errors.h"
+
 
 #define CONTROL_TASK_RATE_HZ 1000
 
@@ -53,6 +55,25 @@ static _iq coilExtension = 0;
 static _iq speed = 0;
 static _iq actuatorForce = 0;
 static _iq dampingCoefficient = 0;
+
+static char wusStatus = 0;
+static int roadType = 0;
+static _iq throttle = 0;
+static int resetState = 0;
+
+/**
+ * \brief Reads an incoming UART message.
+ *
+ * \param uartFrame Pointer to the uartFrame to read.
+ */
+static void readMessage(UartFrame uartFrame) {
+	switch (uartFrame.frameWise.msgType) {
+		case 'W':
+			wusStatus = uartFrame.frameWise.msg[0];
+			break;
+	}
+}
+
 
 /**
  * \brief Gets the damping coefficient.
@@ -77,6 +98,7 @@ void vControlTask(void *params)
 	initAdcModule(ACC_SPRUNG_ADC | ACC_UNSPRUNG_ADC | COIL_EXTENSION_ADC);
 	initPwmModule(ACTUATOR_FORCE_PWM | DAMPING_COEFF_PWM);
 
+	attachOnReceiveCallback(readMessage);
 	// Initialise FreeRTOS Sleep Parameters
 	portTickType pxPreviousWakeTime;
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
@@ -120,6 +142,7 @@ _iq getDampingCoefficient()
 	return -1;
 }
 
+
 _iq getControlForce(int dTime)
 {
 	if (isOn == 0) {
@@ -131,19 +154,32 @@ _iq getControlForce(int dTime)
 
 /* SETTERS */
 
-void setRideMode(rideType rideModeIn)
+void setRideMode(int rideModeIn)
 {
-	rideMode = rideModeIn;
+	rideMode = (rideType) rideModeIn;
 }
+
 
 void setAscOn(int isAscOn)
 {
 	isOn = isAscOn;
 }
 
+void setRoadType(int roadTypeInput) {
+	roadType = roadTypeInput;
+}
+
+void setThrottle(int throttleInput) {
+	throttle = _IQ(throttleInput);
+}
+
+void setResetState(int resetStateInput) {
+	resetState = resetStateInput;
+}
+
 /* GETTERS */
 
-rideType getDisplayRideMode()
+int getDisplayRideMode()
 {
 	return rideMode;
 }
@@ -178,3 +214,52 @@ int getDisplayDampingCoefficient()
 	return dampingCoefficient;
 }
 
+int getRoadType()
+{
+	return roadType;
+}
+
+int getThrottle()
+{
+	return  _IQint(throttle);
+}
+
+int getResetState() {
+	return resetState;
+}
+
+int getCoilExError() {
+	if(wusStatus &  COIL_EXTENSION_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getUnsprungAccError() {
+	if(wusStatus & ACC_UNSPRUNG_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getSprungAccError() {
+	if(wusStatus & ACC_SPRUNG_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getCarSpeedError() {
+	if(wusStatus & CAR_SPEED_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getAscOn() {
+	return isOn;
+}
