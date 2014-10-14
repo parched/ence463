@@ -104,7 +104,7 @@ static void sendSerialMessages()
 	UartFrame throttleSend;
 
 	throttleSend.frameWise.msgType = 'A'; // Accel Message Type
-	usprintf(throttleSend.frameWise.msg, "%2d.000", _IQint(throttle));
+	usprintf(throttleSend.frameWise.msg, "%2d.%03d", throttle >> QG, ((1 << QG) - 1) & throttle);
 	queueMsgToSend(&throttleSend);
 
 	// Road Type Transmission
