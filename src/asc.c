@@ -95,10 +95,11 @@ int main(void)
 	statuses2 = listView("WUS Errors", 4);
 
 	/*controls menu GUI*/
-	roadTypeOption = option(0, 8);
+	roadTypeOption = option(10, 33);
 	roadTypeOption.skip = 1;
 	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, roadTypeOption, getRoadType);
 	roadTypeItem.setter = setRoadType;
+	setRoadType(10);
 	rideTypeOption = option(0, 3);
 	rideTypeOption.skip = 1;
 	rideTypeOption.values[0]  = "SEDATE";
