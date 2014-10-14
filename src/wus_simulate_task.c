@@ -136,21 +136,21 @@ void updateStatus() {
 
 	//max speed error check
 	if(speed > MAX_SPEED || speed < MIN_SPEED) {
-		combinedError = combinedError | CAR_SPEED_EXCEEDED;
+		combinedError |= CAR_SPEED_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
+		combinedError &= ~CAR_SPEED_EXCEEDED;
 	}
 	//max sprung acceration check
 	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
-		combinedError = combinedError | ACC_SPRUNG_EXCEEDED;
+		combinedError |= ACC_SPRUNG_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
+		combinedError &= ~ACC_SPRUNG_EXCEEDED;
 	}
 	//max unsprung acceration check
 	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
-		combinedError = combinedError | ACC_UNSPRUNG_EXCEEDED;
+		combinedError |= ACC_UNSPRUNG_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
+		combinedError &= ~ACC_UNSPRUNG_EXCEEDED;
 	}
 
 	errorStatusSend.frameWise.msgType = 'W';
@@ -262,10 +262,10 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	coilExtension = zU - zS;
 	
 	// max coil extension check
-	if(coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
-		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
+	if (coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
+		combinedError |= COIL_EXTENSION_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+		combinedError &= ~COIL_EXTENSION_EXCEEDED;
 	}
 
 	/* TODO: error check */
