@@ -41,6 +41,7 @@
 
 #define SENDMESSAGE_QUEUE_SIZE 10
 #define UART_TASK_RATE_HZ 1000
+#define UART_PERCHAR_HZ 50000	// 20us delay between characters
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
@@ -97,7 +98,7 @@ void vUartTask(void* pvParameters) {
 				// send characters individually
 				UARTCharPut(UART1_BASE, (unsigned char) toSend.byteWise[i]);
 			}
-			vTaskDelay(1);		// put delay between messages
+			vTaskDelay(msgLen*configTICK_RATE_HZ / UART_PERCHAR_HZ);		// put delay between messages
 		}
 
 		// receive messages
