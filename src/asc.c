@@ -183,6 +183,49 @@ int main(void)
 	invokeCoilErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeCoilErrorOption, getAscOn);
 	invokeCoilErrorItem.setter = setAscOn;
 
+	invokeSprungErrorOption = option(0,1);
+	invokeSprungErrorOption.skip = 1;
+	invokeSprungErrorOption.values[0]  = "Off";
+	invokeSprungErrorOption.values[1]  = "On";
+	invokeSprungErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSprungErrorOption, getAscOn);
+	invokeSprungErrorItem.setter = setAscOn;
+
+
+	invokeUnsprungErrorOption = option(0,1);
+	invokeUnsprungErrorOption.skip = 1;
+	invokeUnsprungErrorOption.values[0]  = "Off";
+	invokeUnsprungErrorOption.values[1]  = "On";
+	invokeUnsprungErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeUnsprungErrorOption, getAscOn);
+	invokeUnsprungErrorItem.setter = setAscOn;
+
+	invokeSpeedErrorOption = option(0,1);
+	invokeSpeedErrorOption.skip = 1;
+	invokeSpeedErrorOption.values[0]  = "Off";
+	invokeSpeedErrorOption.values[1]  = "On";
+	invokeSpeedErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSpeedErrorOption, getAscOn);
+	invokeSpeedErrorItem.setter = setAscOn;
+
+	involePowerErrorOption = option(0,1);
+	involePowerErrorOption.skip = 1;
+	involePowerErrorOption.values[0]  = "Off";
+	involePowerErrorOption.values[1]  = "On";
+	involePowerErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, involePowerErrorOption, getAscOn);
+	involePowerErrorItem.setter = setAscOn;
+
+	invokeWatchdogErrorOption = option(0,1);
+	invokeWatchdogErrorOption.skip = 1;
+	invokeWatchdogErrorOption.values[0]  = "Off";
+	invokeWatchdogErrorOption.values[1]  = "On";
+	invokeWatchdogErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeWatchdogErrorOption, getAscOn);
+	invokeWatchdogErrorItem.setter = setAscOn;
+
+	invokeWusErrors.items[0] = invokeCoilErrorItem;
+	invokeWusErrors.items[1] = invokeSprungErrorItem;
+	invokeWusErrors.items[2] = invokeUnsprungErrorItem;
+	invokeWusErrors.items[3] = invokeSpeedErrorItem;
+	invokeWusErrors2.items[0] = involePowerErrorItem;
+	invokeWusErrors2.items[1] = invokeWatchdogErrorItem;
+
 	/*attach items to ListView*/
 	controls.items[0] = roadTypeItem;
 	controls.items[1] = rideTypeItem;
