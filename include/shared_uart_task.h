@@ -45,8 +45,8 @@ typedef struct
  */
 typedef union
 {
-	_UartFrame frameWise;				/**< Allows access with structure */
-	char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
+	_UartFrame frameWise;						/**< Allows access with structure */
+	unsigned char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
 } UartFrame;
 
 /**

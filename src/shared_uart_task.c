@@ -54,6 +54,7 @@ void vUartTask(void* pvParameters) {
 	GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_3 | GPIO_PIN_2);
 
 	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), UART_BAUD, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
+	UARTEnable(UART1_BASE);
 
 	// initialize queue
 	uartSendQueue = xQueueCreate(SENDMESSAGE_QUEUE_SIZE, sizeof(UartFrame));
@@ -94,15 +95,15 @@ void vUartTask(void* pvParameters) {
 			unsigned int i = 0;
 			for (i=0; i<msgLen; i++) {
 				// send characters individually
-				UARTCharPut(UART1_BASE, toSend.byteWise[i]);
+				UARTCharPut(UART1_BASE, (unsigned char) toSend.byteWise[i]);
 			}
 		}
 
 		// receive messages
 		UartFrame buffer;
 		unsigned int index = 0;
-		while (UARTCharsAvail(UART1_BASE)) {
-			buffer.byteWise[index] = (char) UARTCharGet(UART1_BASE);
+		while (UARTCharsAvail(UART1_BASE) && (index < (UART_FRAME_SIZE+1))) {
+			buffer.byteWise[index] = (unsigned char) UARTCharGetNonBlocking(UART1_BASE);
 			index++;
 		}
 		if (index > 0 && receivedCallback != NULL) {
