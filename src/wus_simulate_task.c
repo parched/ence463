@@ -41,6 +41,7 @@
 
 #include "shared_errors.h"
 
+#define TICK_RATE_HZ ((long)configTICK_RATE_HZ)   /**< The signed tick rate. */
 #define SIMULATE_TASK_RATE_HZ 1000
 
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
@@ -229,7 +230,7 @@ void simulate(int dTime) {
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
-		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
+		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
@@ -266,14 +267,14 @@ void simulate(int dTime) {
 		}
 	}
 
-	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
-	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
-	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
-	vR += aR * dTime / configTICK_RATE_HZ;
-	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
-	vS += sprungAcc * dTime / configTICK_RATE_HZ;
+	zR += vR * 1000 * dTime / TICK_RATE_HZ;
+	zU += vU * 1000 * dTime / TICK_RATE_HZ;
+	zS += vS * 1000 * dTime / TICK_RATE_HZ;
+	vR += aR * dTime / TICK_RATE_HZ;
+	vU += unsprungAcc * dTime / TICK_RATE_HZ;
+	vS += sprungAcc * dTime / TICK_RATE_HZ;
 
-	speed += throttle * dTime / configTICK_RATE_HZ;
+	speed += throttle * dTime / TICK_RATE_HZ;
 
 	coilExtension = zU - zS;
 	
