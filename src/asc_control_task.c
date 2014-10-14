@@ -62,7 +62,12 @@ static _iq throttle = 0;
 static int resetState = 0;
 
 static int invokeCoilError = 0;
-
+static int invokeSpungError = 0;
+static int invokeUnsprungError = 0;
+static int invokeSpeedError = 0;
+static int invokePowerError = 0;
+static int invokeWatchdogError = 0;
+static char errorState = 0;
 /**
  * \brief Reads an incoming UART message.
  *
@@ -182,9 +187,54 @@ void setResetState(int resetStateInput) {
 void setCoilError(int errorInput) {
 	invokeCoilError = errorInput;
 	if(errorInput == 1) {
-//		invokeError =
+		errorState = COIL_EXTENSION_EXCEEDED | errorState;
 	} else {
-//		invokeError = COIL_EXTENSION_EXCEEDED | invokeError;
+		errorState = errorState  & ~COIL_EXTENSION_EXCEEDED;
+	}
+}
+
+void setSprungError(int errorInput) {
+	invokeSpungError = errorInput;
+	if(errorInput == 1) {
+		errorState = ACC_SPRUNG_EXCEEDED | errorState;
+	} else {
+		errorState = errorState  & ~ACC_SPRUNG_EXCEEDED;
+	}
+}
+
+void setUnsprungError(int errorInput) {
+	invokeUnsprungError = errorInput;
+	if(errorInput == 1) {
+		errorState = ACC_UNSPRUNG_EXCEEDED | errorState;
+	} else {
+		errorState = errorState  & ~ACC_UNSPRUNG_EXCEEDED;
+	}
+}
+
+void setSpeedError(int errorInput) {
+	invokeSpeedError = errorInput;
+	if(errorInput == 1) {
+		errorState = CAR_SPEED_EXCEEDED | errorState;
+	} else {
+		errorState = errorState  & ~CAR_SPEED_EXCEEDED;
+	}
+}
+
+void setPowerError(int errorInput) {
+	invokePowerError = errorInput;
+	if(errorInput == 1) {
+		errorState = POWER_FAILURE | errorState;
+	} else {
+		errorState = errorState  & ~POWER_FAILURE;
+	}
+}
+
+void setWatchdogError(int errorInput) {
+	invokeWatchdogError = errorInput;
+	if(errorInput == 1) {
+		errorState = WATCHDOG_TIMER | errorState;
+	} else {
+		errorState = errorState  & ~WATCHDOG_TIMER;
 	}
 }
 
@@ -273,4 +323,29 @@ int getCarSpeedError() {
 
 int getAscOn() {
 	return isOn;
+}
+
+
+int getCoilError() {
+	return invokeCoilError;
+}
+
+int getSprungError() {
+	return invokeSpungError;
+}
+
+int getUnsprungError() {
+	return invokeUnsprungError;
+}
+
+int getSpeedError() {
+	return invokeSpeedError;
+}
+
+int getPowerError() {
+	return invokePowerError;
+}
+
+int getWatchdogError() {
+	return invokeWatchdogError;
 }

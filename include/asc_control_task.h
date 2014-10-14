@@ -71,6 +71,19 @@ void setThrottle(int throttleInput);
  */
 void setResetState(int resetStateInput);
 
+
+void setCoilError(int errorInput);
+
+void setSprungError(int errorInput);
+
+void setUnsprungError(int errorInput);
+
+void setSpeedError(int errorInput);
+
+void setPowerError(int errorInput);
+
+void setWatchdogError(int errorInput);
+
 /**
  * \brief Gets active suspension on or off.
  *
@@ -175,5 +188,17 @@ int getCarSpeedError();
  * \return Asc on state.
  */
 int getAscOn();
+
+int getCoilError();
+
+int getSprungError();
+
+int getUnsprungError();
+
+int getSpeedError();
+
+int getPowerError();
+
+int getWatchdogError();
 
 #endif
