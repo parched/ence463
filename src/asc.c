@@ -247,6 +247,8 @@ int main(void)
 	addView(&mainActivity, &controls, VIEWTYPE_LIST);
 	addView(&mainActivity, &statuses, VIEWTYPE_LIST);
 	addView(&mainActivity, &statuses2, VIEWTYPE_LIST);
+	addView(&mainActivity, &invokeWusErrors, VIEWTYPE_LIST);
+	addView(&mainActivity, &invokeWusErrors2, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
