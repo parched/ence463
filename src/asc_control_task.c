@@ -326,26 +326,43 @@ int getAscOn() {
 }
 
 
-int getCoilError() {
+int getCoilInvokedError() {
 	return invokeCoilError;
 }
 
-int getSprungError() {
+int getSprungInvokedError() {
 	return invokeSpungError;
 }
 
-int getUnsprungError() {
+int getUnsprungInvokedError() {
 	return invokeUnsprungError;
 }
 
-int getSpeedError() {
+int getSpeedInvokedError() {
 	return invokeSpeedError;
 }
 
-int getPowerError() {
+int getPowerInvokedError() {
 	return invokePowerError;
 }
 
-int getWatchdogError() {
+int getWatchdogInvokedError() {
 	return invokeWatchdogError;
+}
+
+
+int getPowerError() {
+	if(wusStatus & POWER_FAILURE) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getWatchdogError() {
+	if(wusStatus & WATCHDOG_TIMER) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
