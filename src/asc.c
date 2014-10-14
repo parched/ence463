@@ -51,6 +51,9 @@ static Activity mainActivity;
 static ListView controls;
 static ListView statuses;
 static ListView statuses2;
+static ListView invokeWusErrors;
+static ListView invokeWusErrors2;
+
 /*controls options and items*/
 static Item roadTypeItem;
 static Options roadTypeOption;
@@ -62,6 +65,7 @@ static Item resetItem;
 static Options resetOption;
 static Item actControlItem;
 static Options actControlOption;
+
 /*status options and items*/
 static Item carSpeedItem;
 static Options carSpeedOption;
@@ -73,6 +77,7 @@ static Item unsprungAccItem;
 static Options unsprungAccOption;
 static Item sprungAccItem;
 static Options sprungAccOption;
+
 /*Out of Randge options and items*/
 static Item wusStatusCoilItem;
 static Options wusStatusCoilOption;
@@ -82,6 +87,20 @@ static Item wusStatusUnsprungItem;
 static Options wusStatusUnsprungOption;
 static Item speedExceededItem;
 static Options speedExceededOption;
+
+/*error to invoke on WUS options and items*/
+static Item invokeCoilErrorItem;
+static Options invokeCoilErrorOption;
+static Item invokeSprungErrorItem;
+static Options invokeSprungErrorOption;
+static Item invokeUnsprungErrorItem;
+static Options invokeUnsprungErrorOption;
+static Item invokeSpeedErrorItem;
+static Options invokeSpeedErrorOption;
+static Item involePowerErrorItem;
+static Options involePowerErrorOption;
+static Item invokeWatchdogErrorItem;
+static Options invokeWatchdogErrorOption;
 
 int main(void)
 {
@@ -93,6 +112,8 @@ int main(void)
 	controls = listView("Controls", 5);
 	statuses = listView("Status", 5);
 	statuses2 = listView("WUS Errors", 4);
+	invokeWusErrors = listView("InvokeErr",4);
+	invokeWusErrors2 = listView("InvokeErr2",2);
 
 	/*controls menu GUI*/
 	roadTypeOption = option(0, 8);
@@ -153,6 +174,14 @@ int main(void)
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
 	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedError);
+
+	/*invoke errors GUI*/
+	invokeCoilErrorOption = option(0,1);
+	invokeCoilErrorOption.skip = 1;
+	invokeCoilErrorOption.values[0]  = "Off";
+	invokeCoilErrorOption.values[1]  = "On";
+	invokeCoilErrorItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeCoilErrorOption, getAscOn);
+	invokeCoilErrorItem.setter = setAscOn;
 
 	/*attach items to ListView*/
 	controls.items[0] = roadTypeItem;
