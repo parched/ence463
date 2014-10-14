@@ -247,8 +247,8 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 
 	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
 
-	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
-	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
+	sprungAcc = ON_MASS_SPRUNG(- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force );
+	unsprungAcc = ON_MASS_UNSPRUNG( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force );
 
 	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
 	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
