@@ -77,13 +77,13 @@ void vUartTask(void* pvParameters) {
 					msgLen = 2;
 					break;
 				case('R'):
-					msgLen = 2;
+					msgLen = 3;
 					break;
 				case('S'):
 					msgLen = 1;
 					break;
 				case('A'):
-					msgLen = 5;
+					msgLen = 7;
 					break;
 				case('M'):
 					msgLen = 2;
