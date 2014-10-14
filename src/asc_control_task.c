@@ -27,6 +27,8 @@
 #include "asc_control_task.h"
 #include "shared_parameters.h"
 
+#include <ustdlib.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -60,6 +62,7 @@ static char wusStatus = 0;
 static int roadType = 0;
 static _iq throttle = 0;
 static int resetState = 0;
+static char errorState = 0;
 
 /**
  * \brief Reads an incoming UART message.
@@ -90,6 +93,45 @@ static _iq getDampingCoefficient();
  * \return The actuator force.
  */
 static _iq getControlForce(int dTime);
+
+/**
+ * \brief Formats and Transmits data over serial to simulator
+ *
+ */
+ static void sendSerialMessages()
+ {
+ 	// Throttle Transmission
+ 	UartFrame ThrottleSend;
+ 	char ThrottleStr[9];
+ 	usprintf(ThrottleStr, "%2d.000", _IQint(throttle));
+
+ 	ThrottleSend.frameWise.msgType = 'A'; // Accel Message Type
+ 	ThrottleSend.frameWise.msg = ThrottleStr;
+ 	queueMsgToSend(ThrottleSend);
+
+ 	// Road Type Transmission
+ 	UartFrame RoadSend;
+ 	char RoadStr[9];
+ 	usprintf(RoadStr, "%2d", roadType);
+
+ 	RoadSend.framewise.msgType = 'R';	// Road Message Type
+ 	RoadSend.frameWise.msg = RoadStr;
+
+ 	// Reset Transmission
+ 	if (~resetState)
+ 	{
+ 		UartFrame ResetSend;
+ 		ResetSend.frameWise.msgType = 'S';	// Reset Message Type
+ 		queueMsgToSend(ResetSend);
+ 	}
+
+ 	// Status Transmission
+ 	UartFrame StatusSend;
+ 	StatusSend.frameWise.msgType = 'M';
+ 	StatusSend.frameWise.msg[0] = errorState;
+ 	queueMsgToSend(StatusSend);
+
+ }
 
 void vControlTask(void *params)
 {
@@ -122,6 +164,8 @@ void vControlTask(void *params)
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
+
+		sendSerialMessages();
 	}
 }
 
@@ -159,7 +203,6 @@ void setRideMode(int rideModeIn)
 	rideMode = (rideType) rideModeIn;
 }
 
-
 void setAscOn(int isAscOn)
 {
 	isOn = isAscOn;
@@ -175,6 +218,11 @@ void setThrottle(int throttleInput) {
 
 void setResetState(int resetStateInput) {
 	resetState = resetStateInput;
+}
+
+void setErrorState(char errorStateInput)
+{
+	errorState = errorStateInput;
 }
 
 /* GETTERS */
