@@ -64,7 +64,6 @@ static Item resetItem;
 static Options resetOption;
 static Item actControlItem;
 static Options actControlOption;
-
 /*status options and items*/
 static Item carSpeedItem;
 static Options carSpeedOption;
@@ -76,7 +75,6 @@ static Item unsprungAccItem;
 static Options unsprungAccOption;
 static Item sprungAccItem;
 static Options sprungAccOption;
-
 /*Out of Randge options and items*/
 static Item wusStatusCoilItem;
 static Options wusStatusCoilOption;
@@ -91,20 +89,6 @@ static Options powerFailureOption;
 static Item watchdogFauilureItem;
 static Options watchdogFailureOption;
 
-/*error to invoke on WUS options and items*/
-static Item invokeCoilErrorItem;
-static Options invokeCoilErrorOption;
-static Item invokeSprungErrorItem;
-static Options invokeSprungErrorOption;
-static Item invokeUnsprungErrorItem;
-static Options invokeUnsprungErrorOption;
-static Item invokeSpeedErrorItem;
-static Options invokeSpeedErrorOption;
-static Item involePowerErrorItem;
-static Options involePowerErrorOption;
-static Item invokeWatchdogErrorItem;
-static Options invokeWatchdogErrorOption;
-
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
@@ -118,10 +102,11 @@ int main(void)
 	invokeWusErrors = listView("InvokeErr",6);
 
 	/*controls menu GUI*/
-	roadTypeOption = option(0, 8);
+	roadTypeOption = option(10, 33);
 	roadTypeOption.skip = 1;
 	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, roadTypeOption, getRoadType);
 	roadTypeItem.setter = setRoadType;
+	setRoadType(10);
 	rideTypeOption = option(0, 3);
 	rideTypeOption.skip = 1;
 	rideTypeOption.values[0]  = "SEDATE";
