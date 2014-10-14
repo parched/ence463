@@ -70,6 +70,7 @@ static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
 static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 static char combinedError = 0; /**<current error status */
+static int startStatus = 0;
 
 /**
  * \brief Resets the simulation.
@@ -288,4 +289,65 @@ _iq getRandom() {
 	b = 18000 * (b & 65535) + (b >> 16);
 
 	return b & ((1 << QG) - 1);
+}
+
+int getStartStatusDisplay() {
+	return startStatus;
+}
+
+int getRoadTypeStatusDisplay() {
+	return roadType;
+}
+
+int getThrottleStatusDisplay() {
+	return _IQint(throttle);
+}
+
+
+int getCoilExErrorInvoked() {
+	if(wusStatusEcho &  COIL_EXTENSION_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getUnsprungAccErrorInvoked() {
+	if(wusStatusEcho & ACC_UNSPRUNG_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getSprungAccErrorInvoked() {
+	if(wusStatusEcho & ACC_SPRUNG_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getCarSpeedErrorInvoked() {
+	if(wusStatusEcho & CAR_SPEED_EXCEEDED) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getPowerFailureInvoked() {
+	if(wusStatusEcho & POWER_FAILURE) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getWatchdogTimerFailureInvoked() {
+	if(wusStatusEcho & WATCHDOG_TIMER) {
+		return 1;
+	} else {
+		return 0;
+	}
 }

@@ -61,6 +61,32 @@ static Options unsprungAccOption;
 static Item unsprungAccItem;
 static Options coilExtensionOption;
 static Item coilExtensionItem;
+
+static ListView wusMessages;
+//static Options startOption;
+//static Item startItem;
+static Options roadTypeOption;
+static Item roadTypeItem;
+static Options throttleOption;
+static Item throttleItem;
+
+static ListView wusStatusEcho;
+static Item wusStatusCoilItem;
+static Options wusStatusCoilOption;
+static Item wusStatusSprungItem;
+static Options wusStatusSprungOption;
+static Item wusStatusUnsprungItem;
+static Options wusStatusUnsprungOption;
+static Item speedExceededItem;
+static Options speedExceededOption;
+
+static ListView wusStatusEcho2;
+static Item powerFailureItem;
+static Options powerFailureOption;
+static Item watchdogErrorItem;
+static Options watchdogErrorOption;
+
+
 /*-----------------------------------------------------------*/
 
 int main(void)
@@ -74,6 +100,7 @@ int main(void)
 	setRoadBuffer(&roadHandler); // pass it to the sim task
 	roadSurface = traceView("Surface", &roadHandler, TRACE_ZERO_CENTER, 1, 1, 1);
 
+	/*telemetry GUI*/
 	telemetry = listView("Telemetry", 4);
 	speedOption = option(-999, 999);
 	speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
@@ -88,9 +115,67 @@ int main(void)
 	telemetry.items[2] = unsprungAccItem;
 	telemetry.items[3] = coilExtensionItem;
 
+	/*ASC messages GUI*/
+	wusMessages = listView("ASC STAT",2);
+	/*
+	startOption = option(0,1);
+	startOption.skip = 1;
+	startOption.values[0]  = "Off";
+	startOption.values[1]  = "On";
+	startItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, startOption, getStartStatusDisplay);
+	*/
+	roadTypeOption = option(0, 1);
+	roadTypeOption.skip = 1;
+	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getRoadTypeStatusDisplay);
+	throttleOption = option(-10,10);
+	throttleOption.skip = 1;
+	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_READONLY, throttleOption, getThrottleStatusDisplay);
+	wusMessages.items[0] = roadTypeItem;
+	wusMessages.items[1] = throttleItem;
+	//wusMessages.items[2] = startItem;
+
+	/*Invoked errors GUI*/
+	wusStatusEcho = listView("ErrInvoked",4);
+	wusStatusCoilOption = option(0, 1);
+	wusStatusCoilOption.values[0] = "Ok";
+	wusStatusCoilOption.values[1] = "Error";
+	wusStatusCoilItem = item("CoilEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusCoilOption, getCoilExErrorInvoked);
+	wusStatusSprungOption = option(0, 1);
+	wusStatusSprungOption.values[0] = "Ok";
+	wusStatusSprungOption.values[1] = "Error";
+	wusStatusSprungItem = item("SprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusSprungOption, getSprungAccErrorInvoked);
+	wusStatusUnsprungOption = option(0, 1);
+	wusStatusUnsprungOption.values[0] = "Ok";
+	wusStatusUnsprungOption.values[1] = "Error";
+	wusStatusUnsprungItem = item("UnsprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusUnsprungOption, getUnsprungAccErrorInvoked);
+	speedExceededOption = option(0,1);
+	speedExceededOption.values[0] = "Ok";
+	speedExceededOption.values[1] = "Error";
+	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedErrorInvoked);
+	wusStatusEcho.items[0] = wusStatusCoilItem;
+	wusStatusEcho.items[1] = wusStatusSprungItem;
+	wusStatusEcho.items[2] = wusStatusUnsprungItem;
+	wusStatusEcho.items[3] = speedExceededItem;
+
+	wusStatusEcho2 = listView("ErrInvoked2",2);
+	powerFailureOption = option(0, 1);
+	powerFailureOption.values[0] = "Ok";
+	powerFailureOption.values[1] = "Error";
+	powerFailureItem = item("CoilEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerFailureInvoked);
+	watchdogErrorOption = option(0, 1);
+	watchdogErrorOption.values[0] = "Ok";
+	watchdogErrorOption.values[1] = "Error";
+	watchdogErrorItem = item("SprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogErrorOption, getWatchdogTimerFailureInvoked);
+	wusStatusEcho2.items[0] = powerFailureItem;
+	wusStatusEcho2.items[1] = watchdogErrorItem;
+
+	/*attach views to activity*/
 	mainActivity = activity();
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST);
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE);
+	addView(&mainActivity, &wusMessages, VIEWTYPE_LIST);
+	addView(&mainActivity, &wusStatusEcho, VIEWTYPE_LIST);
+	addView(&mainActivity, &wusStatusEcho2, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */

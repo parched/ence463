@@ -71,5 +71,59 @@ int getDisplayCoilExtension();
  */
 void setRoadBuffer(CircularBufferHandler *roadBuffer);
 
+/**
+ * \brief Get road status.
+ *
+ */
+int getStartStatusDisplay();
+
+/**
+ * \brief Get road type status
+ *
+ */
+int getRoadTypeStatusDisplay();
+
+/**
+ * \brief Get throttle status
+ *
+ */
+int getThrottleStatusDisplay();
+
+/**
+ * \brief Get Coil extension errror involed from ASC
+ *
+ */
+int getCoilExErrorInvoked();
+
+/**
+ * \brief Get unsprung acceration error involed from ASC
+ *
+ */
+int getUnsprungAccErrorInvoked();
+
+/**
+ * \brief Get sprung accearation error involed from ASC
+ *
+ */
+int getSprungAccErrorInvoked();
+
+/**
+ * \brief Get car speed error involed from ASC
+ *
+ */
+int getCarSpeedErrorInvoked();
+
+/**
+ * \brief Get power failure error involed from ASC
+ *
+ */
+int getPowerFailureInvoked();
+
+/**
+ * \brief Get watchdog timer failure error involed from ASC
+ *
+ */
+int getWatchdogTimerFailureInvoked();
+
 #endif
 
