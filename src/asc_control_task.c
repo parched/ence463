@@ -67,7 +67,7 @@ static int invokeUnsprungError = 0;
 static int invokeSpeedError = 0;
 static int invokePowerError = 0;
 static int invokeWatchdogError = 0;
-static char errorState = 0;
+
 /**
  * \brief Reads an incoming UART message.
  *
