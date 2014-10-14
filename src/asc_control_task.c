@@ -61,8 +61,6 @@ static int roadType = 0;
 static _iq throttle = 0;
 static int resetState = 0;
 
-static int invokeCoilError = 0;
-
 /**
  * \brief Reads an incoming UART message.
  *
