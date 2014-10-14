@@ -61,6 +61,7 @@ static int roadType = 0;
 static _iq throttle = 0;
 static int resetState = 0;
 
+static char errorState = 0;
 static int invokeCoilError = 0;
 static int invokeSpungError = 0;
 static int invokeUnsprungError = 0;
