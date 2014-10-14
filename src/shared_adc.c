@@ -47,25 +47,9 @@ static unsigned long ADCout[8];
 
 void adcISR (void);
 
-static void initAdcTimer(void)
-{
-	// Initialise Timer 1 (Used to trogger ADC) as a Periodic Timer
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-	TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC_UP);
-
-	// Set Timer 1 Load to 50 ksps (ADC Sample Rate)
-	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ - 1);
-
-	// Enable Timer 1 ADC Trigger
-	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
-}
 
 void initAdcModule(char adcs)
 {
-
-	// Configure Timer for ADC Triggering
-	initAdcTimer();
-
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
 	SysCtlDelay(SysCtlClockGet() / 3000);
@@ -76,12 +60,11 @@ void initAdcModule(char adcs)
 	// Disable Sequence 0 before Configuration
 	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 
-	// Configure  ADC processor for a Timer Trigger and 8x Oversampling
-	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
+	// Configure  ADC processor and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_ALWAYS, ADC_PRIORITY);
 	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
-	//
-
+	// Configure ADC Processor Steps
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 0, ADC_CTL_CH0);
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
@@ -95,9 +78,6 @@ void initAdcModule(char adcs)
 	IntEnable 		(INT_ADC0);
 	ADCIntClear 	(ADC_BASE, ADC_SEQ);
 	IntMasterEnable	();
-
-	// Enable ADC Trigger Timer
-	TimerEnable(TIMER1_BASE, TIMER_A);
 }
 
 
