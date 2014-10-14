@@ -142,6 +142,23 @@ _iq getDampingCoefficient()
 	return -1;
 }
 
+_iq getDampingCoefficient()
+{
+	switch (rideMode)
+	{
+		case SEDATE:
+			return DAMPING_SEDATE;
+		case NORMAL:
+			return DAMPING_NORMAL;
+		case SPORT:
+			return DAMPING_SPORT;
+		case RALLY:
+			return DAMPING_RALLY;
+	}
+
+	return -1;
+}
+
 _iq getControlForce(int dTime)
 {
 	if (isOn == 0) {
