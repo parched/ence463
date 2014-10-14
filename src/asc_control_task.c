@@ -105,20 +105,21 @@ static void sendSerialMessages()
 
 	throttleSend.frameWise.msgType = 'A'; // Accel Message Type
 	usprintf(throttleSend.frameWise.msg, "%2d.000", _IQint(throttle));
-	queueMsgToSend(throttleSend);
+	queueMsgToSend(&throttleSend);
 
 	// Road Type Transmission
 	UartFrame roadSend;
 
 	roadSend.frameWise.msgType = 'R';	// Road Message Type
 	usprintf(roadSend.frameWise.msg, "%2d", roadType);
+	queueMsgToSend(&roadSend);
 
 	// Reset Transmission
 	if (~resetState)
 	{
 		UartFrame resetSend;
 		resetSend.frameWise.msgType = 'S';	// Reset Message Type
-		queueMsgToSend(resetSend);
+		queueMsgToSend(&resetSend);
 	}
 
 	// Status Transmission
