@@ -166,7 +166,17 @@ void setAscOn(int isAscOn)
 }
 
 void setRoadType(int roadTypeInput) {
-	roadType = roadTypeInput;
+	if(roadTypeInput > 13 && roadType <= 13) {
+		roadType = 20;
+	} else if(roadTypeInput > 23 && roadType <= 23) {
+		roadType = 30;
+	} else if(roadTypeInput < 20 && roadType >= 20) {
+		roadType = 13;
+	} else if(roadTypeInput < 30 && roadType >= 30) {
+		roadType = 23;
+	} else {
+		roadType = roadTypeInput;
+	}
 }
 
 void setThrottle(int throttleInput) {
