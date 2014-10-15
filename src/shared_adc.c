@@ -70,7 +70,7 @@ void initAdcModule(char adcs)
 	unsigned long ulDummy[8];
 
 	// Set ADC Speed to 500ksps Max
-	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_1MSPS);
 
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
@@ -131,8 +131,6 @@ _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 
 void adcISR (void)
 {
-	// Disable ADC Sequence to mitigate FIFO overflow
-	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 	// Clear ADC Interrupt
 	ADCIntClear(ADC_BASE, ADC_SEQ);
 
@@ -146,7 +144,4 @@ void adcISR (void)
 	// Clear FIFO Under/Overflow Flags
 	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);
 	ADCSequenceUnderflowClear(ADC_BASE, ADC_SEQ);
-
-	// Re-enable ADC Sequence
-	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 }
