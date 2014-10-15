@@ -65,6 +65,12 @@ void vUartTask(void* pvParameters) {
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / UART_TASK_RATE_HZ;
 	xLastWakeTime = xTaskGetTickCount();
 
+	// message decoding variables
+	UartFrame buffer;
+	unsigned int msgLen;
+	unsigned int index = 0;
+	char lastChar;
+
 	for (;;) {
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
@@ -102,11 +108,29 @@ void vUartTask(void* pvParameters) {
 		}
 
 		// receive messages
-		UartFrame buffer;
-		unsigned int index = 0;
-		while (UARTCharsAvail(UART1_BASE) && (index < (UART_FRAME_SIZE+1))) {
-			buffer.byteWise[index] = (unsigned char) UARTCharGetNonBlocking(UART1_BASE);
-			index++;
+		while (UARTCharsAvail(UART1_BASE)) {
+			char recvChar = (char) UARTCharGetNonBlocking(UART1_BASE);
+			if (index == 0) {
+				// decode message type
+				msgLen = getMsgLen(recvChar);
+				if (msgLen && lastChar != 'M' && lastChar != 'W') {
+					// only valid message types get to advance (msgLen = 0 is invalid)
+					buffer.frameWise.msgType = recvChar;
+					index++;
+				}
+			} else {
+				if (index >= msgLen) {
+					// end of message given message type
+					receivedCallback(&buffer);
+					index = 0;
+				} else {
+					// adding more characters onto frame
+					buffer.byteWise[index] = recvChar;
+					index++;
+				}
+			}
+
+			lastChar = recvChar;		// store the last character
 		}
 		if (index > 0 && receivedCallback != NULL) {
 			receivedCallback(&buffer);
