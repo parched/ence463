@@ -54,24 +54,36 @@ CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, B
 	handler.fullMode = mode;
 	handler.size = size;
 
+	handler.readAccess = xSemaphoreCreateMutex();
+	handler.writeAccess = xSemaphoreCreateMutex();
+
 	return handler;
 }
 
 int circularBufferWrite(CircularBufferHandler* buffer, int x, int y)
 {
-	TraceNode* writing = buffer->lastWritten->next;	// node currently being written
-
-	if (buffer->fullMode == BUFFERFULLMODE_BLOCK && writing == buffer->lastRead)
+	if (buffer->writeAccess != NULL && xSemaphoreTake(buffer->writeAccess, (TickType_t) 10) == pdTRUE)
 	{
-		return -1;		// buffer full
+		TraceNode* writing = buffer->lastWritten->next;	// node currently being written
+
+		if (buffer->fullMode == BUFFERFULLMODE_BLOCK && writing == buffer->lastRead)
+		{
+			xSemaphoreGive(buffer->writeAccess);
+			return -1;		// buffer full
+		}
+		else
+		{
+			writing->x = x;
+			writing->y = y;
+			buffer->lastWritten = writing;	// advance the write pointer
+
+			xSemaphoreGive(buffer->writeAccess);
+			return 0;
+		}
 	}
 	else
 	{
-		writing->x = x;
-		writing->y = y;
-		buffer->lastWritten = writing;	// advance the write pointer
-
-		return 0;
+		return -2;			// could not obtain semaphore
 	}
 }
 
@@ -82,15 +94,25 @@ TraceNode* getLatestNode(CircularBufferHandler* buffer)
 
 TraceNode* circularBufferRead(CircularBufferHandler* buffer)
 {
-	if (buffer->lastRead->next == buffer->lastWritten->next)
+	if (buffer->readAccess != NULL && xSemaphoreTake(buffer->readAccess, (TickType_t) 10) == pdTRUE)
 	{
-		return NULL;					// no unread data
+		// successfully obtained the semaphore
+		if (buffer->lastRead->next == buffer->lastWritten->next)
+		{
+			xSemaphoreGive(buffer->readAccess);
+			return NULL;					// no unread data
+		}
+		else
+		{
+			TraceNode* reading = buffer->lastRead->next;
+			buffer->lastRead = reading;		// advance the read pointer
+			xSemaphoreGive(buffer->readAccess);
+			return reading;
+		}
 	}
 	else
 	{
-		TraceNode* reading = buffer->lastRead->next;
-		buffer->lastRead = reading;		// advance the read pointer
-		return reading;
+		return NULL;
 	}
 }
 
