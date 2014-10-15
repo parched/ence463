@@ -153,6 +153,15 @@ void clearTracePlot(void);
  */
 unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin);
 
+/**
+ * \brief Draws option modifiable indicators
+ *
+ * \param x Horizontal position to draw
+ * \param y Vertical position to draw
+ * \param strlen Length of the string
+ */
+unsigned int drawModifiableIndicator(unsigned int x, unsigned int y, unsigned int strlen);
+
 
 void attachActivity(Activity* activity)
 {
@@ -635,7 +644,7 @@ unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int mar
 			pos = margin;
 			break;
 		case(TEXTALIGN_CENTER):
-			pos = PX_HORZ/2 + margin - (ustrlen(str)/2)*CHAR_WIDTH;
+			pos = (PX_HORZ - ustrlen(str)*CHAR_WIDTH)/2 + margin;
 			break;
 		case(TEXTALIGN_RIGHT):
 			pos = PX_HORZ - margin - ustrlen(str)*CHAR_WIDTH;
@@ -644,4 +653,8 @@ unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int mar
 	return pos;
 }
 
+unsigned int drawModifiableIndicator(unsigned int x, unsigned int y, unsigned int strlen)
+{
+
+}
 
