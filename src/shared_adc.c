@@ -43,7 +43,7 @@
 #define ADC_PRIORITY	0
 #define ADC_TO_IQ(x) ((x) << (QG - 10)) /** This will need to be changed if QG < 10 */
 
-static unsigned long ADCout[8];
+static volatile unsigned long ADCout[8];
 
 void adcISR (void);
 
@@ -137,11 +137,7 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
-	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ADCout);
-
-	// Check for FIFO Under/Overflow
-	long FIFOoverflow  = ADCSequenceOverflow(ADC_BASE, ADC_SEQ);
-	long FIFOunderflow = ADCSequenceUnderflow(ADC_BASE, ADC_SEQ);
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, (unsigned long *) ADCout);
 
 	// Clear FIFO Under/Overflow Flags
 	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);
