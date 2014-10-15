@@ -27,6 +27,9 @@
 #ifndef SHARED_TRACENODE
 #define SHARED_TRACENODE
 
+#include "FreeRTOS.h"
+#include "semphr.h"
+
 typedef enum {BUFFERFULLMODE_BLOCK, BUFFERFULLMODE_OVERWRITE} BufferFullMode;
 
 typedef struct TraceNode TraceNode;
@@ -55,6 +58,8 @@ typedef struct
 	TraceNode* lastWritten;
 	unsigned int size;
 	BufferFullMode fullMode;
+	SemaphoreHandle_t readAccess;
+	SemaphoreHandle_t writeAccess;
 } CircularBufferHandler;
 
 /**
