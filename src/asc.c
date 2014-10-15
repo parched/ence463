@@ -89,6 +89,20 @@ static Options powerFailureOption;
 static Item watchdogFauilureItem;
 static Options watchdogFailureOption;
 
+/*error to invoke on WUS options and items*/
+static Item invokeCoilErrorItem;
+static Options invokeCoilErrorOption;
+static Item invokeSprungErrorItem;
+static Options invokeSprungErrorOption;
+static Item invokeUnsprungErrorItem;
+static Options invokeUnsprungErrorOption;
+static Item invokeSpeedErrorItem;
+static Options invokeSpeedErrorOption;
+static Item involePowerErrorItem;
+static Options involePowerErrorOption;
+static Item invokeWatchdogErrorItem;
+static Options invokeWatchdogErrorOption;
+
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
