@@ -44,10 +44,10 @@
 
 #define CONTROL_TASK_RATE_HZ 1000
 
-#define DAMPING_SEDATE 	100
-#define DAMPING_NORMAL 	250
-#define DAMPING_SPORT	350
-#define DAMPING_RALLY	500
+#define DAMPING_SEDATE 	_IQ(0.100)
+#define DAMPING_NORMAL 	_IQ(0.250)
+#define DAMPING_SPORT	_IQ(0.350)
+#define DAMPING_RALLY	_IQ(0.500)
 
 static int isOn;                      /**< Sets whether the active suspension is on or off. */
 static rideType rideMode = SEDATE;
