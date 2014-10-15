@@ -50,12 +50,12 @@ void adcISR (void);
 
 void initAdcModule(char adcs)
 {
+	// Set ADC Speed to 500ksps Max
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
+
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
 	SysCtlDelay(SysCtlClockGet() / 3000);
-
-	// Set ADC Speed to 500ksps Max
-	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
 	// Disable Sequence 0 before Configuration
 	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
