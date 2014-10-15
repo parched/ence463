@@ -76,6 +76,7 @@ void vUartTask(void* pvParameters) {
 	UartFrame buffer;
 	unsigned int msgLen;
 	unsigned int index = 0;
+	char lastChar;
 
 	for (;;) {
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
@@ -95,16 +96,17 @@ void vUartTask(void* pvParameters) {
 
 		// receive and decode messages
 		while (UARTCharsAvail(UART1_BASE)) {
+			char recvChar = (char) UARTCharGetNonBlocking(UART1_BASE);
 			if (index == 0) {
 				// decode message type
-				buffer.frameWise.msgType = (char) UARTCharGetNonBlocking(UART1_BASE);
-				msgLen = getMsgLen(buffer.frameWise.msgType);
-				if (msgLen) {
+				msgLen = getMsgLen(recvChar);
+				if (msgLen && lastChar != 'M') {
 					// only valid message types get to advance (msgLen = 0 is invalid)
+					buffer.frameWise.msgType = recvChar;
 					index++;
 				}
 			} else {
-				buffer.byteWise[index] = (char) UARTCharGetNonBlocking(UART1_BASE);
+				buffer.byteWise[index] = recvChar;
 				index++;
 				if (index >= msgLen) {
 					// end of message given message type
@@ -112,6 +114,8 @@ void vUartTask(void* pvParameters) {
 					receivedCallback(&buffer);
 				}
 			}
+
+			lastChar = recvChar;		// store the last character
 		}
 	}
 }
