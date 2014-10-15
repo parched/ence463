@@ -28,9 +28,12 @@
 
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "inc/hw_timer.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
-
+#include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -41,36 +44,81 @@
 #define PULSE_OUT_TASK_PROIRITY 5
 
 #define PULSE_OUT_TASK_MIN_RATE_HZ 1
+#define TIMER_FALLBACK_RATE_HZ 5
 
 #define PULSE_OUT_PERIPH SYSCTL_PERIPH_GPIOB
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
 
 static volatile int psuedoSpeed = 0; /**< The internally stored speed. */
-
+static volatile unsigned char isPulseHigh = 0;
 /**
  * \brief The pulse output task.
  *
  * \param pvParams Unused.
  */
-static void vPulseOutTask(void *pvParams);
+//static void vPulseOutTask(void *pvParams);
+
+static void isrTimer0 (void);
+
+static void initPulseTimer(void)
+{
+	// Enable and Configure Timer Peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+	SysCtlDelay(SysCtlClockGet()/3000);
+
+	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
+
+	// Initialise Timer Load
+	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TIMER_FALLBACK_RATE_HZ);
+
+	// Configure Timer Interrupt
+	TimerIntRegister(TIMER0_BASE, TIMER_A, isrTimer0);
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+	// Enable Timer Stalling
+	TimerControlStall(TIMER0_BASE, TIMER_A, true);
+
+	// Enable Timer
+	TimerEnable(TIMER0_BASE, TIMER_A);
+}
+
+
+void isrTimer0 (void)
+{
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	if(psuedoSpeed == 0)
+	{
+		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TIMER_FALLBACK_RATE_HZ);
+	}
+	else
+	{
+		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
+		isPulseHigh = ~isPulseHigh;
+
+		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() * WHEEL_CIRCUMFERENCE_M / psuedoSpeed);
+	}
+}
 
 void initPulseOut() {
 	// Enable peripheral
 	SysCtlPeripheralEnable(PULSE_OUT_PERIPH);
+	SysCtlDelay(SysCtlClockGet() / 3000);
 
 	// Set pin direction and configure output settings
 	GPIODirModeSet(PULSE_OUT_PORT, PULSE_OUT_PIN, GPIO_DIR_MODE_OUT);
 	GPIOPadConfigSet(PULSE_OUT_PORT, PULSE_OUT_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 	GPIOPinTypeGPIOOutput(PULSE_OUT_PORT, PULSE_OUT_PIN);
 
-	xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
+	initPulseTimer();
+	//xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
 void setPulseSpeed(_iq speed) {
 	psuedoSpeed = _IQint(PULSES_PER_REV * speed * 2);
 }
-
+/*
 void vPulseOutTask(void *pvParams) {
 	unsigned char isPulseHigh = 0;
 
@@ -90,3 +138,4 @@ void vPulseOutTask(void *pvParams) {
 		}
 	}
 }
+*/

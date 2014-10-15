@@ -379,15 +379,16 @@ void putSimOnStops() {
 }
 
 _iq getThrottle(char *msg) {
-	char intThrottlePartString[2];
-	char decThrottlePartString[3];
-	intThrottlePartString[1] = '\0';
-	decThrottlePartString[3] = '\0';
-	ustrncpy(intThrottlePartString, &msg[1], 2);
-	ustrncpy(decThrottlePartString, &msg[3], 3);
-	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
-	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
-	return _IQ(throttleIntPart) + _IQ(throttleDecPart )/1000;
+	int throttleInt = 1000*(msg[1]-'0') + 100*(msg[3] - '0') + 10*(msg[4] - '0') + (msg[5] - '0');
+	if (msg[0] == '-') {
+		// negative case
+		throttleInt = -throttleInt;
+	} else if (msg[0] >= '1' && msg[0] <= '9') {
+		// 10 case
+		throttleInt = 10000*(msg[0]-'0');
+	}
+
+	return _IQ(throttleInt)/1000;
 }
 
 _iq getRandom() {
