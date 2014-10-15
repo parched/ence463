@@ -354,6 +354,9 @@ void simulate(int dTime) {
 	vS += sprungAcc * dTime / (TICK_RATE_HZ / 1000);
 
 	speed += throttle * dTime / TICK_RATE_HZ;
+	if(speed < 0) {
+		speed = 0;
+	}
 
 	coilExtension = zU - zS;
 	

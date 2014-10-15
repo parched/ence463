@@ -195,8 +195,8 @@ int main(void)
 	invokeSprungErrorOption.skip = 1;
 	invokeSprungErrorOption.values[0]  = "Off";
 	invokeSprungErrorOption.values[1]  = "On";
-	invokeSprungErrorItem = item("SprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSprungErrorOption, getSpeedInvokedError);
-	invokeSprungErrorItem.setter = setSpeedError;
+	invokeSprungErrorItem = item("SprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSprungErrorOption, getSprungInvokedError);
+	invokeSprungErrorItem.setter = setSprungError;
 	invokeUnsprungErrorOption = option(0,1);
 	invokeUnsprungErrorOption.skip = 1;
 	invokeUnsprungErrorOption.values[0]  = "Off";
