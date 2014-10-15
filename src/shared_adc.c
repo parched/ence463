@@ -89,7 +89,8 @@ void initAdcModule(char adcs)
 	// Configure ADC Processor Steps
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 0, ADC_CTL_CH0);
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
-	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 3, ADC_CTL_TS | ADC_CTL_IE | ADC_CTL_END);
 
 	ADCIntDisable(ADC_BASE, ADC_SEQ);
 
