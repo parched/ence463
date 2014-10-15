@@ -274,7 +274,7 @@ void decodeRoadType(){
 }
 
 int getDisplaySpeed() {
-	return _IQint(speed);
+	return _IQint(speed * 36 / 10);
 }
 
 int getDisplaySprungAcc() {
