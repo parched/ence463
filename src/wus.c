@@ -183,7 +183,7 @@ int main(void)
 	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 4, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
+	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
 
 	/* Refreshes GUI */
 	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
