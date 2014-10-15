@@ -44,8 +44,8 @@
 #define TICK_RATE_HZ ((long)configTICK_RATE_HZ)   /**< The signed tick rate. */
 #define SIMULATE_TASK_RATE_HZ 2000     /**< Task rate, it is borderline stable at 1384Hz. */
 
-#define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
-#define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
+#define ROAD_RESTORING_FACTOR 200      /**< Road neutral restoring factor. */
+#define ROAD_DAMPING_FACTOR 50          /**< Road damping factor. */
 
 static int roadType = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
@@ -67,6 +67,8 @@ static _iq vR = 0;                     /**< The road velocity (mm/s). */
 static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
 static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
 
+static int amplitudeFactor = 100000;
+static _iq halfRoadWavelength = _IQ(100);
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
 static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
@@ -171,6 +173,8 @@ void vSimulateTask(void *params) {
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
 	pxPreviousWakeTime = xTaskGetTickCount();
 
+	int distanceTravelled = 0;
+
 	for (;;) {
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
@@ -179,12 +183,15 @@ void vSimulateTask(void *params) {
 
 		simulate(xTimeIncrement);
 
+		/* TODO: base this increment on speed */
+		distanceTravelled += 100;
+
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
 		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
 		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
 
-		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
+		circularBufferWrite(roadBuffer, distanceTravelled, _IQint(zR));
 
 		updateStatus();
 	}
@@ -225,13 +232,10 @@ void resetSimulation() {
 void simulate(int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
-	int amplitudeFactor = 100000;
-	int halfRoadWavelength = 250;
-
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
-		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
+		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / speed;
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
@@ -240,7 +244,7 @@ void simulate(int dTime) {
 		timeFromLastNoise += dTime;
 	}
 
-	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
+	aR = aRNoise - zR / ROAD_RESTORING_FACTOR -  vR / ROAD_DAMPING_FACTOR;
 
 	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
 	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
