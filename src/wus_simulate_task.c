@@ -232,8 +232,6 @@ void resetSimulation() {
 void simulate(int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
-	speed = _IQ(20);
-	halfRoadWavelength = _IQ(0.5);
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
