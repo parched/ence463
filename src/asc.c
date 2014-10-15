@@ -207,7 +207,7 @@ int main(void)
 	invokeSpeedErrorOption.skip = 1;
 	invokeSpeedErrorOption.values[0]  = "Off";
 	invokeSpeedErrorOption.values[1]  = "On";
-	invokeSpeedErrorItem = item("speedErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSpeedErrorOption, getSpeedInvokedError);
+	invokeSpeedErrorItem = item("SpeedErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSpeedErrorOption, getSpeedInvokedError);
 	invokeSpeedErrorItem.setter = setSpeedError;
 	involePowerErrorOption = option(0,1);
 	involePowerErrorOption.skip = 1;
