@@ -53,5 +53,12 @@ void initAdcModule(char adcs);
  */
 _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue);
 
+/**
+ * \brief Returns temperature in degrees celsius
+ *
+ * \return Temperature
+ */
+int getTemperature(void);
+
 #endif
 

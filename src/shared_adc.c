@@ -131,6 +131,12 @@ _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 	return minValue + _IQmpy((maxValue - minValue), ADC_TO_IQ(adcOutput));
 }
 
+int getTemperature(void)
+{
+	_iq voltageOffset = -_IQ(ADCout[3]/343) + _IQ(2.7);
+	return _IQint(_IQmpy(_IQ(75), voltageOffset) + _IQ(55));
+}
+
 
 void adcISR (void)
 {
