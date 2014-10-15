@@ -299,32 +299,32 @@ int getDisplayRideMode()
 
 int getDisplaySpeed() 
 {
-	return speed / 10;
+	return _IQint((speed*36) / 10);
 }
 
 int getDisplaySprungAcc() 
 {
-	return sprungAcc;
+	return _IQint(sprungAcc);
 }
 
 int getDisplayUnsprungAcc() 
 {
-	return unsprungAcc;
+	return _IQint(unsprungAcc);
 }
 
 int getDisplayCoilExtension() 
 {
-	return coilExtension;
+	return _IQint(coilExtension);
 }
 
 int getDisplayForce()
 {
-	return actuatorForce;
+	return _IQint(actuatorForce);
 }
 
 int getDisplayDampingCoefficient()
 {
-	return dampingCoefficient;
+	return _IQint(dampingCoefficient);
 }
 
 int getRoadType()
