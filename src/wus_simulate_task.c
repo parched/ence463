@@ -182,7 +182,7 @@ void vSimulateTask(void *params) {
 		simulate(xTimeIncrement);
 
 		/* TODO: base this increment on speed */
-		distanceTravelled += 1;
+		distanceTravelled += 100;
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
