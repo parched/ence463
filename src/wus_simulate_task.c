@@ -115,6 +115,7 @@ static void putSimOnStops();
 static void readMessage(UartFrame* uartFrame) {
 	switch (uartFrame->frameWise.msgType) {
 		case 'R':
+			uartFrame->frameWise.msg[2] = '\0';
 			roadType = (int) ustrtoul(uartFrame->frameWise.msg, NULL, 10);
 			break;
 		case 'S':
@@ -298,9 +299,11 @@ void putSimOnStops() {
 }
 
 _iq getThrottle(char *msg) {
-	char intThrottlePartString[3];
-	char decThrottlePartString[4];
-	ustrncpy(intThrottlePartString, msg, 2);
+	char intThrottlePartString[2];
+	char decThrottlePartString[3];
+	intThrottlePartString[1] = '\0';
+	decThrottlePartString[3] = '\0';
+	ustrncpy(intThrottlePartString, &msg[1], 2);
 	ustrncpy(decThrottlePartString, &msg[3], 3);
 	int throttleIntPart = (int) ustrtoul(intThrottlePartString, NULL, 10);
 	int throttleDecPart = (int) ustrtoul(decThrottlePartString, NULL, 10);
