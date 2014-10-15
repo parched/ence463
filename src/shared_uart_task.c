@@ -89,8 +89,9 @@ void vUartTask(void* pvParameters) {
 
 			unsigned int i = 0;
 			for (i=0; i<msgLen; i++) {
-				// send characters individually
-				UARTCharPut(UART1_BASE, (unsigned char) toSend.byteWise[i]);
+				while(!UARTCharPutNonBlocking(UART1_BASE, (unsigned char) toSend.byteWise[i])) {
+					vTaskDelay(1);
+				}
 			}
 			vTaskDelay(msgLen*configTICK_RATE_HZ / UART_PERCHAR_HZ);		// put delay between messages
 		}
