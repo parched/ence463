@@ -54,6 +54,7 @@ static rideType rideMode = SEDATE;
 static _iq sprungAcc = 0;
 static _iq unsprungAcc = 0;
 static _iq coilExtension = 0;
+static _iq lastCoilExtension = 0;
 static _iq speed = 0;
 static _iq actuatorForce = 0;
 static _iq dampingCoefficient = 0;
@@ -195,7 +196,12 @@ _iq getControlForce(int dTime)
 		return 0;
 	}
 
-	return STIFFNESS_SPRING * coilExtension;
+	_iq coilExtensionDeriv = (coilExtension - lastCoilExtension) * dTime / ((long)configTICK_RATE_HZ);
+	_iq outForce = (STIFFNESS_SPRING - 1) * coilExtension + _IQmpy(dampingCoefficient, coilExtensionDeriv);
+
+	lastCoilExtension = coilExtension;
+
+	return outForce;
 }
 
 /* SETTERS */
