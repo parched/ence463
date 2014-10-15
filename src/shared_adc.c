@@ -41,8 +41,7 @@
 #define ADC_DATA_MASK	0x3FF
 #define ADC_SEQ			0
 #define ADC_PRIORITY	0
-#define ADC_MAX			(1023 * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE)
-#define ADC_TO_IQ(x) ((x) << (QG - 10)) * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE  /** This will need to be changed if QG < 10 */
+#define ADC_TO_IQ(x) ((x) << (QG - 10)) /** This will need to be changed if QG < 10 */
 
 static unsigned long ADCout[8];
 
