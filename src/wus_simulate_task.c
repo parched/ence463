@@ -67,6 +67,8 @@ static _iq vR = 0;                     /**< The road velocity (mm/s). */
 static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
 static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
 
+static int amplitudeFactor = 100000;
+static _iq halfRoadWavelength = _IQ(100);
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
 static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
@@ -230,13 +232,10 @@ void resetSimulation() {
 void simulate(int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
-	int amplitudeFactor = 100000;
-	int halfRoadWavelength = 250;
-
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
-		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
+		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / speed;
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
