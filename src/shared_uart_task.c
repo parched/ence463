@@ -106,12 +106,14 @@ void vUartTask(void* pvParameters) {
 					index++;
 				}
 			} else {
-				buffer.byteWise[index] = recvChar;
-				index++;
 				if (index >= msgLen) {
 					// end of message given message type
-					index = 0;
 					receivedCallback(&buffer);
+					index = 0;
+				} else {
+					// adding more characters onto frame
+					buffer.byteWise[index] = recvChar;
+					index++;
 				}
 			}
 
