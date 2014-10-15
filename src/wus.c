@@ -96,7 +96,7 @@ int main(void)
 	/* Marking up GUI */
 	roadHandler = createCircularBuffer(roadNodes, NUM_ROAD_NODES, BUFFERFULLMODE_OVERWRITE);
 	setRoadBuffer(&roadHandler); // pass it to the sim task
-	roadSurface = traceView("Surface", &roadHandler, TRACE_ZERO_CENTER, 30, 30, 30);
+	roadSurface = traceView("Surface", &roadHandler, TRACE_ZERO_DYNAMIC, 30, 30, 15);
 
 	/*telemetry GUI*/
 	telemetry = listView("Telemetry", 4);

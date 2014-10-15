@@ -29,6 +29,7 @@
 #define UI_TASK_H_
 
 #include "shared_tracenode.h"
+#include "inc/hw_types.h"
 
 #define ACTIVITY_MAX_PAGES 5    /**<maximum number of pages in a GUI */
 
@@ -41,6 +42,7 @@
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACE_ZERO_CENTER -1    /**<specifies the zero height of the TraceView to be center */
+#define TRACE_ZERO_DYNAMIC -2	/**<specifies the center value of the TraceView to always be the value of the rightmost point */
 
 
 /**
@@ -112,6 +114,7 @@ typedef struct {
 	CircularBufferHandler* buffer;            /**<pointer to circular buffer handler*/
 
 	unsigned int zeroLine;                    /**<position on screen representing y value of 0*/
+	tBoolean dynamicZero;                     /**<sets trace to always set center point to be the rightmost point*/
 	unsigned int minZoomHorzScale;			  /**<change in horizontal trace position in pixels per change in x value of TraceNode while zoomed out*/
 	unsigned int maxZoomHorzScale;            /**<change in horizontal trace position in pixels per change in x value of TraceNode while zoomed in*/
 	int vertScale;                            /**<change in vertical trace position in CHAR_HEIGHT per change in y value of TraceNode*/

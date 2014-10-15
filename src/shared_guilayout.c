@@ -26,6 +26,7 @@
 
 #include "shared_guilayout.h"
 
+#include "inc/hw_types.h"
 #include "shared_displayformat128x96.h"
 #include <ustdlib.h>
 
@@ -75,6 +76,16 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 		// convert pixel height from bottom of plot to pixel index from top of screen
 		traceView.zeroLine = PX_VERT - TRACE_MARGIN_BOTTOM - zeroHeight;
 	}
+
+	if (zeroHeight == -2)
+	{
+		traceView.dynamicZero = true;
+	}
+	else
+	{
+		traceView.dynamicZero = false;
+	}
+
 	traceView.vertScale = vertScale;
 
 	ustrncpy(traceView.name, name, VIEW_NAME_SIZE);
