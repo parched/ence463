@@ -37,7 +37,7 @@
 #include "driverlib/timer.h"
 
 #define BIT(x) 			(1 << x)
-#define ADC_FREQ_HZ 	50000
+#define ADC_FREQ_HZ 	10000
 #define ADC_DATA_MASK	0x3FF
 #define ADC_SEQ			0
 #define ADC_PRIORITY	0
@@ -70,7 +70,7 @@ void initAdcModule(char adcs)
 	unsigned long ulDummy[8];
 
 	// Set ADC Speed to 500ksps Max
-	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_1MSPS);
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
