@@ -42,6 +42,7 @@
 #define ADC_SEQ			0
 #define ADC_PRIORITY	0
 #define ADC_MAX			(1023 * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE)
+#define ADC_TO_IQ(x) ((x) << (QG - 10)) * DESIRED_MAX_VOLTAGE / REAL_MAX_VOLTAGE  /** This will need to be changed if QG < 10 */
 
 static unsigned long ADCout[8];
 
@@ -103,19 +104,19 @@ void initAdcModule(char adcs)
 
 _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 {
-	int adcOutput = -1;
+	unsigned long adcOutput = -1;
 
 	switch(adc)
 	{
 	case 0x01:
-		adcOutput = (int) ADCout[0] & ADC_DATA_MASK; break;
+		adcOutput = ADCout[0] & ADC_DATA_MASK; break;
 	case 0x02:
-		adcOutput = (int) ADCout[1] & ADC_DATA_MASK; break;
+		adcOutput = ADCout[1] & ADC_DATA_MASK; break;
 	case 0x04:
-		adcOutput = (int) ADCout[2] & ADC_DATA_MASK; break;
+		adcOutput = ADCout[2] & ADC_DATA_MASK; break;
 	}
 
-	return minValue + ((maxValue - minValue) * adcOutput / ADC_MAX);
+	return minValue + _IQmpy((maxValue - minValue), ADC_TO_IQ(adcOutput));
 }
 
 
