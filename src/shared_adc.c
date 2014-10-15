@@ -103,7 +103,7 @@ void initAdcModule(char adcs)
 
 _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 {
-	unsigned long adcOutput = -1;
+	unsigned long adcOutput;
 
 	switch(adc)
 	{
@@ -113,6 +113,8 @@ _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 		adcOutput = ADCout[1] & ADC_DATA_MASK; break;
 	case 0x04:
 		adcOutput = ADCout[2] & ADC_DATA_MASK; break;
+	default:
+		return -1ul;
 	}
 
 	return minValue + _IQmpy((maxValue - minValue), ADC_TO_IQ(adcOutput));
