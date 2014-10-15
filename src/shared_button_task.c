@@ -35,11 +35,11 @@
 #include "task.h"
 #include "shared_guidraw_task.h"
 
-#define BIT(x)		(1 << x)
+#define BIT(x) (1 << x)
 
-#define TOTAL_MAX	250
-#define TOTAL_MIN	0
 #define BUTTON_TASK_RATE_HZ 10000
+#define TOTAL_MAX (BUTTON_TASK_RATE_HZ / 50)
+#define TOTAL_MIN 0
 
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
