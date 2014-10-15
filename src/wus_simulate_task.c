@@ -44,8 +44,8 @@
 #define TICK_RATE_HZ ((long)configTICK_RATE_HZ)   /**< The signed tick rate. */
 #define SIMULATE_TASK_RATE_HZ 2000     /**< Task rate, it is borderline stable at 1384Hz. */
 
-#define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
-#define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
+#define ROAD_RESTORING_FACTOR 200      /**< Road neutral restoring factor. */
+#define ROAD_DAMPING_FACTOR 50          /**< Road damping factor. */
 
 static int roadType = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
@@ -245,7 +245,7 @@ void simulate(int dTime) {
 		timeFromLastNoise += dTime;
 	}
 
-	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
+	aR = aRNoise - zR / ROAD_RESTORING_FACTOR -  vR / ROAD_DAMPING_FACTOR;
 
 	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
 	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
