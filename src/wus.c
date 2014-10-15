@@ -122,7 +122,7 @@ int main(void)
 	startOption.values[1]  = "On";
 	startItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, startOption, getStartStatusDisplay);
 	*/
-	roadTypeOption = option(0, 1);
+	roadTypeOption = option(0, 33);
 	roadTypeOption.skip = 1;
 	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getRoadTypeStatusDisplay);
 	throttleOption = option(-10,10);

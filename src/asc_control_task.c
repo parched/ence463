@@ -116,7 +116,6 @@ static void sendSerialMessages()
 
 	// Road Type Transmission
 	UartFrame roadSend;
-
 	roadSend.frameWise.msgType = 'R';	// Road Message Type
 	usprintf(roadSend.frameWise.msg, "%2d", roadType);
 	queueMsgToSend(&roadSend);
@@ -134,7 +133,6 @@ static void sendSerialMessages()
 	statusSend.frameWise.msgType = 'M';
 	statusSend.frameWise.msg[0] = errorState;
 	queueMsgToSend(&statusSend);
-
 }
 
 void vControlTask(void *params)
