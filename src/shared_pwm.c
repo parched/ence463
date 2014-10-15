@@ -37,7 +37,7 @@
 #define MAX_DUTY 1000
 #define FREQ_HZ 100000
 
-static unsigned long ulPeriod;
+static long lPeriod;
 
 typedef struct  {
     unsigned long pwmOut;
@@ -58,7 +58,7 @@ static PwmPin pwm5 = {PWM_OUT_5,PWM_OUT_5_BIT,0};
 /*init the PWM Module*/
 void initPwmModule(char pwmORed) {
 	//set the PWM frequency to 100000KHz
-	ulPeriod = SysCtlClockGet() / FREQ_HZ;
+	lPeriod = SysCtlClockGet() / FREQ_HZ;
 
 	//set PWM clock to system's clock and enables the PWM perhiferial
 	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
@@ -66,7 +66,7 @@ void initPwmModule(char pwmORed) {
 
 	if((pwmORed %2) != 0) { //Sets up PWM1
 		PWMGenConfigure(PWM_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-		PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, ulPeriod);
+		PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, lPeriod);
 		PWMGenEnable(PWM_BASE, PWM_GEN_0);
 		SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
 		GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
@@ -74,7 +74,7 @@ void initPwmModule(char pwmORed) {
 	}
 	if(pwmORed !=1 ) { //Sets up PWM4 and/or PWM5 if needed
 		PWMGenConfigure(PWM_BASE, PWM_GEN_2, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-		PWMGenPeriodSet(PWM_BASE, PWM_GEN_2, ulPeriod);
+		PWMGenPeriodSet(PWM_BASE, PWM_GEN_2, lPeriod);
 		PWMGenEnable(PWM_BASE, PWM_GEN_2);
 		SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 		//dont want to not be able to use a pin if we not using it for pwm
@@ -98,6 +98,9 @@ void initPwmModule(char pwmORed) {
 
 //set the pwm dutycycle for the PWM of (value - minValue) / (maxValue - minValue) for the PWM pin passed to it
 void setDuty(char pwmPin, _iq value, _iq minValue, _iq maxValue) {
+	value >>= 6;
+	minValue >>= 6;
+	maxValue >>= 6;
 	PwmPin pwmToChange;
 	if(pwmPin == 1 && pwm1.enableFlag == 1) {
 		pwmToChange = pwm1;
@@ -115,11 +118,15 @@ void setDuty(char pwmPin, _iq value, _iq minValue, _iq maxValue) {
 		value = maxValue;
 	}
 
-	if(value > minValue) {
-		unsigned long pulseWidth = (value - minValue) / ((maxValue - minValue) * REAL_MAX_VOLTAGE / (ulPeriod * DESIRED_MAX_VOLTAGE));
+
+	if(value < minValue) {
+		value = minValue;
+	}
+	unsigned long pulseWidth = (value - minValue) * lPeriod / ((maxValue - minValue) * REAL_MAX_VOLTAGE / DESIRED_MAX_VOLTAGE);
+	if(pulseWidth != 0) {
 		PWMPulseWidthSet(PWM_BASE, pwmToChange.pwmOut, pulseWidth);
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, true);
-	} else { //disable PWM output in order to get 0V
+	} else {
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, false);
 	}
 }
