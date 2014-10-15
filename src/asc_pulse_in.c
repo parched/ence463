@@ -64,7 +64,7 @@ void initPulseIn()
 
 _iq getPulseSpeed()
 {
-	return _IQ(((long) configTICK_RATE_HZ) * WHEEL_CIRCUMFERENCE_M) / (lastTickDuration * PULSES_PER_REV);
+	return (((((long) configTICK_RATE_HZ) * WHEEL_CIRCUMFERENCE_M) << 10)/((long) lastTickDuration * PULSES_PER_REV)) << (QG-10);
 }
 
 void isrPortF(void)
