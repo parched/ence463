@@ -242,7 +242,7 @@ void simulate(int dTime) {
 	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
 
 	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
-	_iq suspensionDampingForce = dampingFactor * (vU - vS);
+	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
 	_iq suspensionForce = suspensionSpringForce + suspensionDampingForce;
 
 	_iq tyreSpringForce = STIFFNESS_TYRE * (zR - zU);
