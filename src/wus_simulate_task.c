@@ -199,7 +199,7 @@ void vSimulateTask(void *params) {
 }
 
 void decodeRoadType(){
-	switch (RoadType){
+	switch (roadType){
 		case 10:
 			roadAmplitude = 5;
 			halfRoadWavelength = _IQ(0.05);
@@ -207,7 +207,7 @@ void decodeRoadType(){
 		
 		case 11:
 			roadAmplitude = 10;
-			halfRoadWavelength = _IQ(0.07)
+			halfRoadWavelength = _IQ(0.07);
 			break;
 
 		case 12:
