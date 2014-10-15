@@ -48,7 +48,7 @@
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
 static int roadType = 0;
-static _iq dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
 static _iq force = 0;                  /**< The actuator force (N). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static _iq speed = 0;                  /**< The car speed (m/s). */
@@ -63,9 +63,9 @@ static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the r
 static _iq zR = 0;                     /**< The road displacement (mm). */
 static _iq zU = 0;                     /**< The unsprung mass displacement (mm). */
 static _iq zS = 0;                     /**< The sprung mass dispalcement (mm). */
-static _iq vR = 0;                     /**< The road velocity (m/s). */
-static _iq vU = 0;                     /**< The unsprung mass velocity (m/s). */
-static _iq vS = 0;                     /**< The sprung mass velocity (m/s). */
+static _iq vR = 0;                     /**< The road velocity (mm/s). */
+static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
+static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
 
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
@@ -267,12 +267,12 @@ void simulate(int dTime) {
 		}
 	}
 
-	zR += vR * 1000 * dTime / TICK_RATE_HZ;
-	zU += vU * 1000 * dTime / TICK_RATE_HZ;
-	zS += vS * 1000 * dTime / TICK_RATE_HZ;
-	vR += aR * dTime / TICK_RATE_HZ;
-	vU += unsprungAcc * dTime / TICK_RATE_HZ;
-	vS += sprungAcc * dTime / TICK_RATE_HZ;
+	zR += vR * dTime / TICK_RATE_HZ;
+	zU += vU * dTime / TICK_RATE_HZ;
+	zS += vS * dTime / TICK_RATE_HZ;
+	vR += aR * dTime / (TICK_RATE_HZ / 1000);
+	vU += unsprungAcc * dTime / (TICK_RATE_HZ / 1000);
+	vS += sprungAcc * dTime / (TICK_RATE_HZ / 1000);
 
 	speed += throttle * dTime / TICK_RATE_HZ;
 
