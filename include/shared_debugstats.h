@@ -28,3 +28,17 @@
  * \brief Initialize timer for debugging
  */
 void initDebugStats(void);
+
+/**
+ * \brief Get number of tasks currently running
+ *
+ * \return Number of tasks currently running
+ */
+int getNumberOfTasks(void);
+
+/**
+ * \brief Get combined CPU load
+ *
+ * \return CPU load in percentage if valid, -1 for error
+ */
+int getTasksCPULoad(void);

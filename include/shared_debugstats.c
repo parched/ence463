@@ -26,6 +26,10 @@
 
 #include "shared_debugstats.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include <stdint.h>
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_timer.h"
@@ -42,6 +46,41 @@ void initDebugStats(void)
 	TimerLoadSet(TIMER2_BASE, TIMER_A, 0xFFFFFFFF);
 	TimerPrescaleSet(TIMER2_BASE, TIMER_A, 255);
 	TimerEnable(TIMER2_BASE, TIMER_A);
+}
+
+int getNumberOfTasks(void)
+{
+	return uxTaskGetNumberOfTasks();
+}
+
+int getTasksCPULoad(void)
+{
+	TaskStatus_t *pxTaskStatusArray;
+	volatile UBaseType_t uxArraySize;
+	uint32_t ulTotalRunTime;
+	unsigned int totalCPUPercentage = 0;
+	int ret = -1;
+
+	if (pxTaskStatusArray != NULL)
+	{
+		uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
+
+		/* For percentage calculations */
+		ulTotalRunTime /= 100UL;
+
+		/* Avoid divide by zero errors */
+		if (ulTotalRunTime > 0)
+		{
+			unsigned int i;
+			for (i=0; i<uxArraySize; i++)
+			{
+				totalCPUPercentage += (pxTaskStatusArray[i].ulRunTimeCounter / ulTotalRunTime);
+			}
+			ret = totalCPUPercentage /= uxArraySize;
+		}
+		vPortFree(pxTaskStatusArray);
+	}
+	return ret;
 }
 
 

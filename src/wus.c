@@ -41,6 +41,8 @@
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
 #include "shared_tracenode.h"
+#include "shared_adc.h"
+#include "shared_debugstats.h"
 
 #define NUM_ROAD_NODES 200
 
@@ -83,6 +85,16 @@ static Item powerFailureItem;
 static Options powerFailureOption;
 static Item watchdogErrorItem;
 static Options watchdogErrorOption;
+
+static ListView debug;
+static Item uartQueueItem;
+static Options uartQueueOption;
+//static Item temperatureItem;
+//static Options temperatureOption;
+static Item noTasksItem;
+static Options noTasksOption;
+static Item cpuLoadItem;
+static Options cpuLoadOption;
 
 
 /*-----------------------------------------------------------*/
@@ -165,12 +177,27 @@ int main(void)
 	wusStatusEcho.items[4] = powerFailureItem;
 	wusStatusEcho.items[5] = watchdogErrorItem;
 
+	/*debug gui*/
+	debug = listView("Sys Status", 3);
+	uartQueueOption = option(0, 999);
+	uartQueueItem = item("UART Q", OPTIONTYPE_INT, OPTIONACCESS_READONLY, uartQueueOption, getSendQueueAvailSpaces);
+	//temperatureOption = option(0, 999);
+	//temperatureItem = item("Temp", OPTIONTYPE_INT, OPTIONACCESS_READONLY, temperatureOption, getTemperature);
+	noTasksOption = option(0, 999);
+	noTasksItem = item("Tasks", OPTIONTYPE_INT, OPTIONACCESS_READONLY, noTasksOption, getNumberOfTasks);
+	cpuLoadOption = option(-1, 100);
+	cpuLoadItem = item("CPU %", OPTIONTYPE_INT, OPTIONACCESS_READONLY, cpuLoadOption, getTasksCPULoad);
+	debug.items[0] = uartQueueItem;
+	debug.items[1] = noTasksItem;
+	debug.items[2] = cpuLoadItem;
+
 	/*attach views to activity*/
 	mainActivity = activity();
 	addView(&mainActivity, &telemetry, VIEWTYPE_LIST);
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE);
 	addView(&mainActivity, &wusMessages, VIEWTYPE_LIST);
 	addView(&mainActivity, &wusStatusEcho, VIEWTYPE_LIST);
+	addView(&mainActivity, &debug, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
@@ -183,7 +210,7 @@ int main(void)
 	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 4, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 1, NULL);
 
 	/* Refreshes GUI */
 	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
