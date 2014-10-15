@@ -97,7 +97,7 @@ void isrTimer0 (void)
 		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 		isPulseHigh = ~isPulseHigh;
 
-		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() * WHEEL_CIRCUMFERENCE_M / psuedoSpeed);
+		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / psuedoSpeed / PULSES_PER_REV);
 	}
 }
 
@@ -116,7 +116,7 @@ void initPulseOut() {
 }
 
 void setPulseSpeed(_iq speed) {
-	psuedoSpeed = _IQint(PULSES_PER_REV * speed * 2);
+	psuedoSpeed = _IQint(speed);
 }
 /*
 void vPulseOutTask(void *pvParams) {
