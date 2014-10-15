@@ -41,7 +41,7 @@
 
 #define SENDMESSAGE_QUEUE_SIZE 10
 #define UART_TASK_RATE_HZ 1000
-#define UART_PERCHAR_HZ 50000	// 20us delay between characters
+#define UART_PERCHAR_HZ 75000	// 13.3us delay between characters
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
