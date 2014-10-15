@@ -156,7 +156,7 @@ void updateStatus() {
 	}
 
 	errorStatusSend.frameWise.msgType = 'W';
-	errorStatusSend.frameWise.msg[0] = combinedError;
+	errorStatusSend.frameWise.msg[0] = combinedError | wusStatusEcho;
 	queueMsgToSend(&errorStatusSend);
 }
 
