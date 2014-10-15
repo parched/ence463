@@ -47,21 +47,43 @@ static unsigned long ADCout[8];
 
 void adcISR (void);
 
+static void initAdcTimer (void)
+{
+	// Enable and Configure Timer 1 Peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+	SysCtlDelay(SysCtlClockGet() / 3000);
+
+	TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+
+	// Set Timer 1 Load to 50kHz (Required ADC Sample Rate)
+	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ);
+
+	// Enable Timer Stalling (Timer stops during debug)
+	TimerControlStall(TIMER1_BASE, TIMER_A, true);
+
+	// Enable Timer ADC Trigger
+	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
+}
 
 void initAdcModule(char adcs)
 {
+	unsigned long ulDummy[8];
+
+	// Set ADC Speed to 500ksps Max
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_1MSPS);
+
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
 	SysCtlDelay(SysCtlClockGet() / 3000);
 
-	// Set ADC Speed to 500ksps Max
-	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
+	// Enable Timer Trigger
+	initAdcTimer();
 
 	// Disable Sequence 0 before Configuration
 	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 
-	// Configure  ADC processor and 8x Oversampling
-	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_ALWAYS, ADC_PRIORITY);
+	// Configure ADC processor and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
 	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
 	// Configure ADC Processor Steps
@@ -69,15 +91,23 @@ void initAdcModule(char adcs)
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
 
+	ADCIntDisable(ADC_BASE, ADC_SEQ);
+
+	// Purge ADC Sequence
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ulDummy);
+
+	// Configure, Register and Clear Interrupt
+	ADCIntClear 	(ADC_BASE, ADC_SEQ);
+	IntRegister		(INT_ADC0SS0, adcISR);
+	IntPrioritySet	(INT_ADC0SS0, 0);
+	IntEnable 		(INT_ADC0SS0);
+	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
+
 	// Enable ADC Sequence
 	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 
-	// Configure, Register and Clear Interrupt
-	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
-	IntRegister 	(INT_ADC0, adcISR);
-	IntEnable 		(INT_ADC0);
-	ADCIntClear 	(ADC_BASE, ADC_SEQ);
-	IntMasterEnable	();
+	// Enable Timer
+	TimerEnable		(TIMER1_BASE, TIMER_A);
 }
 
 
@@ -106,4 +136,12 @@ void adcISR (void)
 
 	// Get Data from the ADC
 	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ADCout);
+
+	// Check for FIFO Under/Overflow
+	long FIFOoverflow  = ADCSequenceOverflow(ADC_BASE, ADC_SEQ);
+	long FIFOunderflow = ADCSequenceUnderflow(ADC_BASE, ADC_SEQ);
+
+	// Clear FIFO Under/Overflow Flags
+	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);
+	ADCSequenceUnderflowClear(ADC_BASE, ADC_SEQ);
 }
