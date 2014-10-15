@@ -591,10 +591,20 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 
 	TraceNode* plotting = getLatestNode(view->buffer);
 	int headX = plotting->x;		// latest node appears rightmost of the trace
+	int headY = plotting->y;
 
 	static int prevYPos[PX_HORZ];
 	int dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-2);
-	int dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+	int dispPosY;
+	if (view->dynamicZero)
+	{
+		dispPosY = view->zeroLine - ((plotting->y-headY)*CHAR_HEIGHT)/(view->vertScale);
+	}
+	else
+	{
+		dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+	}
+
 	// draw until screen is full or up to one being written,
 	// note: return value of getLatestNode() will change while buffer is being drawn
 	do {
@@ -608,7 +618,15 @@ void drawTraceViewPlot(const TraceView* view, tBoolean selected)
 		plotting = plotting->prev;			// draw the previous node
 
 		dispPosX = (plotting->x - headX)/((int) view->dispHorzScale) + (PX_HORZ-1);
-		dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+		if (view->dynamicZero)
+		{
+			dispPosY = view->zeroLine - ((plotting->y-headY)*CHAR_HEIGHT)/(view->vertScale);
+		}
+		else
+		{
+			dispPosY = view->zeroLine - (plotting->y*CHAR_HEIGHT)/(view->vertScale);
+		}
+
 	} while(plotting != NULL && dispPosX >= 0 && plotting != getLatestNode(view->buffer));
 
 }
