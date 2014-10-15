@@ -58,12 +58,17 @@ static void initAdcTimer (void)
 	// Set Timer 1 Load to 50kHz (Required ADC Sample Rate)
 	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ);
 
+	// Enable Timer Stalling (Timer stops during debug)
+	TimerControlStall(TIMER1_BASE, TIMER_A, true);
+
 	// Enable Timer ADC Trigger
 	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
 }
 
 void initAdcModule(char adcs)
 {
+	unsigned long ulDummy[8];
+
 	// Set ADC Speed to 500ksps Max
 	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
