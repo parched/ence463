@@ -42,7 +42,7 @@
 #include "shared_errors.h"
 
 #define TICK_RATE_HZ ((long)configTICK_RATE_HZ)   /**< The signed tick rate. */
-#define SIMULATE_TASK_RATE_HZ 10000     /**< Task rate, it is borderline stable at 1384Hz. */
+#define SIMULATE_TASK_RATE_HZ 2000     /**< Task rate, it is borderline stable at 1384Hz. */
 
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
