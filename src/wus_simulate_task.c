@@ -171,6 +171,8 @@ void vSimulateTask(void *params) {
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
 	pxPreviousWakeTime = xTaskGetTickCount();
 
+	int distanceTravelled = 0;
+
 	for (;;) {
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
@@ -179,12 +181,15 @@ void vSimulateTask(void *params) {
 
 		simulate(xTimeIncrement);
 
+		/* TODO: base this increment on speed */
+		distanceTravelled += 1;
+
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
 		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
 		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
 
-		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
+		circularBufferWrite(roadBuffer, distanceTravelled, _IQint(zR));
 
 		updateStatus();
 	}
