@@ -312,7 +312,7 @@ void simulate(int dTime) {
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
-			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * roadAmplitude * 250;
+			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * roadAmplitude / 4;
 		}
 		timeFromLastNoise += dTime;
 	}
