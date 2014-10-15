@@ -41,6 +41,7 @@
 
 typedef enum {VERTDIR_UP, VERTDIR_DOWN} VertDir;
 typedef enum {HORZDIR_LEFT, HORZDIR_RIGHT} HorzDir;
+typedef enum {DRAWMODE_TITLE, DRAWMODE_OPTION} DrawMode;
 
 typedef struct
 {
@@ -154,13 +155,15 @@ void clearTracePlot(void);
 unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int margin);
 
 /**
- * \brief Draws option modifiable indicators
+ * \brief Finds horizontal position of modifiable indicators
  *
- * \param x Horizontal position to draw
- * \param y Vertical position to draw
+ * \param menuType Specify to draw for Title or Option
+ * \param dir Which indicator side to find position of
+ * \param x Horizontal position of text to surround
  * \param strlen Length of the string
+ * \return Horizontal pixel position to draw the modifiable indicator
  */
-unsigned int drawModifiableIndicator(unsigned int x, unsigned int y, unsigned int strlen);
+unsigned int getModifiableIndicatorHorzPos(DrawMode menuType, HorzDir dir, unsigned int x, unsigned int strlen);
 
 
 void attachActivity(Activity* activity)
@@ -494,11 +497,11 @@ void drawViewTitle(const Activity* activity)
 		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		if (activity->pageContext > 0)
 		{
-			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		}
 		if (activity->pageContext < activity->numPages-1)
 		{
-			RIT128x96x4StringDraw(">", posX+ustrlen(titleStr)*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		}
 	}
 	else
@@ -507,11 +510,11 @@ void drawViewTitle(const Activity* activity)
 		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		if (activity->pageContext > 0)
 		{
-			RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		}
 		if (activity->pageContext < activity->numPages-1)
 		{
-			RIT128x96x4StringDraw(">", posX+ustrlen(titleStr)*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		}
 	}
 }
@@ -561,22 +564,22 @@ void drawListViewItem(const Item* item, unsigned int index, tBoolean selected)
 		{
 			if (item->getter() < item->options.maxIndex)
 			{
-				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(displayStr)), posY, SELECTED_BRIGHTNESS);
 			}
 			if (item->getter() > item->options.minIndex)
 			{
-				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, SELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(displayStr)), posY, SELECTED_BRIGHTNESS);
 			}
 		}
 		else
 		{
 			if (item->getter() < item->options.maxIndex)
 			{
-				RIT128x96x4StringDraw(">", posX+OPTION_NAME_SIZE*CHAR_WIDTH+OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(displayStr)), posY, UNSELECTED_BRIGHTNESS);
 			}
 			if (item->getter() > item->options.minIndex)
 			{
-				RIT128x96x4StringDraw("<", posX-CHAR_WIDTH-OPTION_MODFIABLEINDICATOR_MARGIN, posY, UNSELECTED_BRIGHTNESS);
+				RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(displayStr)), posY, UNSELECTED_BRIGHTNESS);
 			}
 		}
 	}
@@ -653,8 +656,83 @@ unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int mar
 	return pos;
 }
 
-unsigned int drawModifiableIndicator(unsigned int x, unsigned int y, unsigned int strlen)
+unsigned int getModifiableIndicatorHorzPos(DrawMode menuType, HorzDir dir, unsigned int x, unsigned int strlen)
 {
+	strlen--;		// account for null byte
 
+	unsigned int margin;
+	unsigned int nameSize;
+	tBoolean wrap;
+
+	switch(menuType)
+	{
+		case(DRAWMODE_OPTION):
+			margin = OPTION_MODIFIABLEINDICATOR_MARGIN;
+			nameSize = OPTION_NAME_SIZE;
+			wrap = OPTION_MODIFIABLEINDICATOR_WRAP;
+			break;
+		case(DRAWMODE_TITLE):
+			margin = TITLE_MARGIN;
+			nameSize = VIEW_NAME_SIZE;
+			wrap = TITLE_WRAP;
+			break;
+	}
+
+	switch(OPTION_TEXTALIGN)
+	{
+		case(TEXTALIGN_LEFT):
+			switch(dir)
+			{
+				case(HORZDIR_LEFT):
+					return (x - margin - CHAR_WIDTH);
+				case(HORZDIR_RIGHT):
+					if (wrap)
+					{
+						return (x + strlen*CHAR_WIDTH + margin);
+					}
+					else
+					{
+						return (x + nameSize*CHAR_WIDTH + margin);
+					}
+			}
+		case(TEXTALIGN_CENTER):
+			switch(dir)
+			{
+				case(HORZDIR_LEFT):
+					if (wrap)
+					{
+						return (x - margin - CHAR_WIDTH);
+					}
+					else
+					{
+						return (x + CHAR_WIDTH*(strlen - nameSize)/2 - margin - CHAR_WIDTH);
+					}
+				case(HORZDIR_RIGHT):
+					if (OPTION_MODIFIABLEINDICATOR_WRAP)
+					{
+						return (x + CHAR_WIDTH*strlen + margin);
+					}
+					else
+					{
+						return (x + CHAR_WIDTH*(strlen + nameSize)/2 + margin);
+					}
+			}
+		case(TEXTALIGN_RIGHT):
+			switch(dir)
+			{
+				case(HORZDIR_LEFT):
+					if (wrap)
+					{
+						return (x - margin - CHAR_WIDTH);
+					}
+					else
+					{
+						return (x + CHAR_WIDTH*(strlen - nameSize) + margin);
+					}
+				case(HORZDIR_RIGHT):
+					return (x + CHAR_WIDTH*strlen + margin);
+			}
+	}
+	return 0;
 }
 
