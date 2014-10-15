@@ -100,7 +100,7 @@ void vUartTask(void* pvParameters) {
 			if (index == 0) {
 				// decode message type
 				msgLen = getMsgLen(recvChar);
-				if (msgLen && lastChar != 'M') {
+				if (msgLen && lastChar != 'M' && lastChar != 'W') {
 					// only valid message types get to advance (msgLen = 0 is invalid)
 					buffer.frameWise.msgType = recvChar;
 					index++;
