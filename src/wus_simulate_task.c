@@ -48,6 +48,7 @@
 #define ROAD_DAMPING_FACTOR 50          /**< Road damping factor. */
 
 static int roadType = 0;
+static int roadAmplitude = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
 static _iq force = 0;                  /**< The actuator force (N). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
@@ -67,7 +68,6 @@ static _iq vR = 0;                     /**< The road velocity (mm/s). */
 static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
 static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
 
-static int amplitudeFactor = 100000;
 static _iq halfRoadWavelength = _IQ(100);
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
@@ -80,6 +80,11 @@ static int startStatus = 0;
  * \brief Resets the simulation.
  */
 static void resetSimulation();
+
+/**
+ * \brief Converts Road Type to Amplitude and Half-Wavelength
+ */
+ static void decodeRoadType();
 
 /**
  * \brief Simulates and updates the state.
@@ -118,6 +123,7 @@ static void readMessage(UartFrame* uartFrame) {
 	switch (uartFrame->frameWise.msgType) {
 		case 'R':
 			roadType = (int) ustrtoul(uartFrame->frameWise.msg, NULL, 10);
+			decodeRoadType();
 			break;
 		case 'S':
 			resetSimulation();
@@ -197,6 +203,75 @@ void vSimulateTask(void *params) {
 	}
 }
 
+void decodeRoadType(){
+	switch (roadType){
+		case 10:
+			roadAmplitude = 5;
+			halfRoadWavelength = _IQ(0.05);
+			break;
+		
+		case 11:
+			roadAmplitude = 10;
+			halfRoadWavelength = _IQ(0.07);
+			break;
+
+		case 12:
+			roadAmplitude = 15;
+			halfRoadWavelength = _IQ(0.09);
+			break;
+
+		case 13:
+			roadAmplitude = 20;
+			halfRoadWavelength = _IQ(0.10);
+			break;
+
+		case 20:
+			roadAmplitude = 25;
+			halfRoadWavelength = _IQ(0.11);
+			break;
+
+		case 21:
+			roadAmplitude = 50;
+			halfRoadWavelength = _IQ(0.16);
+			break;
+
+		case 22:
+			roadAmplitude = 75;
+			halfRoadWavelength = _IQ(0.19);
+			break;
+
+		case 23:
+			roadAmplitude = 100;
+			halfRoadWavelength = _IQ(0.22);
+			break;
+
+		case 30:
+			roadAmplitude = 150;
+			halfRoadWavelength = _IQ(0.27);
+			break;
+
+		case 31:
+			roadAmplitude = 200;
+			halfRoadWavelength = _IQ(0.32);			
+			break;
+
+		case 32:
+			roadAmplitude = 250;
+			halfRoadWavelength = _IQ(0.35);
+			break;
+
+		case 33:
+			roadAmplitude = 300;
+			halfRoadWavelength = _IQ(0.39);
+			break;
+		
+		default:
+			roadAmplitude = 0;
+			halfRoadWavelength = _IQ(100);
+			break;
+	}
+}
+
 int getDisplaySpeed() {
 	return _IQint(speed);
 }
@@ -230,8 +305,6 @@ void resetSimulation() {
 }
 
 void simulate(int dTime) {
-	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
-
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
@@ -239,7 +312,7 @@ void simulate(int dTime) {
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
-			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * amplitudeFactor;
+			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * roadAmplitude / 4;
 		}
 		timeFromLastNoise += dTime;
 	}
