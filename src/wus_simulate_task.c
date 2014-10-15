@@ -146,7 +146,7 @@ void updateStatus() {
 	UartFrame errorStatusSend;
 
 	//max speed error check
-	if(speed > MAX_SPEED || speed < MIN_SPEED) {
+	if(speed >= MAX_SPEED ) {
 		combinedError |= CAR_SPEED_EXCEEDED;
 	} else {
 		combinedError &= ~CAR_SPEED_EXCEEDED;
@@ -354,8 +354,11 @@ void simulate(int dTime) {
 	vS += sprungAcc * dTime / (TICK_RATE_HZ / 1000);
 
 	speed += throttle * dTime / TICK_RATE_HZ;
-	if(speed < 0) {
-		speed = 0;
+
+	if (speed < MIN_SPEED) {
+		speed = MIN_SPEED;
+	} else if (speed > MAX_SPEED) {
+		speed = MAX_SPEED;
 	}
 
 	coilExtension = zU - zS;
