@@ -91,7 +91,7 @@ int main(void)
 
 	/* Marking up GUI */
 	controls = listView("Controls", 5);
-	statuses = listView("Status", 5);
+	statuses = listView("Status ", 5);
 	statuses2 = listView("WUS Errors", 4);
 
 	/*controls menu GUI*/

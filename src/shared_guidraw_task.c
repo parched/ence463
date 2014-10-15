@@ -497,11 +497,11 @@ void drawViewTitle(const Activity* activity)
 		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		if (activity->pageContext > 0)
 		{
-			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_TITLE, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		}
 		if (activity->pageContext < activity->numPages-1)
 		{
-			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_TITLE, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, SELECTED_BRIGHTNESS);
 		}
 	}
 	else
@@ -510,11 +510,11 @@ void drawViewTitle(const Activity* activity)
 		RIT128x96x4StringDraw(titleStr, posX, TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		if (activity->pageContext > 0)
 		{
-			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw("<", getModifiableIndicatorHorzPos(DRAWMODE_TITLE, HORZDIR_LEFT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		}
 		if (activity->pageContext < activity->numPages-1)
 		{
-			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_OPTION, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
+			RIT128x96x4StringDraw(">", getModifiableIndicatorHorzPos(DRAWMODE_TITLE, HORZDIR_RIGHT, posX, ustrlen(titleStr)), TITLE_PADDINGTOP, UNSELECTED_BRIGHTNESS);
 		}
 	}
 }
