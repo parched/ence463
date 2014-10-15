@@ -37,7 +37,7 @@
 
 #define BIT(x) (1 << x)
 
-#define BUTTON_TASK_RATE_HZ 10000
+#define BUTTON_TASK_RATE_HZ 500
 #define TOTAL_MAX (BUTTON_TASK_RATE_HZ / 50)
 #define TOTAL_MIN 0
 
