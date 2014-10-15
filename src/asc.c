@@ -51,6 +51,8 @@ static Activity mainActivity;
 static ListView controls;
 static ListView statuses;
 static ListView statuses2;
+static ListView invokeWusErrors;
+
 /*controls options and items*/
 static Item roadTypeItem;
 static Options roadTypeOption;
@@ -82,6 +84,24 @@ static Item wusStatusUnsprungItem;
 static Options wusStatusUnsprungOption;
 static Item speedExceededItem;
 static Options speedExceededOption;
+static Item powerFailureItem;
+static Options powerFailureOption;
+static Item watchdogFauilureItem;
+static Options watchdogFailureOption;
+
+/*error to invoke on WUS options and items*/
+static Item invokeCoilErrorItem;
+static Options invokeCoilErrorOption;
+static Item invokeSprungErrorItem;
+static Options invokeSprungErrorOption;
+static Item invokeUnsprungErrorItem;
+static Options invokeUnsprungErrorOption;
+static Item invokeSpeedErrorItem;
+static Options invokeSpeedErrorOption;
+static Item involePowerErrorItem;
+static Options involePowerErrorOption;
+static Item invokeWatchdogErrorItem;
+static Options invokeWatchdogErrorOption;
 
 int main(void)
 {
@@ -91,8 +111,9 @@ int main(void)
 
 	/* Marking up GUI */
 	controls = listView("Controls", 5);
-	statuses = listView("Status ", 5);
-	statuses2 = listView("WUS Errors", 4);
+	statuses = listView("Status", 5);
+	statuses2 = listView("WUS Errors", 6);
+	invokeWusErrors = listView("InvokeErr",6);
 
 	/*controls menu GUI*/
 	roadTypeOption = option(10, 33);
@@ -154,6 +175,52 @@ int main(void)
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
 	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedError);
+	watchdogFailureOption = option(0,1);
+	watchdogFailureOption.values[0] = "Ok";
+	watchdogFailureOption.values[1] = "Error";
+	watchdogFauilureItem = item("WatchdogEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogFailureOption, getWatchdogInvokedError);
+	powerFailureOption = option(0,1);
+	powerFailureOption.values[0] = "Ok";
+	powerFailureOption.values[1] = "Error";
+	powerFailureItem = item("PowerEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerError);
+
+	/*invoke errors GUI*/
+	invokeCoilErrorOption = option(0,1);
+	invokeCoilErrorOption.skip = 1;
+	invokeCoilErrorOption.values[0]  = "Off";
+	invokeCoilErrorOption.values[1]  = "On";
+	invokeCoilErrorItem = item("CoilErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeCoilErrorOption, getCoilInvokedError);
+	invokeCoilErrorItem.setter = setCoilError;
+	invokeSprungErrorOption = option(0,1);
+	invokeSprungErrorOption.skip = 1;
+	invokeSprungErrorOption.values[0]  = "Off";
+	invokeSprungErrorOption.values[1]  = "On";
+	invokeSprungErrorItem = item("SprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSprungErrorOption, getSpeedInvokedError);
+	invokeSprungErrorItem.setter = setSpeedError;
+	invokeUnsprungErrorOption = option(0,1);
+	invokeUnsprungErrorOption.skip = 1;
+	invokeUnsprungErrorOption.values[0]  = "Off";
+	invokeUnsprungErrorOption.values[1]  = "On";
+	invokeUnsprungErrorItem = item("UnsprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeUnsprungErrorOption, getUnsprungInvokedError);
+	invokeUnsprungErrorItem.setter = setUnsprungError;
+	invokeSpeedErrorOption = option(0,1);
+	invokeSpeedErrorOption.skip = 1;
+	invokeSpeedErrorOption.values[0]  = "Off";
+	invokeSpeedErrorOption.values[1]  = "On";
+	invokeSpeedErrorItem = item("SpeedErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSpeedErrorOption, getSpeedInvokedError);
+	invokeSpeedErrorItem.setter = setSpeedError;
+	involePowerErrorOption = option(0,1);
+	involePowerErrorOption.skip = 1;
+	involePowerErrorOption.values[0]  = "Off";
+	involePowerErrorOption.values[1]  = "On";
+	involePowerErrorItem = item("PowErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, involePowerErrorOption, getPowerInvokedError);
+	involePowerErrorItem.setter = setPowerError;
+	invokeWatchdogErrorOption = option(0,1);
+	invokeWatchdogErrorOption.skip = 1;
+	invokeWatchdogErrorOption.values[0]  = "Off";
+	invokeWatchdogErrorOption.values[1]  = "On";
+	invokeWatchdogErrorItem = item("WatchdogErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeWatchdogErrorOption, getWatchdogInvokedError);
+	invokeWatchdogErrorItem.setter = setWatchdogError;
 
 	/*attach items to ListView*/
 	controls.items[0] = roadTypeItem;
@@ -170,12 +237,21 @@ int main(void)
 	statuses2.items[1] = wusStatusSprungItem;
 	statuses2.items[2] = wusStatusUnsprungItem;
 	statuses2.items[3] = speedExceededItem;
+	statuses2.items[4] = watchdogFauilureItem;
+	statuses2.items[5] = powerFailureItem;
+	invokeWusErrors.items[0] = invokeCoilErrorItem;
+	invokeWusErrors.items[1] = invokeSprungErrorItem;
+	invokeWusErrors.items[2] = invokeUnsprungErrorItem;
+	invokeWusErrors.items[3] = invokeSpeedErrorItem;
+	invokeWusErrors.items[4] = involePowerErrorItem;
+	invokeWusErrors.items[5] = invokeWatchdogErrorItem;
 
 	/*init Activity and attach ListViews ot activity*/
 	mainActivity = activity();
 	addView(&mainActivity, &controls, VIEWTYPE_LIST);
 	addView(&mainActivity, &statuses, VIEWTYPE_LIST);
 	addView(&mainActivity, &statuses2, VIEWTYPE_LIST);
+	addView(&mainActivity, &invokeWusErrors, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */

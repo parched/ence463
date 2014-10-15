@@ -27,7 +27,7 @@
 #ifndef SHARED_IQMATH_H
 #define SHARED_IQMATH_H
 
-#define GLOBAL_Q 10 /**< Number of fractional bits to use for fixed point. */
+#define GLOBAL_Q 16 /**< Number of fractional bits to use for fixed point. */
 
 #include "IQmath/IQmathLib.h"
 

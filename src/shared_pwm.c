@@ -116,7 +116,7 @@ void setDuty(char pwmPin, _iq value, _iq minValue, _iq maxValue) {
 	}
 
 	if(value > minValue) {
-		unsigned long pulseWidth = ulPeriod * (value - minValue) * DESIRED_MAX_VOLTAGE / ((maxValue - minValue) * REAL_MAX_VOLTAGE);
+		unsigned long pulseWidth = (value - minValue) / ((maxValue - minValue) * REAL_MAX_VOLTAGE / (ulPeriod * DESIRED_MAX_VOLTAGE));
 		PWMPulseWidthSet(PWM_BASE, pwmToChange.pwmOut, pulseWidth);
 		PWMOutputState(PWM_BASE, pwmToChange.pwmOutBit, true);
 	} else { //disable PWM output in order to get 0V

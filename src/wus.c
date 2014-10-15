@@ -79,8 +79,6 @@ static Item wusStatusUnsprungItem;
 static Options wusStatusUnsprungOption;
 static Item speedExceededItem;
 static Options speedExceededOption;
-
-static ListView wusStatusEcho2;
 static Item powerFailureItem;
 static Options powerFailureOption;
 static Item watchdogErrorItem;
@@ -135,11 +133,11 @@ int main(void)
 	//wusMessages.items[2] = startItem;
 
 	/*Invoked errors GUI*/
-	wusStatusEcho = listView("ErrInvoked",4);
+	wusStatusEcho = listView("ErrInvoked",6);
 	wusStatusCoilOption = option(0, 1);
 	wusStatusCoilOption.values[0] = "Ok";
 	wusStatusCoilOption.values[1] = "Error";
-	wusStatusCoilItem = item("CoilEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusCoilOption, getCoilExErrorInvoked);
+	wusStatusCoilItem = item("Coil", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusCoilOption, getCoilExErrorInvoked);
 	wusStatusSprungOption = option(0, 1);
 	wusStatusSprungOption.values[0] = "Ok";
 	wusStatusSprungOption.values[1] = "Error";
@@ -151,23 +149,21 @@ int main(void)
 	speedExceededOption = option(0,1);
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
-	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedErrorInvoked);
+	speedExceededItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedErrorInvoked);
+	powerFailureOption = option(0, 1);
+	powerFailureOption.values[0] = "Ok";
+	powerFailureOption.values[1] = "Error";
+	powerFailureItem = item("Power", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerFailureInvoked);
+	watchdogErrorOption = option(0, 1);
+	watchdogErrorOption.values[0] = "Ok";
+	watchdogErrorOption.values[1] = "Error";
+	watchdogErrorItem = item("Watchdog", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogErrorOption, getWatchdogTimerFailureInvoked);
 	wusStatusEcho.items[0] = wusStatusCoilItem;
 	wusStatusEcho.items[1] = wusStatusSprungItem;
 	wusStatusEcho.items[2] = wusStatusUnsprungItem;
 	wusStatusEcho.items[3] = speedExceededItem;
-
-	wusStatusEcho2 = listView("ErrInvoked2",2);
-	powerFailureOption = option(0, 1);
-	powerFailureOption.values[0] = "Ok";
-	powerFailureOption.values[1] = "Error";
-	powerFailureItem = item("CoilEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerFailureInvoked);
-	watchdogErrorOption = option(0, 1);
-	watchdogErrorOption.values[0] = "Ok";
-	watchdogErrorOption.values[1] = "Error";
-	watchdogErrorItem = item("SprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogErrorOption, getWatchdogTimerFailureInvoked);
-	wusStatusEcho2.items[0] = powerFailureItem;
-	wusStatusEcho2.items[1] = watchdogErrorItem;
+	wusStatusEcho.items[4] = powerFailureItem;
+	wusStatusEcho.items[5] = watchdogErrorItem;
 
 	/*attach views to activity*/
 	mainActivity = activity();
@@ -175,7 +171,6 @@ int main(void)
 	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE);
 	addView(&mainActivity, &wusMessages, VIEWTYPE_LIST);
 	addView(&mainActivity, &wusStatusEcho, VIEWTYPE_LIST);
-	addView(&mainActivity, &wusStatusEcho2, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */

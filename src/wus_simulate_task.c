@@ -41,13 +41,15 @@
 
 #include "shared_errors.h"
 
-#define SIMULATE_TASK_RATE_HZ 1000
+#define TICK_RATE_HZ ((long)configTICK_RATE_HZ)   /**< The signed tick rate. */
+#define SIMULATE_TASK_RATE_HZ 2000     /**< Task rate, it is borderline stable at 1384Hz. */
 
 #define ROAD_RESTORING_FACTOR 1         /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 20          /**< Road damping factor. */
 
 static int roadType = 0;
-static _iq dampingFactor = 0;          /**< The damping factor (N.s/m). */
+static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
+static _iq force = 0;                  /**< The actuator force (N). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static _iq speed = 0;                  /**< The car speed (m/s). */
 static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
@@ -61,9 +63,9 @@ static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the r
 static _iq zR = 0;                     /**< The road displacement (mm). */
 static _iq zU = 0;                     /**< The unsprung mass displacement (mm). */
 static _iq zS = 0;                     /**< The sprung mass dispalcement (mm). */
-static _iq vR = 0;                     /**< The road velocity (m/s). */
-static _iq vU = 0;                     /**< The unsprung mass velocity (m/s). */
-static _iq vS = 0;                     /**< The sprung mass velocity (m/s). */
+static _iq vR = 0;                     /**< The road velocity (mm/s). */
+static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
+static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
 
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
 static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
@@ -80,15 +82,9 @@ static void resetSimulation();
 /**
  * \brief Simulates and updates the state.
  *
- * \param force The applied force from the controller.
- * \param throttle The forward acceleration from the driver.
- * \param dampingFactor The set damping factor.
- * \param roadType The road type.
  * \param dTime The time since the last state.
- *
- * \return The error statuses of the car.
  */
-static char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime);
+static void simulate(int dTime);
 
 /**
  * \brief Reads the throttle from a message.
@@ -105,6 +101,11 @@ static _iq getThrottle(char *msg);
  * \return A random number between 0.0 and 1.0 fixed point..
  */
 static _iq getRandom();
+
+/**
+ * \brief Sets the simulation on the bump stops.
+ */
+static void putSimOnStops();
 
 /**
  * \brief Reads an incoming UART message.
@@ -137,21 +138,21 @@ void updateStatus() {
 
 	//max speed error check
 	if(speed > MAX_SPEED || speed < MIN_SPEED) {
-		combinedError = combinedError | CAR_SPEED_EXCEEDED;
+		combinedError |= CAR_SPEED_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~CAR_SPEED_EXCEEDED;
+		combinedError &= ~CAR_SPEED_EXCEEDED;
 	}
 	//max sprung acceration check
 	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
-		combinedError = combinedError | ACC_SPRUNG_EXCEEDED;
+		combinedError |= ACC_SPRUNG_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~ ACC_SPRUNG_EXCEEDED;
+		combinedError &= ~ACC_SPRUNG_EXCEEDED;
 	}
 	//max unsprung acceration check
 	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
-		combinedError = combinedError | ACC_UNSPRUNG_EXCEEDED;
+		combinedError |= ACC_UNSPRUNG_EXCEEDED;
 	} else {
-		combinedError = combinedError & ~ ACC_UNSPRUNG_EXCEEDED;
+		combinedError &= ~ACC_UNSPRUNG_EXCEEDED;
 	}
 
 	errorStatusSend.frameWise.msgType = 'W';
@@ -160,9 +161,6 @@ void updateStatus() {
 }
 
 void vSimulateTask(void *params) {
-	_iq force = 0;
-	char errorCode = 0;
-
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
@@ -179,8 +177,7 @@ void vSimulateTask(void *params) {
 		force = getSmoothAdc(ACTUATOR_FORCE_ADC, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		dampingFactor = getSmoothAdc(DAMPING_COEFF_ADC, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
 
-		/* TODO: find dTime */
-		errorCode = simulate(force, throttle, dampingFactor, roadType, xTimeIncrement);
+		simulate(xTimeIncrement);
 
 		setPulseSpeed(speed);
 		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
@@ -189,9 +186,6 @@ void vSimulateTask(void *params) {
 
 		circularBufferWrite(roadBuffer, xTaskGetTickCount(), _IQint(zR));
 
-		if (errorCode != 0) {
-			/* TODO */
-		}
 		updateStatus();
 	}
 }
@@ -228,7 +222,7 @@ void resetSimulation() {
 	unsprungAcc = 0;
 }
 
-char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTime) {
+void simulate(int dTime) {
 	/* TODO: set the amplitudeFactor according to roadType and halfRoadWavelength and ROAD_FACTORS. */
 
 	int amplitudeFactor = 100000;
@@ -237,7 +231,7 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 	if (speed == 0) {
 		aRNoise = 0;
 	} else {
-		int noisePeroid = configTICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
+		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / _IQint(speed);
 
 		if (timeFromLastNoise >= noisePeroid) {
 			timeFromLastNoise -= noisePeroid;
@@ -248,29 +242,59 @@ char simulate(_iq force, _iq throttle, _iq dampingFactor, char roadType, int dTi
 
 	aR = aRNoise - ROAD_RESTORING_FACTOR * zR - ROAD_DAMPING_FACTOR * vR;
 
-	sprungAcc = (- STIFFNESS_SPRING * (zS - zU) - dampingFactor * (vS - vU) + force ) ON_MASS_SPRUNG;
-	unsprungAcc = ( STIFFNESS_SPRING * (zS - zU) + dampingFactor * (vS - vU) - STIFFNESS_TYRE * (zU - zR) - DAMPING_TYRE * (vU - vR) - force ) ON_MASS_UNSPRUNG;
+	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
+	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
+	_iq suspensionForce = suspensionSpringForce + suspensionDampingForce;
 
-	zR += vR * 1000 * dTime / configTICK_RATE_HZ;
-	zU += vU * 1000 * dTime / configTICK_RATE_HZ;
-	zS += vS * 1000 * dTime / configTICK_RATE_HZ;
-	vR += aR * dTime / configTICK_RATE_HZ;
-	vU += unsprungAcc * dTime / configTICK_RATE_HZ;
-	vS += sprungAcc * dTime / configTICK_RATE_HZ;
+	_iq tyreSpringForce = STIFFNESS_TYRE * (zR - zU);
+	_iq tyreDampingForce = DAMPING_TYRE * (vR - vU);
+	_iq tyreForce = tyreSpringForce + tyreDampingForce;
 
-	speed += throttle * dTime / configTICK_RATE_HZ;
+	_iq sprungForce = suspensionForce + force;
+	_iq unsprungForce = tyreForce - suspensionForce - force;
+
+	sprungAcc = ON_MASS_SPRUNG(sprungForce);
+	unsprungAcc = ON_MASS_UNSPRUNG(unsprungForce);
+
+	/* Check if on the bump stops */
+	if (combinedError & COIL_EXTENSION_EXCEEDED) {
+		if ((coilExtension == MAX_COIL_EXTENSION && sprungAcc < unsprungAcc)
+				|| (coilExtension == MIN_COIL_EXTENSION && sprungAcc > unsprungAcc)) {
+			/* We are coming off the bump stops */
+			combinedError &= ~COIL_EXTENSION_EXCEEDED;
+		} else { /* Both masses move as one unit */
+			unsprungAcc = ON_MASS_TOTAL(tyreForce);
+			sprungAcc = unsprungAcc;
+		}
+	}
+
+	zR += vR * dTime / TICK_RATE_HZ;
+	zU += vU * dTime / TICK_RATE_HZ;
+	zS += vS * dTime / TICK_RATE_HZ;
+	vR += aR * dTime / (TICK_RATE_HZ / 1000);
+	vU += unsprungAcc * dTime / (TICK_RATE_HZ / 1000);
+	vS += sprungAcc * dTime / (TICK_RATE_HZ / 1000);
+
+	speed += throttle * dTime / TICK_RATE_HZ;
 
 	coilExtension = zU - zS;
 	
 	// max coil extension check
-	if(coilExtension > MAX_COIL_EXTENSION || coilExtension < MIN_COIL_EXTENSION) {
-		combinedError = combinedError | COIL_EXTENSION_EXCEEDED;
-	} else {
-		combinedError = combinedError & ~COIL_EXTENSION_EXCEEDED;
+	if (coilExtension > MAX_COIL_EXTENSION) {
+		coilExtension = MAX_COIL_EXTENSION;
+		zS = zU + MAX_COIL_EXTENSION;
+		putSimOnStops();
+	} else if (coilExtension < MIN_COIL_EXTENSION) {
+		coilExtension = MIN_COIL_EXTENSION;
+		zS = zU + MIN_COIL_EXTENSION;
+		putSimOnStops();
 	}
+}
 
-	/* TODO: error check */
-	return 0;
+void putSimOnStops() {
+	combinedError |= COIL_EXTENSION_EXCEEDED;
+	vU = WEIGHT_BY_MASSES(vS,vU);
+	vS = vU;
 }
 
 _iq getThrottle(char *msg) {

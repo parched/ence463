@@ -32,7 +32,7 @@
 
 #define ACTIVITY_MAX_PAGES 5    /**<maximum number of pages in a GUI */
 
-#define LISTVIEW_MAX_ITEMS 5    /**<maximum number of items allowed in a ListView */
+#define LISTVIEW_MAX_ITEMS 7    /**<maximum number of items allowed in a ListView */
 
 #define VIEW_NAME_SIZE 12		/**<maximum string size allowed for a View title */
 #define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
