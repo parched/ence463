@@ -47,6 +47,20 @@ static unsigned long ADCout[8];
 
 void adcISR (void);
 
+static void initAdcTimer (void)
+{
+	// Enable and Configure Timer 1 Peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+	SysCtlDelay(SysCtlClockGet() / 3000);
+
+	TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+
+	// Set Timer 1 Load to 50kHz (Required ADC Sample Rate)
+	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ);
+
+	// Enable Timer ADC Trigger
+	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
+}
 
 void initAdcModule(char adcs)
 {
@@ -57,11 +71,14 @@ void initAdcModule(char adcs)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
 	SysCtlDelay(SysCtlClockGet() / 3000);
 
+	// Enable Timer Trigger
+	initAdcTimer();
+
 	// Disable Sequence 0 before Configuration
 	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 
-	// Configure  ADC processor and 8x Oversampling
-	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_ALWAYS, ADC_PRIORITY);
+	// Configure ADC processor and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
 	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
 	// Configure ADC Processor Steps
@@ -78,6 +95,9 @@ void initAdcModule(char adcs)
 	IntEnable 		(INT_ADC0);
 	ADCIntClear 	(ADC_BASE, ADC_SEQ);
 	IntMasterEnable	();
+
+	// Enable Timer
+	TimerEnable		(TIMER1_BASE, TIMER_A);
 }
 
 
