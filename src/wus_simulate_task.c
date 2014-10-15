@@ -47,34 +47,40 @@
 #define ROAD_RESTORING_FACTOR 200      /**< Road neutral restoring factor. */
 #define ROAD_DAMPING_FACTOR 50          /**< Road damping factor. */
 
+#define NUM_STEPS 3
+
 static int roadType = 0;
 static int roadAmplitude = 0;
 static _iq dampingFactor = 0;          /**< The damping factor (N.s/mm). */
 static _iq force = 0;                  /**< The actuator force (N). */
 static _iq throttle = 0;               /**< The throttle acceleration (m/s/s). */
 static _iq speed = 0;                  /**< The car speed (m/s). */
-static _iq sprungAcc = 0;              /**< The sprung mass acceleration (m/s/s). */
-static _iq unsprungAcc = 0;            /**< The unsprung mass acceleration (m/s/s). */
+static _iq sprungAcc[NUM_STEPS] = {0};              /**< The sprung mass acceleration (m/s/s). */
+static _iq unsprungAcc[NUM_STEPS] = {0};            /**< The unsprung mass acceleration (m/s/s). */
 static _iq coilExtension = 0;          /**< The coil extension (mm). */
 static char wusStatusEcho = 0;         /**< The status the needs to be echoed. */
 
 static CircularBufferHandler *roadBuffer; /**< The road buffer for writing the road to. */
 
 /* simulation states */
-static _iq zR = 0;                     /**< The road displacement (mm). */
-static _iq zU = 0;                     /**< The unsprung mass displacement (mm). */
-static _iq zS = 0;                     /**< The sprung mass dispalcement (mm). */
-static _iq vR = 0;                     /**< The road velocity (mm/s). */
-static _iq vU = 0;                     /**< The unsprung mass velocity (mm/s). */
-static _iq vS = 0;                     /**< The sprung mass velocity (mm/s). */
+static _iq zR[NUM_STEPS] = {0};                     /**< The road displacement (mm). */
+static _iq zU[NUM_STEPS] = {0};                     /**< The unsprung mass displacement (mm). */
+static _iq zS[NUM_STEPS] = {0};                     /**< The sprung mass dispalcement (mm). */
+static _iq vR[NUM_STEPS] = {0};                     /**< The road velocity (mm/s). */
+static _iq vU[NUM_STEPS] = {0};                     /**< The unsprung mass velocity (mm/s). */
+static _iq vS[NUM_STEPS] = {0};                     /**< The sprung mass velocity (mm/s). */
 
 static _iq halfRoadWavelength = _IQ(100);
 static int timeFromLastNoise = 0;      /**< The time since the last noise injection (ticks). */
-static _iq aR = 0;                     /**< The road acceleration (m/s/s). */
+static _iq aR[NUM_STEPS] = {0};                     /**< The road acceleration (m/s/s). */
 static _iq aRNoise = 0;                /**< The road acceleration noise (m/s/s). */
 
 static char combinedError = 0; /**<current error status */
 static int startStatus = 0;
+
+static unsigned int i = 0;
+static unsigned int j = 1;
+static unsigned int k = 2;
 
 /**
  * \brief Resets the simulation.
@@ -152,13 +158,13 @@ void updateStatus() {
 		combinedError &= ~CAR_SPEED_EXCEEDED;
 	}
 	//max sprung acceration check
-	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
+	if(sprungAcc[k] > MAX_ACC_SPRUNG || sprungAcc[k] < MIN_ACC_SPRUNG) {
 		combinedError |= ACC_SPRUNG_EXCEEDED;
 	} else {
 		combinedError &= ~ACC_SPRUNG_EXCEEDED;
 	}
 	//max unsprung acceration check
-	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
+	if(unsprungAcc[k] > MAX_ACC_UNSPRUNG || unsprungAcc[k] < MIN_ACC_UNSPRUNG) {
 		combinedError |= ACC_UNSPRUNG_EXCEEDED;
 	} else {
 		combinedError &= ~ACC_UNSPRUNG_EXCEEDED;
@@ -194,11 +200,11 @@ void vSimulateTask(void *params) {
 		distanceTravelled += 100;
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
-		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+		setDuty(ACC_SPRUNG_PWM, sprungAcc[k] , MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc[k] , MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
+		setDuty(COIL_EXTENSION_PWM, coilExtension , MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
 
-		circularBufferWrite(roadBuffer, distanceTravelled, _IQint(zR));
+		circularBufferWrite(roadBuffer, distanceTravelled, _IQint(zR[k]));
 
 		updateStatus();
 	}
@@ -278,11 +284,11 @@ int getDisplaySpeed() {
 }
 
 int getDisplaySprungAcc() {
-	return _IQint(sprungAcc);
+	return _IQint(sprungAcc[k]);
 }
 
 int getDisplayUnsprungAcc() {
-	return _IQint(unsprungAcc);
+	return _IQint(unsprungAcc[k]);
 }
 
 int getDisplayCoilExtension() {
@@ -295,14 +301,17 @@ void setRoadBuffer(CircularBufferHandler *buffer) {
 
 void resetSimulation() {
 	speed = 0;
-	zR = 0;
-	zU = 0;
-	zS = 0;
-	vR = 0;
-	vU = 0;
-	vS = 0;
-	sprungAcc = 0;
-	unsprungAcc = 0;
+	int n = 0;
+	for (n = 0; n < NUM_STEPS; n++) {
+		zR[n] = 0;
+		zU[n] = 0;
+		zS[n] = 0;
+		vR[n] = 0;
+		vU[n] = 0;
+		vS[n] = 0;
+		sprungAcc[n] = 0;
+		unsprungAcc[n] = 0;
+	}
 }
 
 void simulate(int dTime) {
@@ -318,40 +327,40 @@ void simulate(int dTime) {
 		timeFromLastNoise += dTime;
 	}
 
-	aR = aRNoise - zR / ROAD_RESTORING_FACTOR -  vR / ROAD_DAMPING_FACTOR;
+	aR[i] = aRNoise - zR[k] / ROAD_RESTORING_FACTOR -  vR[k] / ROAD_DAMPING_FACTOR;
 
-	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
-	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
+	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU[k] - zS[k]);
+	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU[k] - vS[k]));
 	_iq suspensionForce = suspensionSpringForce + suspensionDampingForce;
 
-	_iq tyreSpringForce = STIFFNESS_TYRE * (zR - zU);
-	_iq tyreDampingForce = DAMPING_TYRE * (vR - vU);
+	_iq tyreSpringForce = STIFFNESS_TYRE * (zR[k] - zU[k]);
+	_iq tyreDampingForce = DAMPING_TYRE * (vR[k] - vU[k]);
 	_iq tyreForce = tyreSpringForce + tyreDampingForce;
 
 	_iq sprungForce = suspensionForce + force;
 	_iq unsprungForce = tyreForce - suspensionForce - force;
 
-	sprungAcc = ON_MASS_SPRUNG(sprungForce);
-	unsprungAcc = ON_MASS_UNSPRUNG(unsprungForce);
+	sprungAcc[i] = ON_MASS_SPRUNG(sprungForce);
+	unsprungAcc[i] = ON_MASS_UNSPRUNG(unsprungForce);
 
 	/* Check if on the bump stops */
 	if (combinedError & COIL_EXTENSION_EXCEEDED) {
-		if ((coilExtension == MAX_COIL_EXTENSION && sprungAcc < unsprungAcc)
-				|| (coilExtension == MIN_COIL_EXTENSION && sprungAcc > unsprungAcc)) {
+		if ((coilExtension == MAX_COIL_EXTENSION && sprungAcc[i] < unsprungAcc[i])
+				|| (coilExtension == MIN_COIL_EXTENSION && sprungAcc[i] > unsprungAcc[i])) {
 			/* We are coming off the bump stops */
 			combinedError &= ~COIL_EXTENSION_EXCEEDED;
 		} else { /* Both masses move as one unit */
-			unsprungAcc = ON_MASS_TOTAL(tyreForce);
-			sprungAcc = unsprungAcc;
+			unsprungAcc[i] = ON_MASS_TOTAL(tyreForce);
+			sprungAcc[i] = unsprungAcc[i];
 		}
 	}
 
-	zR += vR * dTime / TICK_RATE_HZ;
-	zU += vU * dTime / TICK_RATE_HZ;
-	zS += vS * dTime / TICK_RATE_HZ;
-	vR += aR * dTime / (TICK_RATE_HZ / 1000);
-	vU += unsprungAcc * dTime / (TICK_RATE_HZ / 1000);
-	vS += sprungAcc * dTime / (TICK_RATE_HZ / 1000);
+	zR[i] += (23 * vR[k] - 16 * vR[j] + 5 * vR[i]) * dTime / (12 * TICK_RATE_HZ);
+	zS[i] += (23 * vS[k] - 16 * vS[j] + 5 * vS[i]) * dTime / (12 * TICK_RATE_HZ);
+	zU[i] += (23 * vU[k] - 16 * vU[j] + 5 * vU[i]) * dTime / (12 * TICK_RATE_HZ);
+	vR[i] += (23 * aR[j] - 16 * aR[k] + 5 * aR[i]) * dTime / (12 * TICK_RATE_HZ / 1000);
+	vU[i] += (23 * unsprungAcc[i] - 16 * unsprungAcc[k] + 5 * unsprungAcc[j]) * dTime / (12 * TICK_RATE_HZ / 1000);
+	vS[i] += (23 * sprungAcc[i] - 16 * sprungAcc[k] + 5 * sprungAcc[j]) * dTime / (12 * TICK_RATE_HZ / 1000);
 
 	speed += throttle * dTime / TICK_RATE_HZ;
 
@@ -361,24 +370,28 @@ void simulate(int dTime) {
 		speed = MAX_SPEED;
 	}
 
-	coilExtension = zU - zS;
+	coilExtension = zU[i] - zS[i];
 	
 	// max coil extension check
 	if (coilExtension > MAX_COIL_EXTENSION) {
 		coilExtension = MAX_COIL_EXTENSION;
-		zS = zU + MAX_COIL_EXTENSION;
+		zS[i] = zU[i] + MAX_COIL_EXTENSION;
 		putSimOnStops();
 	} else if (coilExtension < MIN_COIL_EXTENSION) {
 		coilExtension = MIN_COIL_EXTENSION;
-		zS = zU + MIN_COIL_EXTENSION;
+		zS[i] = zU[i] + MIN_COIL_EXTENSION;
 		putSimOnStops();
 	}
+
+	if (++i == NUM_STEPS) i = 0;
+	if (++j == NUM_STEPS) j = 0;
+	if (++k == NUM_STEPS) k = 0;
 }
 
 void putSimOnStops() {
 	combinedError |= COIL_EXTENSION_EXCEEDED;
-	vU = WEIGHT_BY_MASSES(vS,vU);
-	vS = vU;
+	vU[i] = WEIGHT_BY_MASSES(vS[i],vU[i]);
+	vS[i] = vU[i];
 }
 
 _iq getThrottle(char *msg) {
