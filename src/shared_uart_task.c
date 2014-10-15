@@ -59,6 +59,7 @@ void vUartTask(void* pvParameters) {
 	// setup Uart peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	SysCtlDelay(SysCtlClockGet() / 3000);
 	GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_3 | GPIO_PIN_2);
 
 	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), UART_BAUD, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
