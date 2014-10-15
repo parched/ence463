@@ -226,6 +226,13 @@ void setRoadType(int roadTypeInput) {
 	}
 }
 
+
+void setErrorState(char errorStateInput)
+{
+	errorState = errorStateInput;
+}
+
+
 void setThrottle(int throttleInput) {
 	throttle = _IQ(throttleInput);
 }
