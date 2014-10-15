@@ -36,7 +36,7 @@
 #include "shared_displayformat128x96.h"
 
 #define INPUTEVENT_QUEUE_SIZE 10
-#define GUI_TASK_RATE_HZ 25
+#define GUI_TASK_RATE_HZ 10
 #define OLED_FREQ 1000000
 
 typedef enum {VERTDIR_UP, VERTDIR_DOWN} VertDir;
