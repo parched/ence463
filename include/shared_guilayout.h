@@ -32,12 +32,12 @@
 
 #define ACTIVITY_MAX_PAGES 5    /**<maximum number of pages in a GUI */
 
-#define LISTVIEW_MAX_ITEMS 5    /**<maximum number of items allowed in a ListView */
+#define LISTVIEW_MAX_ITEMS 7    /**<maximum number of items allowed in a ListView */
 
 #define VIEW_NAME_SIZE 12		/**<maximum string size allowed for a View title */
 #define ITEM_NAME_SIZE 10       /**<maximum string size allowed for a ListView Item */
 #define ITEM_MAX_OPTIONSTR 5    /**<maximum number of items allowed for Items with string Options */
-#define OPTION_NAME_SIZE 6		/**<maximum string size allowed for string Options */
+#define OPTION_NAME_SIZE 7		/**<maximum string size allowed for string Options */
 
 #define TRACEVIEW_POINTS 64     /**<number of data points to store in TraceView menu */
 #define TRACE_ZERO_CENTER -1    /**<specifies the zero height of the TraceView to be center */

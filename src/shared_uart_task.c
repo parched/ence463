@@ -41,19 +41,12 @@
 
 #define SENDMESSAGE_QUEUE_SIZE 10
 #define UART_TASK_RATE_HZ 1000
-#define UART_PERCHAR_HZ 75000	// 13.3us delay between characters
+#define UART_PERCHAR_HZ 50000	// 20us delay between characters
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
 static QueueHandle_t uartSendQueue;
 
-/**
- * \brief Determines the total length of the message including type character
- *
- * \param type Char representing message type (W, R, S, A, M)
- * \return Length of frame including the type character, 0 if did not correspond to a type
- */
-unsigned int getMsgLen(char type);
 
 void vUartTask(void* pvParameters) {
 	// setup Uart peripheral
@@ -84,7 +77,27 @@ void vUartTask(void* pvParameters) {
 		// process message send queue
 		UartFrame toSend;
 		while (xQueueReceive(uartSendQueue, &toSend, 0) == pdTRUE) {
-			unsigned int msgLen = getMsgLen(toSend.frameWise.msgType);
+			unsigned int msgLen = 0;
+			switch(toSend.frameWise.msgType)
+			{
+				case('W'):
+					msgLen = 2;
+					break;
+				case('R'):
+					msgLen = 3;
+					break;
+				case('S'):
+					msgLen = 1;
+					break;
+				case('A'):
+					msgLen = 7;
+					break;
+				case('M'):
+					msgLen = 2;
+					break;
+				default:
+					break;
+			}
 
 			unsigned int i = 0;
 			for (i=0; i<msgLen; i++) {
@@ -94,7 +107,7 @@ void vUartTask(void* pvParameters) {
 			vTaskDelay(msgLen*configTICK_RATE_HZ / UART_PERCHAR_HZ);		// put delay between messages
 		}
 
-		// receive and decode messages
+		// receive messages
 		while (UARTCharsAvail(UART1_BASE)) {
 			char recvChar = (char) UARTCharGetNonBlocking(UART1_BASE);
 			if (index == 0) {
@@ -119,6 +132,9 @@ void vUartTask(void* pvParameters) {
 
 			lastChar = recvChar;		// store the last character
 		}
+		if (index > 0 && receivedCallback != NULL) {
+			receivedCallback(&buffer);
+		}
 	}
 }
 
@@ -140,22 +156,4 @@ int queueMsgToSend(UartFrame* uartFrame) {
 
 int getSendQueueAvailSpaces(void) {
 	return uxQueueMessagesWaiting(uartSendQueue);
-}
-
-unsigned int getMsgLen(char type) {
-	switch(type)
-	{
-		case('W'):
-			return 2;
-		case('R'):
-			return 3;
-		case('S'):
-			return 1;
-		case('A'):
-			return 7;
-		case('M'):
-			return 2;
-		default:
-			return 0;
-	}
 }

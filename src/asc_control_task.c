@@ -64,6 +64,13 @@ static _iq throttle = 0;
 static int resetState = 0;
 static char errorState = 0;
 
+static int invokeCoilError = 0;
+static int invokeSpungError = 0;
+static int invokeUnsprungError = 0;
+static int invokeSpeedError = 0;
+static int invokePowerError = 0;
+static int invokeWatchdogError = 0;
+
 /**
  * \brief Reads an incoming UART message.
  *
@@ -219,6 +226,8 @@ void setRoadType(int roadTypeInput) {
 	}
 }
 
+
+
 void setThrottle(int throttleInput) {
 	throttle = _IQ(throttleInput);
 }
@@ -227,9 +236,58 @@ void setResetState(int resetStateInput) {
 	resetState = resetStateInput;
 }
 
-void setErrorState(char errorStateInput)
-{
-	errorState = errorStateInput;
+void setCoilError(int errorInput) {
+	invokeCoilError = errorInput;
+	if(errorInput == 1) {
+		errorState |= COIL_EXTENSION_EXCEEDED;
+	} else {
+		errorState &= ~COIL_EXTENSION_EXCEEDED;
+	}
+}
+
+void setSprungError(int errorInput) {
+	invokeSpungError = errorInput;
+	if(errorInput == 1) {
+		errorState |= ACC_SPRUNG_EXCEEDED;
+	} else {
+		errorState &= ~ACC_SPRUNG_EXCEEDED;
+	}
+}
+
+void setUnsprungError(int errorInput) {
+	invokeUnsprungError = errorInput;
+	if(errorInput == 1) {
+		errorState |= ACC_UNSPRUNG_EXCEEDED;
+	} else {
+		errorState &= ~ACC_UNSPRUNG_EXCEEDED;
+	}
+}
+
+void setSpeedError(int errorInput) {
+	invokeSpeedError = errorInput;
+	if(errorInput == 1) {
+		errorState |= CAR_SPEED_EXCEEDED;
+	} else {
+		errorState &= ~CAR_SPEED_EXCEEDED;
+	}
+}
+
+void setPowerError(int errorInput) {
+	invokePowerError = errorInput;
+	if(errorInput == 1) {
+		errorState |= POWER_FAILURE;
+	} else {
+		errorState &= ~POWER_FAILURE;
+	}
+}
+
+void setWatchdogError(int errorInput) {
+	invokeWatchdogError = errorInput;
+	if(errorInput == 1) {
+		errorState |= WATCHDOG_TIMER;
+	} else {
+		errorState &= ~WATCHDOG_TIMER;
+	}
 }
 
 /* GETTERS */
@@ -241,32 +299,32 @@ int getDisplayRideMode()
 
 int getDisplaySpeed() 
 {
-	return speed / 10;
+	return _IQint((speed*36) / 10);
 }
 
 int getDisplaySprungAcc() 
 {
-	return sprungAcc;
+	return _IQint(sprungAcc);
 }
 
 int getDisplayUnsprungAcc() 
 {
-	return unsprungAcc;
+	return _IQint(unsprungAcc);
 }
 
 int getDisplayCoilExtension() 
 {
-	return coilExtension;
+	return _IQint(coilExtension);
 }
 
 int getDisplayForce()
 {
-	return actuatorForce;
+	return _IQint(actuatorForce);
 }
 
 int getDisplayDampingCoefficient()
 {
-	return dampingCoefficient;
+	return _IQint(dampingCoefficient);
 }
 
 int getRoadType()
@@ -317,4 +375,46 @@ int getCarSpeedError() {
 
 int getAscOn() {
 	return isOn;
+}
+
+
+int getCoilInvokedError() {
+	return invokeCoilError;
+}
+
+int getSprungInvokedError() {
+	return invokeSpungError;
+}
+
+int getUnsprungInvokedError() {
+	return invokeUnsprungError;
+}
+
+int getSpeedInvokedError() {
+	return invokeSpeedError;
+}
+
+int getPowerInvokedError() {
+	return invokePowerError;
+}
+
+int getWatchdogInvokedError() {
+	return invokeWatchdogError;
+}
+
+
+int getPowerError() {
+	if(wusStatus & POWER_FAILURE) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int getWatchdogError() {
+	if(wusStatus & WATCHDOG_TIMER) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
