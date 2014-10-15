@@ -72,6 +72,11 @@ void vUartTask(void* pvParameters) {
 	const portTickType xTimeIncrement = configTICK_RATE_HZ / UART_TASK_RATE_HZ;
 	xLastWakeTime = xTaskGetTickCount();
 
+	// message decoding variables
+	UartFrame buffer;
+	unsigned int msgLen;
+	unsigned int index = 0;
+
 	for (;;) {
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
@@ -89,9 +94,6 @@ void vUartTask(void* pvParameters) {
 		}
 
 		// receive and decode messages
-		UartFrame buffer;
-		unsigned int msgLen;
-		unsigned int index = 0;
 		while (UARTCharsAvail(UART1_BASE)) {
 			if (index == 0) {
 				// decode message type
