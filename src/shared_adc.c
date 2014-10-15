@@ -91,15 +91,20 @@ void initAdcModule(char adcs)
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
 	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
 
-	// Enable ADC Sequence
-	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
+	ADCIntDisable(ADC_BASE, ADC_SEQ);
+
+	// Purge ADC Sequence
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ulDummy);
 
 	// Configure, Register and Clear Interrupt
-	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
-	IntRegister 	(INT_ADC0, adcISR);
-	IntEnable 		(INT_ADC0);
 	ADCIntClear 	(ADC_BASE, ADC_SEQ);
-	IntMasterEnable	();
+	IntRegister		(INT_ADC0SS0, adcISR);
+	IntPrioritySet	(INT_ADC0SS0, 0);
+	IntEnable 		(INT_ADC0SS0);
+	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
+
+	// Enable ADC Sequence
+	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 
 	// Enable Timer
 	TimerEnable		(TIMER1_BASE, TIMER_A);
@@ -126,9 +131,22 @@ _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 
 void adcISR (void)
 {
+	// Disable ADC Sequence to mitigate FIFO overflow
+	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 	// Clear ADC Interrupt
 	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
 	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ADCout);
+
+	// Check for FIFO Under/Overflow
+	long FIFOoverflow  = ADCSequenceOverflow(ADC_BASE, ADC_SEQ);
+	long FIFOunderflow = ADCSequenceUnderflow(ADC_BASE, ADC_SEQ);
+
+	// Clear FIFO Under/Overflow Flags
+	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);
+	ADCSequenceUnderflowClear(ADC_BASE, ADC_SEQ);
+
+	// Re-enable ADC Sequence
+	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 }
