@@ -66,6 +66,10 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "driverlib/timer.h"
+
 /*-----------------------------------------------------------
  * Application specific definitions.
  *
@@ -94,7 +98,7 @@
 #define configCHECK_FOR_STACK_OVERFLOW	2
 #define configUSE_RECURSIVE_MUTEXES		1
 #define configQUEUE_REGISTRY_SIZE		10
-#define configGENERATE_RUN_TIME_STATS	0
+#define configGENERATE_RUN_TIME_STATS	1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 
 #define configMAX_PRIORITIES		( 5 )
@@ -129,7 +133,9 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 //extern volatile unsigned long ulHighFrequencyTimerTicks;
 /* There is already a high frequency timer running - just reset its count back
 to zero. */
-//#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() ( ulHighFrequencyTimerTicks = 0UL )
-//#define portGET_RUN_TIME_COUNTER_VALUE()	ulHighFrequencyTimerTicks
+extern void initDebugStats(void);
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() initDebugStats()
+#define portGET_RUN_TIME_COUNTER_VALUE() TimerValueGet(TIMER2_BASE, TIMER_A)
+
 
 #endif /* FREERTOS_CONFIG_H */
