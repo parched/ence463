@@ -72,6 +72,48 @@ void setThrottle(int throttleInput);
 void setResetState(int resetStateInput);
 
 /**
+ * \brief Sets the invoked coil error state.
+ *
+ * \param int errorInput.
+ */
+void setCoilError(int errorInput);
+
+/**
+ * \brief Sets the sprung error state.
+ *
+ * \param int errorInput.
+ */
+void setSprungError(int errorInput);
+
+/**
+ * \brief Sets the unsprung error state.
+ *
+ * \param int errorInput.
+ */
+void setUnsprungError(int errorInput);
+
+/**
+ * \brief Sets the speed error state.
+ *
+ * \param int errorInput.
+ */
+void setSpeedError(int errorInput);
+
+/**
+ * \brief Sets the power error state.
+ *
+ * \param int errorInput.
+ */
+void setPowerError(int errorInput);
+
+/**
+ * \brief Sets the watchdog error state.
+ *
+ * \param int errorInput.
+ */
+void setWatchdogError(int errorInput);
+
+/**
  * \brief Gets active suspension on or off.
  *
  * \param rideType Ride Type.
@@ -175,5 +217,61 @@ int getCarSpeedError();
  * \return Asc on state.
  */
 int getAscOn();
+
+/**
+ * \brief Gets coil invoked error
+ *
+ * \return Involed coil error
+ */
+int getCoilInvokedError();
+
+/**
+ * \brief Gets invoked sprung error
+ *
+ * \return Invoked sprung error
+ */
+int getSprungInvokedError();
+
+/**
+ * \brief Gets invoked unsprung error
+ *
+ * \return Invoked unsprung error
+ */
+int getUnsprungInvokedError();
+
+/**
+ * \brief Gets invoked speed error
+ *
+ * \return Invoked speed error
+ */
+int getSpeedInvokedError();
+
+/**
+ * \brief Gets involed power error
+ *
+ * \return Invoked power error
+ */
+int getPowerInvokedError();
+
+/**
+ * \brief Gets invoked watchdog error
+ *
+ * \return Invoked watchdog error
+ */
+int getWatchdogInvokedError();
+
+/**
+ * \brief Gets power error
+ *
+ * \return Invoked power error
+ */
+int getPowerError();
+
+/**
+ * \brief Gets watchdog error
+ *
+ * \return Invoked watchdog error
+ */
+int getWatchdogError();
 
 #endif
