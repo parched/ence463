@@ -244,54 +244,54 @@ void setResetState(int resetStateInput) {
 void setCoilError(int errorInput) {
 	invokeCoilError = errorInput;
 	if(errorInput == 1) {
-		errorState = COIL_EXTENSION_EXCEEDED | errorState;
+		errorState |= COIL_EXTENSION_EXCEEDED;
 	} else {
-		errorState = errorState  & ~COIL_EXTENSION_EXCEEDED;
+		errorState &= ~COIL_EXTENSION_EXCEEDED;
 	}
 }
 
 void setSprungError(int errorInput) {
 	invokeSpungError = errorInput;
 	if(errorInput == 1) {
-		errorState = ACC_SPRUNG_EXCEEDED | errorState;
+		errorState |= ACC_SPRUNG_EXCEEDED;
 	} else {
-		errorState = errorState  & ~ACC_SPRUNG_EXCEEDED;
+		errorState &= ~ACC_SPRUNG_EXCEEDED;
 	}
 }
 
 void setUnsprungError(int errorInput) {
 	invokeUnsprungError = errorInput;
 	if(errorInput == 1) {
-		errorState = ACC_UNSPRUNG_EXCEEDED | errorState;
+		errorState |= ACC_UNSPRUNG_EXCEEDED;
 	} else {
-		errorState = errorState  & ~ACC_UNSPRUNG_EXCEEDED;
+		errorState &= ~ACC_UNSPRUNG_EXCEEDED;
 	}
 }
 
 void setSpeedError(int errorInput) {
 	invokeSpeedError = errorInput;
 	if(errorInput == 1) {
-		errorState = CAR_SPEED_EXCEEDED | errorState;
+		errorState |= CAR_SPEED_EXCEEDED;
 	} else {
-		errorState = errorState  & ~CAR_SPEED_EXCEEDED;
+		errorState &= ~CAR_SPEED_EXCEEDED;
 	}
 }
 
 void setPowerError(int errorInput) {
 	invokePowerError = errorInput;
 	if(errorInput == 1) {
-		errorState = POWER_FAILURE | errorState;
+		errorState |= POWER_FAILURE;
 	} else {
-		errorState = errorState  & ~POWER_FAILURE;
+		errorState &= ~POWER_FAILURE;
 	}
 }
 
 void setWatchdogError(int errorInput) {
 	invokeWatchdogError = errorInput;
 	if(errorInput == 1) {
-		errorState = WATCHDOG_TIMER | errorState;
+		errorState |= WATCHDOG_TIMER;
 	} else {
-		errorState = errorState  & ~WATCHDOG_TIMER;
+		errorState &= ~WATCHDOG_TIMER;
 	}
 }
 
