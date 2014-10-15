@@ -658,7 +658,7 @@ unsigned int getHorzAlignment(const char* str, TextAlign align, unsigned int mar
 
 unsigned int getModifiableIndicatorHorzPos(DrawMode menuType, HorzDir dir, unsigned int x, unsigned int strlen)
 {
-	strlen--;		// account for null byte
+	//strlen--;		// account for null byte
 
 	unsigned int margin;
 	unsigned int nameSize;
