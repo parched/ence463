@@ -27,26 +27,26 @@
 #include "shared_tracenode.h"
 
 #ifndef NULL
-#define NULL ( (void *) 0)
+#define NULL ((void *)0)
 #endif
 
-CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, BufferFullMode mode)
+CircularBufferHandler createCircularBuffer(TraceNode *head, unsigned int size, BufferFullMode mode)
 {
-	TraceNode* prev = head + size - 1;	// prev of the first node is the last node
+	TraceNode *prev = head + size - 1; // prev of the first node is the last node
 
 	// setup the other nodes
 	unsigned int i;
-	for (i=0; i<size-1; i++)			// handle everything except for the last node
+	for (i = 0; i<size - 1; i++)    // handle everything except for the last node
 	{
-		(head+i)->prev = prev;
-		(head+i)->next = head + i + 1;
+		(head + i)->prev = prev;
+		(head + i)->next = head + i + 1;
 
 		// advance the prev pointer
-		prev = (head+i);
+		prev = (head + i);
 	}
 	// last node special case
-	(head+size-1)->next = head;			// first node
-	(head+size-1)->prev = head+size-2;
+	(head + size - 1)->next = head; // first node
+	(head + size - 1)->prev = head + size - 2;
 
 	CircularBufferHandler handler;
 	handler.lastRead = head->prev->prev;
@@ -60,22 +60,22 @@ CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, B
 	return handler;
 }
 
-int circularBufferWrite(CircularBufferHandler* buffer, int x, int y)
+int circularBufferWrite(CircularBufferHandler *buffer, int x, int y)
 {
-	if (buffer->writeAccess != NULL && xSemaphoreTake(buffer->writeAccess, (TickType_t) 10) == pdTRUE)
+	if (buffer->writeAccess != NULL && xSemaphoreTake(buffer->writeAccess, (TickType_t)10) == pdTRUE)
 	{
-		TraceNode* writing = buffer->lastWritten->next;	// node currently being written
+		TraceNode *writing = buffer->lastWritten->next; // node currently being written
 
 		if (buffer->fullMode == BUFFERFULLMODE_BLOCK && writing == buffer->lastRead)
 		{
 			xSemaphoreGive(buffer->writeAccess);
-			return -1;		// buffer full
+			return -1; // buffer full
 		}
 		else
 		{
 			writing->x = x;
 			writing->y = y;
-			buffer->lastWritten = writing;	// advance the write pointer
+			buffer->lastWritten = writing; // advance the write pointer
 
 			xSemaphoreGive(buffer->writeAccess);
 			return 0;
@@ -83,29 +83,29 @@ int circularBufferWrite(CircularBufferHandler* buffer, int x, int y)
 	}
 	else
 	{
-		return -2;			// could not obtain semaphore
+		return -2;  // could not obtain semaphore
 	}
 }
 
-TraceNode* getLatestNode(CircularBufferHandler* buffer)
+TraceNode *getLatestNode(CircularBufferHandler *buffer)
 {
 	return buffer->lastWritten;
 }
 
-TraceNode* circularBufferRead(CircularBufferHandler* buffer)
+TraceNode *circularBufferRead(CircularBufferHandler *buffer)
 {
-	if (buffer->readAccess != NULL && xSemaphoreTake(buffer->readAccess, (TickType_t) 10) == pdTRUE)
+	if (buffer->readAccess != NULL && xSemaphoreTake(buffer->readAccess, (TickType_t)10) == pdTRUE)
 	{
 		// successfully obtained the semaphore
 		if (buffer->lastRead->next == buffer->lastWritten->next)
 		{
 			xSemaphoreGive(buffer->readAccess);
-			return NULL;					// no unread data
+			return NULL;        // no unread data
 		}
 		else
 		{
-			TraceNode* reading = buffer->lastRead->next;
-			buffer->lastRead = reading;		// advance the read pointer
+			TraceNode *reading = buffer->lastRead->next;
+			buffer->lastRead = reading; // advance the read pointer
 			xSemaphoreGive(buffer->readAccess);
 			return reading;
 		}
@@ -115,5 +115,3 @@ TraceNode* circularBufferRead(CircularBufferHandler* buffer)
 		return NULL;
 	}
 }
-
-

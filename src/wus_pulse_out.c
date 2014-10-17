@@ -6,22 +6,22 @@
  * \date 2014-09-02
  */
 
-/* Copyright (C) 
+/* Copyright (C)
  * 2014 - James Duley
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 
 #include "wus_pulse_out.h"
@@ -65,7 +65,7 @@ static void initPulseTimer(void)
 {
 	// Enable and Configure Timer Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
-	SysCtlDelay(SysCtlClockGet()/3000);
+	SysCtlDelay(SysCtlClockGet() / 3000);
 
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
 
@@ -88,7 +88,7 @@ static void initPulseTimer(void)
 void isrTimer0 (void)
 {
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-	if(psuedoSpeed == 0)
+	if (psuedoSpeed == 0)
 	{
 		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TIMER_FALLBACK_RATE_HZ);
 	}
@@ -101,7 +101,8 @@ void isrTimer0 (void)
 	}
 }
 
-void initPulseOut() {
+void initPulseOut()
+{
 	// Enable peripheral
 	SysCtlPeripheralEnable(PULSE_OUT_PERIPH);
 	SysCtlDelay(SysCtlClockGet() / 3000);
@@ -115,27 +116,28 @@ void initPulseOut() {
 	//xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
-void setPulseSpeed(_iq speed) {
+void setPulseSpeed(_iq speed)
+{
 	psuedoSpeed = _IQint(speed);
 }
 /*
-void vPulseOutTask(void *pvParams) {
-	unsigned char isPulseHigh = 0;
+   void vPulseOutTask(void *pvParams) {
+    unsigned char isPulseHigh = 0;
 
-	// initialise FreeRTOS sleep parameters
-	portTickType pxPreviousWakeTime;
-	pxPreviousWakeTime = xTaskGetTickCount();
+    // initialise FreeRTOS sleep parameters
+    portTickType pxPreviousWakeTime;
+    pxPreviousWakeTime = xTaskGetTickCount();
 
-	for (;;) {
-		if (psuedoSpeed == 0) {
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / PULSE_OUT_TASK_MIN_RATE_HZ);
-		} else {
-			GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
+    for (;;) {
+        if (psuedoSpeed == 0) {
+            vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / PULSE_OUT_TASK_MIN_RATE_HZ);
+        } else {
+            GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 
-			isPulseHigh = ~isPulseHigh;
+            isPulseHigh = ~isPulseHigh;
 
-			vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M / psuedoSpeed);
-		}
-	}
-}
-*/
+            vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M / psuedoSpeed);
+        }
+    }
+   }
+ */

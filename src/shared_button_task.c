@@ -44,9 +44,9 @@
 // ButtonSwitch structure contains info on each switch.
 typedef struct ButtonSwitch
 {
-	tBoolean 	enabled;	// Switch is only polled if enabled.
-	int 		events;		// Switch triggers events on rising or falling edges.
-	int 		total;		// Total of previous switch values for oversampled debouncing.
+	tBoolean enabled;   // Switch is only polled if enabled.
+	int events;         // Switch triggers events on rising or falling edges.
+	int total;          // Total of previous switch values for oversampled debouncing.
 } ButtonSwitch;
 
 static ButtonSwitch ButtonSet[5];
@@ -56,35 +56,35 @@ static ButtonSwitch ButtonSet[5];
 static void buttonGPIOInit(unsigned long mcu_clock)
 {
 	// Enable PortG Peripheral
-	SysCtlPeripheralEnable	(SYSCTL_PERIPH_GPIOG);
-	SysCtlDelay 			(mcu_clock / 3000);
+	SysCtlPeripheralEnable  (SYSCTL_PERIPH_GPIOG);
+	SysCtlDelay             (mcu_clock / 3000);
 
 	// Set Pin Directions and Configure Input/Output Settings
-	GPIODirModeSet 			(GPIO_PORTG_BASE, 0xF8, GPIO_DIR_MODE_IN);
-	GPIOPadConfigSet 		(GPIO_PORTG_BASE, 0xF8, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
-	GPIOPinTypeGPIOOutput 	(GPIO_PORTG_BASE, BIT(2));
+	GPIODirModeSet          (GPIO_PORTG_BASE, 0xF8, GPIO_DIR_MODE_IN);
+	GPIOPadConfigSet        (GPIO_PORTG_BASE, 0xF8, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+	GPIOPinTypeGPIOOutput   (GPIO_PORTG_BASE, BIT(2));
 }
 
 
 // Sets Button Event Parameters
 void configureButtonEvent(Button button, ButtonEvent eventType)
 {
-	ButtonSet[button].enabled 	= true;
-	ButtonSet[button].events 	|= BIT(eventType);
-	ButtonSet[button].total 	= 0;
+	ButtonSet[button].enabled = true;
+	ButtonSet[button].events |= BIT(eventType);
+	ButtonSet[button].total = 0;
 }
 
 
 // Switch Polling Task
-void vButtonPollingTask(void* pvParameters)
+void vButtonPollingTask(void *pvParameters)
 {
 	// Initialise GPIO pins
 	unsigned long mcuClock = SysCtlClockGet();
 	buttonGPIOInit(mcuClock);
 
-	Button itr;						// Loop Iterator (Button to Process)
-	int switchStates 	= 0x00;		// Port G Switch Values
-	int tmpTotal 		= 0;		// Temporary Switch Total
+	Button itr;                 // Loop Iterator (Button to Process)
+	int switchStates = 0x00;    // Port G Switch Values
+	int tmpTotal = 0;           // Temporary Switch Total
 
 	portTickType xLastWakeTime;
 
@@ -93,7 +93,7 @@ void vButtonPollingTask(void* pvParameters)
 
 	xLastWakeTime = xTaskGetTickCount();
 
-	for(;;)
+	for (;;)
 	{
 		// Sleep for 0.1ms
 		vTaskDelayUntil( &xLastWakeTime, xTickIncrement);
@@ -102,7 +102,7 @@ void vButtonPollingTask(void* pvParameters)
 		switchStates = 0xF8 & ~(GPIOPinRead(GPIO_PORTG_BASE, 0xF8));
 
 		// Iterate through Switches, check for events
-		for (itr = BUTTON_UP; itr <= BUTTON_SELECT; itr ++)
+		for (itr = BUTTON_UP; itr <= BUTTON_SELECT; itr++)
 		{
 			if (ButtonSet[itr].enabled)
 			{
@@ -111,7 +111,7 @@ void vButtonPollingTask(void* pvParameters)
 
 				// Increment or Decrement total based on switch state
 				if (switchStates & BIT((itr + 3))) tmpTotal++;
-				else tmpTotal --;
+				else tmpTotal--;
 
 				if (tmpTotal > TOTAL_MAX) tmpTotal = TOTAL_MAX;
 				if (tmpTotal < TOTAL_MIN) tmpTotal = TOTAL_MIN;

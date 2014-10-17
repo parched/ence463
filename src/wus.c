@@ -90,7 +90,7 @@ static Options watchdogErrorOption;
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
-	whereas some older eval boards used 6MHz. */
+	   whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
@@ -114,18 +114,18 @@ int main(void)
 	telemetry.items[3] = coilExtensionItem;
 
 	/*ASC messages GUI*/
-	wusMessages = listView("ASC STAT",2);
+	wusMessages = listView("ASC STAT", 2);
 	/*
-	startOption = option(0,1);
-	startOption.skip = 1;
-	startOption.values[0]  = "Off";
-	startOption.values[1]  = "On";
-	startItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, startOption, getStartStatusDisplay);
-	*/
+	   startOption = option(0,1);
+	   startOption.skip = 1;
+	   startOption.values[0]  = "Off";
+	   startOption.values[1]  = "On";
+	   startItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, startOption, getStartStatusDisplay);
+	 */
 	roadTypeOption = option(0, 33);
 	roadTypeOption.skip = 1;
 	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getRoadTypeStatusDisplay);
-	throttleOption = option(-10,10);
+	throttleOption = option(-10, 10);
 	throttleOption.skip = 1;
 	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_READONLY, throttleOption, getThrottleStatusDisplay);
 	wusMessages.items[0] = roadTypeItem;
@@ -133,7 +133,7 @@ int main(void)
 	//wusMessages.items[2] = startItem;
 
 	/*Invoked errors GUI*/
-	wusStatusEcho = listView("ErrInvoked",6);
+	wusStatusEcho = listView("ErrInvoked", 6);
 	wusStatusCoilOption = option(0, 1);
 	wusStatusCoilOption.values[0] = "Ok";
 	wusStatusCoilOption.values[1] = "Error";
@@ -146,7 +146,7 @@ int main(void)
 	wusStatusUnsprungOption.values[0] = "Ok";
 	wusStatusUnsprungOption.values[1] = "Error";
 	wusStatusUnsprungItem = item("UnsprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusUnsprungOption, getUnsprungAccErrorInvoked);
-	speedExceededOption = option(0,1);
+	speedExceededOption = option(0, 1);
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
 	speedExceededItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedErrorInvoked);
@@ -180,24 +180,24 @@ int main(void)
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
 	/* Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension */
-	xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 4, NULL);
+	xTaskCreate(vSimulateTask, "Simulate task", 240, (void *)placeholder, 4, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vUartTask, "Uart Task", 240, (void *)placeholder, 3, NULL);
 
 	/* Refreshes GUI */
-	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void *)placeholder, 1, NULL);
 
 	/* Polls buttons */
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void *)placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
 	vTaskStartScheduler();
-	
+
 	/* If all is well we will never reach here as the scheduler will now be
-	running.  If we do reach here then it is likely that there was insufficient
-	heap available for the idle task to be created. */
-	for(;;);
+	   running.  If we do reach here then it is likely that there was insufficient
+	   heap available for the idle task to be created. */
+	for (;;) ;
 }
 
 
@@ -205,17 +205,17 @@ int main(void)
 void vApplicationMallocFailedHook(void)
 {
 	/* This function will only be called if an API call to create a task, queue
-	or semaphore fails because there is too little heap RAM remaining. */
-	for(;;);
+	   or semaphore fails because there is too little heap RAM remaining. */
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
 void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
 {
 	/* This function will only be called if a task overflows its stack.  Note
-	that stack overflow checking does slow down the context switch
-	implementation. */
-	for(;;);
+	   that stack overflow checking does slow down the context switch
+	   implementation. */
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
@@ -229,5 +229,3 @@ void vApplicationTickHook(void)
 {
 	/* Tick hook */
 }
-
-

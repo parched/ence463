@@ -6,22 +6,22 @@
  * \date 2014-10-08
  */
 
-/* Copyright (C) 
+/* Copyright (C)
  * 2014 - James Duley
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 
 
@@ -50,7 +50,7 @@
 #define ON_MASS_SPRUNG(x) ((x) / 250)       /**< Divide by the sprung mass (kg). */
 #define ON_MASS_UNSPRUNG(x) ((x) * 2 / 73)  /**< Divide by the unsprung mass (kg). */
 #define ON_MASS_TOTAL(x) ((x) * 2 / 573)    /**< Divide by the total mass (kg). */
-#define WEIGHT_BY_MASSES(sprung,unsprung) (((sprung) * 500  + (unsprung) * 73) / 573)       /**< Weighted average relative to the two masses. */
+#define WEIGHT_BY_MASSES(sprung, unsprung) (((sprung) * 500 + (unsprung) * 73) / 573)       /**< Weighted average relative to the two masses. */
 #define STIFFNESS_SPRING 25                 /**< The stiffness of the spring (N/mm). */
 #define STIFFNESS_TYRE 100                  /**< The stiffness of the tyre (N/mm). */
 #define DAMPING_TYRE 50000                  /**< The damping coefficient of the tyre (N.s/m). */

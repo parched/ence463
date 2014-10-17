@@ -6,22 +6,22 @@
  * \date 2014-08-21
  */
 
-/* Copyright (C) 
+/* Copyright (C)
  * 2014 - George Xian
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 
 #ifndef SHARED_UARTTASK_H
@@ -45,28 +45,28 @@ typedef struct
  */
 typedef union
 {
-	_UartFrame frameWise;						/**< Allows access with structure */
-	unsigned char byteWise[UART_FRAME_SIZE+1];	/**< Allows access as a byte stream */
+	_UartFrame frameWise;                   /**< Allows access with structure */
+	unsigned char byteWise[UART_FRAME_SIZE + 1]; /**< Allows access as a byte stream */
 } UartFrame;
 
 /**
  * \brief Function type of callbacks for this module
  */
-typedef void (*uartCallback)(UartFrame*);
+typedef void (*uartCallback)(UartFrame *);
 
 /**
  * \brief Function of the UART Task to be called by the FreeRTOS kernel
  *
  * \param pvParameters		Unused
  */
-void vUartTask(void* pvParameters);
+void vUartTask(void *pvParameters);
 
 /**
  * \brief Attach callback to be executed on a UART message receive event
  *
  * \param callback			Callback to execute for receive event
  */
-void attachOnReceiveCallback(void (*callback)(UartFrame*));
+void attachOnReceiveCallback(void (*callback)(UartFrame *));
 
 /**
  * \brief Queues message to be sent out via UART
@@ -74,7 +74,7 @@ void attachOnReceiveCallback(void (*callback)(UartFrame*));
  * \param uartFrame			Pointer to the frame to send
  * \return 0 for success, -1 if queue is full
  */
-int queueMsgToSend(UartFrame* uartFrame);
+int queueMsgToSend(UartFrame *uartFrame);
 
 /**
  * \brief Returns no. of slots left on the queue

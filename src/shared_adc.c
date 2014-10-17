@@ -36,11 +36,11 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/timer.h"
 
-#define BIT(x) 			(1 << x)
-#define ADC_FREQ_HZ 	10000
-#define ADC_DATA_MASK	0x3FF
-#define ADC_SEQ			0
-#define ADC_PRIORITY	0
+#define BIT(x)          (1 << x)
+#define ADC_FREQ_HZ     10000
+#define ADC_DATA_MASK   0x3FF
+#define ADC_SEQ         0
+#define ADC_PRIORITY    0
 #define ADC_TO_IQ(x) ((x) << (QG - 10)) /** This will need to be changed if QG < 10 */
 
 static volatile unsigned long ADCout[8];
@@ -97,17 +97,17 @@ void initAdcModule(char adcs)
 	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ulDummy);
 
 	// Configure, Register and Clear Interrupt
-	ADCIntClear 	(ADC_BASE, ADC_SEQ);
-	IntRegister		(INT_ADC0SS0, adcISR);
-	IntPrioritySet	(INT_ADC0SS0, 0);
-	IntEnable 		(INT_ADC0SS0);
-	ADCIntEnable 	(ADC_BASE, ADC_SEQ);
+	ADCIntClear     (ADC_BASE, ADC_SEQ);
+	IntRegister     (INT_ADC0SS0, adcISR);
+	IntPrioritySet  (INT_ADC0SS0, 0);
+	IntEnable       (INT_ADC0SS0);
+	ADCIntEnable    (ADC_BASE, ADC_SEQ);
 
 	// Enable ADC Sequence
 	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 
 	// Enable Timer
-	TimerEnable		(TIMER1_BASE, TIMER_A);
+	TimerEnable     (TIMER1_BASE, TIMER_A);
 }
 
 
@@ -115,7 +115,7 @@ _iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 {
 	unsigned long adcOutput;
 
-	switch(adc)
+	switch (adc)
 	{
 	case 0x01:
 		adcOutput = ADCout[0] & ADC_DATA_MASK; break;
@@ -137,7 +137,7 @@ void adcISR (void)
 	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
-	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, (unsigned long *) ADCout);
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, (unsigned long *)ADCout);
 
 	// Clear FIFO Under/Overflow Flags
 	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);

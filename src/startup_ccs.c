@@ -4,20 +4,20 @@
 //
 // Copyright (c) 2012 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
-// 
+//
 // Texas Instruments (TI) is supplying this software for use solely and
 // exclusively on TI's microcontroller products. The software is owned by
 // TI and/or its suppliers, and is protected under applicable copyright
 // laws. You may not combine this software with "viral" open-source
 // software in order to form a larger program.
-// 
+//
 // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
 // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
 // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
 // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
 // DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
+//
 // This is part of revision 9453 of the EK-LM4F120XL Firmware Package.
 //
 //*****************************************************************************
@@ -66,69 +66,69 @@ extern void xPortSysTickHandler(void);
 //*****************************************************************************
 
 #pragma DATA_SECTION(g_pfnVectors, ".intvecs")
-void (* const g_pfnVectors[])(void) =
+void (*const g_pfnVectors[]) (void) =
 {
-    (void (*)(void))((uint32_t)&__STACK_TOP),
-                                            // The initial stack pointer
-    ResetISR,                               // The reset handler
-    NmiSR,                                  // The NMI handler
-    FaultISR,                               // The hard fault handler
-    IntDefaultHandler,                      // The MPU fault handler
-    IntDefaultHandler,                      // The bus fault handler
-    IntDefaultHandler,                      // The usage fault handler
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    vPortSVCHandler,                        // SVCall handler
-    IntDefaultHandler,                      // Debug monitor handler
-    0,                                      // Reserved
-    xPortPendSVHandler,                     // The PendSV handler
-    xPortSysTickHandler,                    // The SysTick handler
-    IntDefaultHandler,                      // GPIO Port A
-    IntDefaultHandler,                      // GPIO Port B
-    IntDefaultHandler,                      // GPIO Port C
-    IntDefaultHandler,                      // GPIO Port D
-    IntDefaultHandler,                      // GPIO Port E
-    IntDefaultHandler,                      // UART0 Rx and Tx
-    IntDefaultHandler,                      // UART1 Rx and Tx
-    IntDefaultHandler,                      // SSI0 Rx and Tx
-    IntDefaultHandler,                      // I2C0 Master and Slave
-    IntDefaultHandler,                      // PWM Fault
-    IntDefaultHandler,                      // PWM Generator 0
-    IntDefaultHandler,                      // PWM Generator 1
-    IntDefaultHandler,                      // PWM Generator 2
-    IntDefaultHandler,                      // Quadrature Encoder 0
-    IntDefaultHandler,                      // ADC Sequence 0
-    IntDefaultHandler,                      // ADC Sequence 1
-    IntDefaultHandler,                      // ADC Sequence 2
-    IntDefaultHandler,                      // ADC Sequence 3
-    IntDefaultHandler,                      // Watchdog timer
-    IntDefaultHandler,                      // Timer 0 subtimer A
-    IntDefaultHandler,                      // Timer 0 subtimer B
-    IntDefaultHandler,                      // Timer 1 subtimer A
-    IntDefaultHandler,                      // Timer 1 subtimer B
-    IntDefaultHandler,                      // Timer 2 subtimer A
-    IntDefaultHandler,                      // Timer 2 subtimer B
-    IntDefaultHandler,                      // Analog Comparator 0
-    IntDefaultHandler,                      // Analog Comparator 1
-    IntDefaultHandler,                      // Analog Comparator 2
-    IntDefaultHandler,                      // System Control (PLL, OSC, BO)
-    IntDefaultHandler,                      // FLASH Control
-    IntDefaultHandler,                      // GPIO Port F
-    IntDefaultHandler,                      // GPIO Port G
-    IntDefaultHandler,                      // GPIO Port H
-    IntDefaultHandler,                      // UART2 Rx and Tx
-    IntDefaultHandler,                      // SSI1 Rx and Tx
-    IntDefaultHandler,                      // Timer 3 subtimer A
-    IntDefaultHandler,                      // Timer 3 subtimer B
-    IntDefaultHandler,                      // I2C1 Master and Slave
-    IntDefaultHandler,                      // Quadrature Encoder 1
-    IntDefaultHandler,                      // CAN0
-    IntDefaultHandler,                      // CAN1
-    IntDefaultHandler,                      // CAN2
-    0,                                      // Reserved
-    IntDefaultHandler                       // Hibernate
+	(void (*)(void))((uint32_t)&__STACK_TOP),
+	// The initial stack pointer
+	ResetISR,                           // The reset handler
+	NmiSR,                              // The NMI handler
+	FaultISR,                           // The hard fault handler
+	IntDefaultHandler,                  // The MPU fault handler
+	IntDefaultHandler,                  // The bus fault handler
+	IntDefaultHandler,                  // The usage fault handler
+	0,                                  // Reserved
+	0,                                  // Reserved
+	0,                                  // Reserved
+	0,                                  // Reserved
+	vPortSVCHandler,                    // SVCall handler
+	IntDefaultHandler,                  // Debug monitor handler
+	0,                                  // Reserved
+	xPortPendSVHandler,                 // The PendSV handler
+	xPortSysTickHandler,                // The SysTick handler
+	IntDefaultHandler,                  // GPIO Port A
+	IntDefaultHandler,                  // GPIO Port B
+	IntDefaultHandler,                  // GPIO Port C
+	IntDefaultHandler,                  // GPIO Port D
+	IntDefaultHandler,                  // GPIO Port E
+	IntDefaultHandler,                  // UART0 Rx and Tx
+	IntDefaultHandler,                  // UART1 Rx and Tx
+	IntDefaultHandler,                  // SSI0 Rx and Tx
+	IntDefaultHandler,                  // I2C0 Master and Slave
+	IntDefaultHandler,                  // PWM Fault
+	IntDefaultHandler,                  // PWM Generator 0
+	IntDefaultHandler,                  // PWM Generator 1
+	IntDefaultHandler,                  // PWM Generator 2
+	IntDefaultHandler,                  // Quadrature Encoder 0
+	IntDefaultHandler,                  // ADC Sequence 0
+	IntDefaultHandler,                  // ADC Sequence 1
+	IntDefaultHandler,                  // ADC Sequence 2
+	IntDefaultHandler,                  // ADC Sequence 3
+	IntDefaultHandler,                  // Watchdog timer
+	IntDefaultHandler,                  // Timer 0 subtimer A
+	IntDefaultHandler,                  // Timer 0 subtimer B
+	IntDefaultHandler,                  // Timer 1 subtimer A
+	IntDefaultHandler,                  // Timer 1 subtimer B
+	IntDefaultHandler,                  // Timer 2 subtimer A
+	IntDefaultHandler,                  // Timer 2 subtimer B
+	IntDefaultHandler,                  // Analog Comparator 0
+	IntDefaultHandler,                  // Analog Comparator 1
+	IntDefaultHandler,                  // Analog Comparator 2
+	IntDefaultHandler,                  // System Control (PLL, OSC, BO)
+	IntDefaultHandler,                  // FLASH Control
+	IntDefaultHandler,                  // GPIO Port F
+	IntDefaultHandler,                  // GPIO Port G
+	IntDefaultHandler,                  // GPIO Port H
+	IntDefaultHandler,                  // UART2 Rx and Tx
+	IntDefaultHandler,                  // SSI1 Rx and Tx
+	IntDefaultHandler,                  // Timer 3 subtimer A
+	IntDefaultHandler,                  // Timer 3 subtimer B
+	IntDefaultHandler,                  // I2C1 Master and Slave
+	IntDefaultHandler,                  // Quadrature Encoder 1
+	IntDefaultHandler,                  // CAN0
+	IntDefaultHandler,                  // CAN1
+	IntDefaultHandler,                  // CAN2
+	0,                                  // Reserved
+	IntDefaultHandler                   // Hibernate
 };
 
 
@@ -145,12 +145,12 @@ void (* const g_pfnVectors[])(void) =
 void
 ResetISR(void)
 {
-    //
-    // Jump to the CCS C initialization routine.  This will enable the
-    // floating-point unit as well, so that does not need to be done here.
-    //
-    __asm("    .global _c_int00\n"
-          "    b.w     _c_int00");
+	//
+	// Jump to the CCS C initialization routine.  This will enable the
+	// floating-point unit as well, so that does not need to be done here.
+	//
+	__asm("    .global _c_int00\n"
+	      "    b.w     _c_int00");
 }
 
 //*****************************************************************************
@@ -163,12 +163,12 @@ ResetISR(void)
 static void
 NmiSR(void)
 {
-    //
-    // Enter an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Enter an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
 
 //*****************************************************************************
@@ -181,12 +181,12 @@ NmiSR(void)
 static void
 FaultISR(void)
 {
-    //
-    // Enter an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Enter an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
 
 //*****************************************************************************
@@ -199,11 +199,10 @@ FaultISR(void)
 static void
 IntDefaultHandler(void)
 {
-    //
-    // Go into an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Go into an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
-
