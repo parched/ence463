@@ -31,7 +31,7 @@
 #define ACC_UNSPRUNG_EXCEEDED 0x20      /**< Unsprung acceleration limit exceeded error. */
 #define COIL_EXTENSION_EXCEEDED 0x40    /**< Coil extension limit exceeded error. */
 #define CAR_SPEED_EXCEEDED 0x80         /**< Car speed limit exceeded error. */
-#define POWER_FAILURE 0x01				/**< Power failure error*/
-#define WATCHDOG_TIMER 0x02				/**< Watchdog timer error*/
+#define POWER_FAILURE 0x01              /**< Power failure error*/
+#define WATCHDOG_TIMER 0x02             /**< Watchdog timer error*/
 
 #endif /* SHARED_ERRORS_H_ */

@@ -36,12 +36,12 @@
 #include "driverlib/uart.h"
 
 #ifndef NULL
-#define NULL ( (void *) 0)
+#define NULL ((void *)0)
 #endif
 
 #define SENDMESSAGE_QUEUE_SIZE 10
 #define UART_TASK_RATE_HZ 1000
-#define UART_PERCHAR_HZ 75000	// 13.3us delay between characters
+#define UART_PERCHAR_HZ 75000   // 13.3us delay between characters
 #define UART_BAUD 625000
 
 static uartCallback receivedCallback;
@@ -55,7 +55,8 @@ static QueueHandle_t uartSendQueue;
  */
 unsigned int getMsgLen(char type);
 
-void vUartTask(void* pvParameters) {
+void vUartTask(void *pvParameters)
+{
 	// setup Uart peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
@@ -79,86 +80,106 @@ void vUartTask(void* pvParameters) {
 	unsigned int index = 0;
 	char lastChar;
 
-	for (;;) {
+	for (;;)
+	{
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
 		// process message send queue
 		UartFrame toSend;
-		while (xQueueReceive(uartSendQueue, &toSend, 0) == pdTRUE) {
+		while (xQueueReceive(uartSendQueue, &toSend, 0) == pdTRUE)
+		{
 			unsigned int msgLen = getMsgLen(toSend.frameWise.msgType);
 
 			unsigned int i = 0;
-			for (i=0; i<msgLen; i++) {
-				while(!UARTCharPutNonBlocking(UART1_BASE, (unsigned char) toSend.byteWise[i])) {
+			for (i = 0; i<msgLen; i++)
+			{
+				while (!UARTCharPutNonBlocking(UART1_BASE, (unsigned char)toSend.byteWise[i]))
+				{
 					vTaskDelay(1);
 				}
 			}
-			vTaskDelay(msgLen*configTICK_RATE_HZ / UART_PERCHAR_HZ);		// put delay between messages
+			vTaskDelay(msgLen * configTICK_RATE_HZ / UART_PERCHAR_HZ); // put delay between messages
 		}
 
 		long receivedChar;
 		// receive and decode messages
-		while ((receivedChar = UARTCharGetNonBlocking(UART1_BASE)) > -1) {
+		while ((receivedChar = UARTCharGetNonBlocking(UART1_BASE)) > -1)
+		{
 
-			if (index == 0) {
+			if (index == 0)
+			{
 				// decode message type
 				msgLen = getMsgLen((char)receivedChar);
-				if (msgLen && lastChar != 'M' && lastChar != 'W') {
+				if (msgLen && lastChar != 'M' && lastChar != 'W')
+				{
 					// only valid message types get to advance (msgLen = 0 is invalid)
 					buffer.frameWise.msgType = (char)receivedChar;
 					index++;
 				}
-			} else {
-				if (index >= msgLen && receivedCallback != NULL) {
+			}
+			else
+			{
+				if (index >= msgLen && receivedCallback != NULL)
+				{
 					// end of message given message type
 					receivedCallback(&buffer);
 					index = 0;
-				} else {
+				}
+				else
+				{
 					// adding more characters onto frame
 					buffer.byteWise[index] = (char)receivedChar;
 					index++;
 				}
 			}
 
-			lastChar = (char)receivedChar;		// store the last character
+			lastChar = (char)receivedChar; // store the last character
 		}
 	}
 }
 
-void attachOnReceiveCallback(void (*callback)(UartFrame*)) {
+void attachOnReceiveCallback(void (*callback)(UartFrame *))
+{
 	receivedCallback = callback;
 }
 
-int queueMsgToSend(UartFrame* uartFrame) {
-	if (uartSendQueue == 0) {
-		return -2;	// queue has not been created
+int queueMsgToSend(UartFrame *uartFrame)
+{
+	if (uartSendQueue == 0)
+	{
+		return -2; // queue has not been created
 	}
 
-	if (xQueueSendToBack(uartSendQueue, (void*) uartFrame, 0) == pdTRUE) {
+	if (xQueueSendToBack(uartSendQueue, (void *)uartFrame, 0) == pdTRUE)
+	{
 		return 0;
-	} else {
-		return -1;	// queue full
+	}
+	else
+	{
+		return -1; // queue full
 	}
 }
 
-int getSendQueueAvailSpaces(void) {
+int getSendQueueAvailSpaces(void)
+{
 	return uxQueueMessagesWaiting(uartSendQueue);
 }
 
-unsigned int getMsgLen(char type) {
-	switch(type)
+unsigned int getMsgLen(char type)
+{
+	switch (type)
 	{
-		case('W'):
-			return 2;
-		case('R'):
-			return 3;
-		case('S'):
-			return 1;
-		case('A'):
-			return 7;
-		case('M'):
-			return 2;
-		default:
-			return 0;
+	case ('W'):
+		return 2;
+	case ('R'):
+		return 3;
+	case ('S'):
+		return 1;
+	case ('A'):
+		return 7;
+	case ('M'):
+		return 2;
+	default:
+		return 0;
 	}
 }

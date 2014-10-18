@@ -6,22 +6,22 @@
  * \date 2014-10-07
  */
 
-/* Copyright (C) 
+/* Copyright (C)
  * 2014 - Tom Walsh
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 
 #include "asc_control_task.h"
@@ -44,10 +44,10 @@
 
 #define CONTROL_TASK_RATE_HZ 1000
 
-#define DAMPING_SEDATE 	_IQ(0.100)
-#define DAMPING_NORMAL 	_IQ(0.250)
-#define DAMPING_SPORT	_IQ(0.350)
-#define DAMPING_RALLY	_IQ(0.500)
+#define DAMPING_SEDATE  _IQ(0.100)
+#define DAMPING_NORMAL  _IQ(0.250)
+#define DAMPING_SPORT   _IQ(0.350)
+#define DAMPING_RALLY   _IQ(0.500)
 
 static int isOn;                      /**< Sets whether the active suspension is on or off. */
 static rideType rideMode = SEDATE;
@@ -77,11 +77,13 @@ static int invokeWatchdogError = 0;
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-static void readMessage(UartFrame* uartFrame) {
-	switch (uartFrame->frameWise.msgType) {
-		case 'W':
-			wusStatus = uartFrame->frameWise.msg[0];
-			break;
+static void readMessage(UartFrame *uartFrame)
+{
+	switch (uartFrame->frameWise.msgType)
+	{
+	case 'W':
+		wusStatus = uartFrame->frameWise.msg[0];
+		break;
 	}
 }
 
@@ -117,7 +119,7 @@ static void sendSerialMessages()
 
 	// Road Type Transmission
 	UartFrame roadSend;
-	roadSend.frameWise.msgType = 'R';	// Road Message Type
+	roadSend.frameWise.msgType = 'R'; // Road Message Type
 	usprintf(roadSend.frameWise.msg, "%2d", roadType);
 	queueMsgToSend(&roadSend);
 
@@ -125,7 +127,7 @@ static void sendSerialMessages()
 	if (resetState)
 	{
 		UartFrame resetSend;
-		resetSend.frameWise.msgType = 'S';	// Reset Message Type
+		resetSend.frameWise.msgType = 'S'; // Reset Message Type
 		queueMsgToSend(&resetSend);
 	}
 
@@ -163,7 +165,7 @@ void vControlTask(void *params)
 
 		// Do control
 		actuatorForce = getControlForce(xTimeIncrement);
-		
+
 		// Set Control Outputs
 		setDuty(ACTUATOR_FORCE_PWM, actuatorForce, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
 		setDuty(DAMPING_COEFF_PWM, dampingCoefficient, MIN_DAMPING_COEFF, MAX_DAMPING_COEFF);
@@ -176,23 +178,24 @@ _iq getDampingCoefficient()
 {
 	switch (rideMode)
 	{
-		case SEDATE:
-			return DAMPING_SEDATE;
-		case NORMAL:
-			return DAMPING_NORMAL;
-		case SPORT:
-			return DAMPING_SPORT;
-		case RALLY:
-			return DAMPING_RALLY;
+	case SEDATE:
+		return DAMPING_SEDATE;
+	case NORMAL:
+		return DAMPING_NORMAL;
+	case SPORT:
+		return DAMPING_SPORT;
+	case RALLY:
+		return DAMPING_RALLY;
 	}
-	
+
 	return -1;
 }
 
 
 _iq getControlForce(int dTime)
 {
-	if (isOn == 0) {
+	if (isOn == 0)
+	{
 		return 0;
 	}
 
@@ -208,7 +211,7 @@ _iq getControlForce(int dTime)
 
 void setRideMode(int rideModeIn)
 {
-	rideMode = (rideType) rideModeIn;
+	rideMode = (rideType)rideModeIn;
 }
 
 void setAscOn(int isAscOn)
@@ -216,80 +219,116 @@ void setAscOn(int isAscOn)
 	isOn = isAscOn;
 }
 
-void setRoadType(int roadTypeInput) {
-	if(roadTypeInput > 13 && roadType <= 13) {
+void setRoadType(int roadTypeInput)
+{
+	if (roadTypeInput > 13 && roadType <= 13)
+	{
 		roadType = 20;
-	} else if(roadTypeInput > 23 && roadType <= 23) {
+	}
+	else if (roadTypeInput > 23 && roadType <= 23)
+	{
 		roadType = 30;
-	} else if(roadTypeInput < 20 && roadType >= 20) {
+	}
+	else if (roadTypeInput < 20 && roadType >= 20)
+	{
 		roadType = 13;
-	} else if(roadTypeInput < 30 && roadType >= 30) {
+	}
+	else if (roadTypeInput < 30 && roadType >= 30)
+	{
 		roadType = 23;
-	} else {
+	}
+	else
+	{
 		roadType = roadTypeInput;
 	}
 }
 
 
 
-void setThrottle(int throttleInput) {
+void setThrottle(int throttleInput)
+{
 	throttle = _IQ(throttleInput);
 }
 
-void setResetState(int resetStateInput) {
+void setResetState(int resetStateInput)
+{
 	resetState = resetStateInput;
 }
 
-void setCoilError(int errorInput) {
+void setCoilError(int errorInput)
+{
 	invokeCoilError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= COIL_EXTENSION_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		errorState &= ~COIL_EXTENSION_EXCEEDED;
 	}
 }
 
-void setSprungError(int errorInput) {
+void setSprungError(int errorInput)
+{
 	invokeSpungError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= ACC_SPRUNG_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		errorState &= ~ACC_SPRUNG_EXCEEDED;
 	}
 }
 
-void setUnsprungError(int errorInput) {
+void setUnsprungError(int errorInput)
+{
 	invokeUnsprungError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= ACC_UNSPRUNG_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		errorState &= ~ACC_UNSPRUNG_EXCEEDED;
 	}
 }
 
-void setSpeedError(int errorInput) {
+void setSpeedError(int errorInput)
+{
 	invokeSpeedError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= CAR_SPEED_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		errorState &= ~CAR_SPEED_EXCEEDED;
 	}
 }
 
-void setPowerError(int errorInput) {
+void setPowerError(int errorInput)
+{
 	invokePowerError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= POWER_FAILURE;
-	} else {
+	}
+	else
+	{
 		errorState &= ~POWER_FAILURE;
 	}
 }
 
-void setWatchdogError(int errorInput) {
+void setWatchdogError(int errorInput)
+{
 	invokeWatchdogError = errorInput;
-	if(errorInput == 1) {
+	if (errorInput == 1)
+	{
 		errorState |= WATCHDOG_TIMER;
-	} else {
+	}
+	else
+	{
 		errorState &= ~WATCHDOG_TIMER;
 	}
 }
@@ -301,22 +340,22 @@ int getDisplayRideMode()
 	return rideMode;
 }
 
-int getDisplaySpeed() 
+int getDisplaySpeed()
 {
-	return _IQint((speed*36) / 10);
+	return _IQint((speed * 36) / 10);
 }
 
-int getDisplaySprungAcc() 
+int getDisplaySprungAcc()
 {
 	return _IQint(sprungAcc);
 }
 
-int getDisplayUnsprungAcc() 
+int getDisplayUnsprungAcc()
 {
 	return _IQint(unsprungAcc);
 }
 
-int getDisplayCoilExtension() 
+int getDisplayCoilExtension()
 {
 	return _IQint(coilExtension);
 }
@@ -338,87 +377,119 @@ int getRoadType()
 
 int getThrottle()
 {
-	return  _IQint(throttle);
+	return _IQint(throttle);
 }
 
-int getResetState() {
+int getResetState()
+{
 	return resetState;
 }
 
-int getCoilExError() {
-	if(wusStatus &  COIL_EXTENSION_EXCEEDED) {
+int getCoilExError()
+{
+	if (wusStatus & COIL_EXTENSION_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getUnsprungAccError() {
-	if(wusStatus & ACC_UNSPRUNG_EXCEEDED) {
+int getUnsprungAccError()
+{
+	if (wusStatus & ACC_UNSPRUNG_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getSprungAccError() {
-	if(wusStatus & ACC_SPRUNG_EXCEEDED) {
+int getSprungAccError()
+{
+	if (wusStatus & ACC_SPRUNG_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getCarSpeedError() {
-	if(wusStatus & CAR_SPEED_EXCEEDED) {
+int getCarSpeedError()
+{
+	if (wusStatus & CAR_SPEED_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getAscOn() {
+int getAscOn()
+{
 	return isOn;
 }
 
 
-int getCoilInvokedError() {
+int getCoilInvokedError()
+{
 	return invokeCoilError;
 }
 
-int getSprungInvokedError() {
+int getSprungInvokedError()
+{
 	return invokeSpungError;
 }
 
-int getUnsprungInvokedError() {
+int getUnsprungInvokedError()
+{
 	return invokeUnsprungError;
 }
 
-int getSpeedInvokedError() {
+int getSpeedInvokedError()
+{
 	return invokeSpeedError;
 }
 
-int getPowerInvokedError() {
+int getPowerInvokedError()
+{
 	return invokePowerError;
 }
 
-int getWatchdogInvokedError() {
+int getWatchdogInvokedError()
+{
 	return invokeWatchdogError;
 }
 
 
-int getPowerError() {
-	if(wusStatus & POWER_FAILURE) {
+int getPowerError()
+{
+	if (wusStatus & POWER_FAILURE)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getWatchdogError() {
-	if(wusStatus & WATCHDOG_TIMER) {
+int getWatchdogError()
+{
+	if (wusStatus & WATCHDOG_TIMER)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }

@@ -6,22 +6,22 @@
  * \date 2014-08-21
  */
 
-/* Copyright (C) 
+/* Copyright (C)
  * 2014 - James Duley
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 
 #include "wus_simulate_task.h"
@@ -84,7 +84,7 @@ static void resetSimulation();
 /**
  * \brief Converts Road Type to Amplitude and Half-Wavelength
  */
- static void decodeRoadType();
+static void decodeRoadType();
 
 /**
  * \brief Simulates and updates the state.
@@ -119,22 +119,24 @@ static void putSimOnStops();
  *
  * \param uartFrame Pointer to the uartFrame to read.
  */
-static void readMessage(UartFrame* uartFrame) {
-	switch (uartFrame->frameWise.msgType) {
-		case 'R':
-			uartFrame->frameWise.msg[2] = '\0';
-			roadType = (int) ustrtoul(uartFrame->frameWise.msg, NULL, 10);
-			decodeRoadType();
-			break;
-		case 'S':
-			resetSimulation();
-			break;
-		case 'A':
-			throttle = getThrottle(uartFrame->frameWise.msg);
-			break;
-		case 'M':
-			wusStatusEcho = uartFrame->frameWise.msg[0];
-			break;
+static void readMessage(UartFrame *uartFrame)
+{
+	switch (uartFrame->frameWise.msgType)
+	{
+	case 'R':
+		uartFrame->frameWise.msg[2] = '\0';
+		roadType = (int)ustrtoul(uartFrame->frameWise.msg, NULL, 10);
+		decodeRoadType();
+		break;
+	case 'S':
+		resetSimulation();
+		break;
+	case 'A':
+		throttle = getThrottle(uartFrame->frameWise.msg);
+		break;
+	case 'M':
+		wusStatusEcho = uartFrame->frameWise.msg[0];
+		break;
 	}
 }
 
@@ -142,25 +144,35 @@ static void readMessage(UartFrame* uartFrame) {
  * \brief Checks all error shated and sends status to ASC
  *
  */
-void updateStatus() {
+void updateStatus()
+{
 	UartFrame errorStatusSend;
 
 	//max speed error check
-	if(speed >= MAX_SPEED ) {
+	if (speed >= MAX_SPEED)
+	{
 		combinedError |= CAR_SPEED_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		combinedError &= ~CAR_SPEED_EXCEEDED;
 	}
 	//max sprung acceration check
-	if(sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG) {
+	if (sprungAcc > MAX_ACC_SPRUNG || sprungAcc < MIN_ACC_SPRUNG)
+	{
 		combinedError |= ACC_SPRUNG_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		combinedError &= ~ACC_SPRUNG_EXCEEDED;
 	}
 	//max unsprung acceration check
-	if(unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG) {
+	if (unsprungAcc > MAX_ACC_UNSPRUNG || unsprungAcc < MIN_ACC_UNSPRUNG)
+	{
 		combinedError |= ACC_UNSPRUNG_EXCEEDED;
-	} else {
+	}
+	else
+	{
 		combinedError &= ~ACC_UNSPRUNG_EXCEEDED;
 	}
 
@@ -169,7 +181,8 @@ void updateStatus() {
 	queueMsgToSend(&errorStatusSend);
 }
 
-void vSimulateTask(void *params) {
+void vSimulateTask(void *params)
+{
 	initPulseOut();
 	initAdcModule(ACTUATOR_FORCE_ADC | DAMPING_COEFF_ADC);
 	initPwmModule(ACC_SPRUNG_PWM | ACC_UNSPRUNG_PWM | COIL_EXTENSION_PWM);
@@ -182,7 +195,8 @@ void vSimulateTask(void *params) {
 
 	int distanceTravelled = 0;
 
-	for (;;) {
+	for (;;)
+	{
 		vTaskDelayUntil( &pxPreviousWakeTime, xTimeIncrement);
 
 		force = getSmoothAdc(ACTUATOR_FORCE_ADC, MIN_ACTUATOR_FORCE, MAX_ACTUATOR_FORCE);
@@ -194,9 +208,9 @@ void vSimulateTask(void *params) {
 		distanceTravelled += 100;
 
 		setPulseSpeed(speed);
-		setDuty(ACC_SPRUNG_PWM, sprungAcc,MIN_ACC_SPRUNG,MAX_ACC_SPRUNG);
-		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc,MIN_ACC_UNSPRUNG,MAX_ACC_UNSPRUNG);
-		setDuty(COIL_EXTENSION_PWM, coilExtension,MIN_COIL_EXTENSION,MAX_COIL_EXTENSION);
+		setDuty(ACC_SPRUNG_PWM, sprungAcc, MIN_ACC_SPRUNG, MAX_ACC_SPRUNG);
+		setDuty(ACC_UNSPRUNG_PWM, unsprungAcc, MIN_ACC_UNSPRUNG, MAX_ACC_UNSPRUNG);
+		setDuty(COIL_EXTENSION_PWM, coilExtension, MIN_COIL_EXTENSION, MAX_COIL_EXTENSION);
 
 		circularBufferWrite(roadBuffer, distanceTravelled, _IQint(zR));
 
@@ -204,96 +218,104 @@ void vSimulateTask(void *params) {
 	}
 }
 
-void decodeRoadType(){
-	switch (roadType){
-		case 10:
-			roadAmplitude = 5;
-			halfRoadWavelength = _IQ(0.05);
-			break;
-		
-		case 11:
-			roadAmplitude = 10;
-			halfRoadWavelength = _IQ(0.07);
-			break;
+void decodeRoadType()
+{
+	switch (roadType)
+	{
+	case 10:
+		roadAmplitude = 5;
+		halfRoadWavelength = _IQ(0.05);
+		break;
 
-		case 12:
-			roadAmplitude = 15;
-			halfRoadWavelength = _IQ(0.09);
-			break;
+	case 11:
+		roadAmplitude = 10;
+		halfRoadWavelength = _IQ(0.07);
+		break;
 
-		case 13:
-			roadAmplitude = 20;
-			halfRoadWavelength = _IQ(0.10);
-			break;
+	case 12:
+		roadAmplitude = 15;
+		halfRoadWavelength = _IQ(0.09);
+		break;
 
-		case 20:
-			roadAmplitude = 25;
-			halfRoadWavelength = _IQ(0.11);
-			break;
+	case 13:
+		roadAmplitude = 20;
+		halfRoadWavelength = _IQ(0.10);
+		break;
 
-		case 21:
-			roadAmplitude = 50;
-			halfRoadWavelength = _IQ(0.16);
-			break;
+	case 20:
+		roadAmplitude = 25;
+		halfRoadWavelength = _IQ(0.11);
+		break;
 
-		case 22:
-			roadAmplitude = 75;
-			halfRoadWavelength = _IQ(0.19);
-			break;
+	case 21:
+		roadAmplitude = 50;
+		halfRoadWavelength = _IQ(0.16);
+		break;
 
-		case 23:
-			roadAmplitude = 100;
-			halfRoadWavelength = _IQ(0.22);
-			break;
+	case 22:
+		roadAmplitude = 75;
+		halfRoadWavelength = _IQ(0.19);
+		break;
 
-		case 30:
-			roadAmplitude = 150;
-			halfRoadWavelength = _IQ(0.27);
-			break;
+	case 23:
+		roadAmplitude = 100;
+		halfRoadWavelength = _IQ(0.22);
+		break;
 
-		case 31:
-			roadAmplitude = 200;
-			halfRoadWavelength = _IQ(0.32);			
-			break;
+	case 30:
+		roadAmplitude = 150;
+		halfRoadWavelength = _IQ(0.27);
+		break;
 
-		case 32:
-			roadAmplitude = 250;
-			halfRoadWavelength = _IQ(0.35);
-			break;
+	case 31:
+		roadAmplitude = 200;
+		halfRoadWavelength = _IQ(0.32);
+		break;
 
-		case 33:
-			roadAmplitude = 300;
-			halfRoadWavelength = _IQ(0.39);
-			break;
-		
-		default:
-			roadAmplitude = 0;
-			halfRoadWavelength = _IQ(100);
-			break;
+	case 32:
+		roadAmplitude = 250;
+		halfRoadWavelength = _IQ(0.35);
+		break;
+
+	case 33:
+		roadAmplitude = 300;
+		halfRoadWavelength = _IQ(0.39);
+		break;
+
+	default:
+		roadAmplitude = 0;
+		halfRoadWavelength = _IQ(100);
+		break;
 	}
 }
 
-int getDisplaySpeed() {
+int getDisplaySpeed()
+{
 	return _IQint(speed * 36 / 10);
 }
 
-int getDisplaySprungAcc() {
+int getDisplaySprungAcc()
+{
 	return _IQint(sprungAcc);
 }
 
-int getDisplayUnsprungAcc() {
+int getDisplayUnsprungAcc()
+{
 	return _IQint(unsprungAcc);
 }
 
-int getDisplayCoilExtension() {
+int getDisplayCoilExtension()
+{
 	return _IQint(coilExtension);
 }
 
-void setRoadBuffer(CircularBufferHandler *buffer) {
+void setRoadBuffer(CircularBufferHandler *buffer)
+{
 	roadBuffer = buffer;
 }
 
-void resetSimulation() {
+void resetSimulation()
+{
 	speed = 0;
 	zR = 0;
 	zU = 0;
@@ -305,20 +327,25 @@ void resetSimulation() {
 	unsprungAcc = 0;
 }
 
-void simulate(int dTime) {
-	if (speed == 0) {
+void simulate(int dTime)
+{
+	if (speed == 0)
+	{
 		aRNoise = 0;
-	} else {
+	}
+	else
+	{
 		int noisePeroid = TICK_RATE_HZ * halfRoadWavelength / speed;
 
-		if (timeFromLastNoise >= noisePeroid) {
+		if (timeFromLastNoise >= noisePeroid)
+		{
 			timeFromLastNoise -= noisePeroid;
 			aRNoise = (getRandom() + getRandom() - getRandom() - getRandom()) * roadAmplitude / 4;
 		}
 		timeFromLastNoise += dTime;
 	}
 
-	aR = aRNoise - zR / ROAD_RESTORING_FACTOR -  vR / ROAD_DAMPING_FACTOR;
+	aR = aRNoise - zR / ROAD_RESTORING_FACTOR - vR / ROAD_DAMPING_FACTOR;
 
 	_iq suspensionSpringForce = STIFFNESS_SPRING * (zU - zS);
 	_iq suspensionDampingForce = _IQmpy(dampingFactor, (vU - vS));
@@ -335,12 +362,16 @@ void simulate(int dTime) {
 	unsprungAcc = ON_MASS_UNSPRUNG(unsprungForce);
 
 	/* Check if on the bump stops */
-	if (combinedError & COIL_EXTENSION_EXCEEDED) {
+	if (combinedError & COIL_EXTENSION_EXCEEDED)
+	{
 		if ((coilExtension == MAX_COIL_EXTENSION && sprungAcc < unsprungAcc)
-				|| (coilExtension == MIN_COIL_EXTENSION && sprungAcc > unsprungAcc)) {
+		    || (coilExtension == MIN_COIL_EXTENSION && sprungAcc > unsprungAcc))
+		{
 			/* We are coming off the bump stops */
 			combinedError &= ~COIL_EXTENSION_EXCEEDED;
-		} else { /* Both masses move as one unit */
+		}
+		else /* Both masses move as one unit */
+		{
 			unsprungAcc = ON_MASS_TOTAL(tyreForce);
 			sprungAcc = unsprungAcc;
 		}
@@ -355,46 +386,58 @@ void simulate(int dTime) {
 
 	speed += throttle * dTime / TICK_RATE_HZ;
 
-	if (speed < MIN_SPEED) {
+	if (speed < MIN_SPEED)
+	{
 		speed = MIN_SPEED;
-	} else if (speed > MAX_SPEED) {
+	}
+	else if (speed > MAX_SPEED)
+	{
 		speed = MAX_SPEED;
 	}
 
 	coilExtension = zU - zS;
-	
+
 	// max coil extension check
-	if (coilExtension > MAX_COIL_EXTENSION) {
+	if (coilExtension > MAX_COIL_EXTENSION)
+	{
 		coilExtension = MAX_COIL_EXTENSION;
 		zS = zU + MAX_COIL_EXTENSION;
 		putSimOnStops();
-	} else if (coilExtension < MIN_COIL_EXTENSION) {
+	}
+	else if (coilExtension < MIN_COIL_EXTENSION)
+	{
 		coilExtension = MIN_COIL_EXTENSION;
 		zS = zU + MIN_COIL_EXTENSION;
 		putSimOnStops();
 	}
 }
 
-void putSimOnStops() {
+void putSimOnStops()
+{
 	combinedError |= COIL_EXTENSION_EXCEEDED;
-	vU = WEIGHT_BY_MASSES(vS,vU);
+	vU = WEIGHT_BY_MASSES(vS, vU);
 	vS = vU;
 }
 
-_iq getThrottle(char *msg) {
-	int throttleInt = 1000*(msg[1]-'0') + 100*(msg[3] - '0') + 10*(msg[4] - '0') + (msg[5] - '0');
-	if (msg[0] == '-') {
+_iq getThrottle(char *msg)
+{
+	int throttleInt = 1000 * (msg[1] - '0') + 100 * (msg[3] - '0') + 10 * (msg[4] - '0') + (msg[5] - '0');
+	if (msg[0] == '-')
+	{
 		// negative case
 		throttleInt = -throttleInt;
-	} else if (msg[0] >= '1' && msg[0] <= '9') {
+	}
+	else if (msg[0] >= '1' && msg[0] <= '9')
+	{
 		// 10 case
-		throttleInt = 10000*(msg[0]-'0');
+		throttleInt = 10000 * (msg[0] - '0');
 	}
 
-	return _IQ(throttleInt)/1000;
+	return _IQ(throttleInt) / 1000;
 }
 
-_iq getRandom() {
+_iq getRandom()
+{
 	static unsigned long b = 12903;
 
 	b = 18000 * (b & 65535) + (b >> 16);
@@ -402,63 +445,90 @@ _iq getRandom() {
 	return b & ((1 << QG) - 1);
 }
 
-int getStartStatusDisplay() {
+int getStartStatusDisplay()
+{
 	return startStatus;
 }
 
-int getRoadTypeStatusDisplay() {
+int getRoadTypeStatusDisplay()
+{
 	return roadType;
 }
 
-int getThrottleStatusDisplay() {
+int getThrottleStatusDisplay()
+{
 	return _IQint(throttle);
 }
 
 
-int getCoilExErrorInvoked() {
-	if(wusStatusEcho &  COIL_EXTENSION_EXCEEDED) {
+int getCoilExErrorInvoked()
+{
+	if (wusStatusEcho & COIL_EXTENSION_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getUnsprungAccErrorInvoked() {
-	if(wusStatusEcho & ACC_UNSPRUNG_EXCEEDED) {
+int getUnsprungAccErrorInvoked()
+{
+	if (wusStatusEcho & ACC_UNSPRUNG_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getSprungAccErrorInvoked() {
-	if(wusStatusEcho & ACC_SPRUNG_EXCEEDED) {
+int getSprungAccErrorInvoked()
+{
+	if (wusStatusEcho & ACC_SPRUNG_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getCarSpeedErrorInvoked() {
-	if(wusStatusEcho & CAR_SPEED_EXCEEDED) {
+int getCarSpeedErrorInvoked()
+{
+	if (wusStatusEcho & CAR_SPEED_EXCEEDED)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getPowerFailureInvoked() {
-	if(wusStatusEcho & POWER_FAILURE) {
+int getPowerFailureInvoked()
+{
+	if (wusStatusEcho & POWER_FAILURE)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int getWatchdogTimerFailureInvoked() {
-	if(wusStatusEcho & WATCHDOG_TIMER) {
+int getWatchdogTimerFailureInvoked()
+{
+	if (wusStatusEcho & WATCHDOG_TIMER)
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }

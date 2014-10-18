@@ -43,8 +43,8 @@ struct TraceNode
 {
 	int x;
 	int y;
-	TraceNode* next;
-	TraceNode* prev;
+	TraceNode *next;
+	TraceNode *prev;
 };
 
 /**
@@ -54,8 +54,8 @@ struct TraceNode
  */
 typedef struct
 {
-	TraceNode* lastRead;
-	TraceNode* lastWritten;
+	TraceNode *lastRead;
+	TraceNode *lastWritten;
 	unsigned int size;
 	BufferFullMode fullMode;
 	SemaphoreHandle_t readAccess;
@@ -70,7 +70,7 @@ typedef struct
  * \param mode Desired behavior when buffer is full
  * \return Handler for the circular buffer
  */
-CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, BufferFullMode mode);
+CircularBufferHandler createCircularBuffer(TraceNode *head, unsigned int size, BufferFullMode mode);
 
 /**
  * \brief Writes x and y values to chosen circular buffer
@@ -80,7 +80,7 @@ CircularBufferHandler createCircularBuffer(TraceNode* head, unsigned int size, B
  * \param y value to write
  * \return 0 for success, -1 for buffer full
  */
-int circularBufferWrite(CircularBufferHandler* buffer, int x, int y);
+int circularBufferWrite(CircularBufferHandler *buffer, int x, int y);
 
 /**
  * \brief Returns the node of the circular buffer that was last written
@@ -88,7 +88,7 @@ int circularBufferWrite(CircularBufferHandler* buffer, int x, int y);
  * \param buffer Pointer to the handler for the buffer to modify
  * \return The last written node of the buffer
  */
-TraceNode* getLatestNode(CircularBufferHandler* buffer);
+TraceNode *getLatestNode(CircularBufferHandler *buffer);
 
 /**
  * \brief Read data from the circular buffer
@@ -96,6 +96,6 @@ TraceNode* getLatestNode(CircularBufferHandler* buffer);
  * \param buffer Pointer to the handler for the buffer to read
  * \return The oldest unread node
  */
-TraceNode* circularBufferRead(CircularBufferHandler* buffer);
+TraceNode *circularBufferRead(CircularBufferHandler *buffer);
 
 #endif

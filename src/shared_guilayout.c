@@ -30,7 +30,8 @@
 #include "shared_displayformat128x96.h"
 #include <ustdlib.h>
 
-Options option(int minIndex, int maxIndex) {
+Options option(int minIndex, int maxIndex)
+{
 	Options newOptions;
 	newOptions.minIndex = minIndex;
 	newOptions.maxIndex = maxIndex;
@@ -38,7 +39,8 @@ Options option(int minIndex, int maxIndex) {
 	return newOptions;
 }
 
-Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int (*getter)(void)) {
+Item item(char *name, OptionType optionType, OptionAccess accessType, Options options, int (*getter)(void))
+{
 	Item item;
 	//write the name to the Item object
 	ustrncpy(item.name, name, ITEM_NAME_SIZE);
@@ -52,7 +54,8 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 	return item;
 }
 
-TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale) {
+TraceView traceView(char *name, CircularBufferHandler *buffer, int zeroHeight, unsigned int minHorzScale, unsigned int maxHorzScale, int vertScale)
+{
 	TraceView traceView;
 
 	traceView.buffer = buffer;
@@ -69,7 +72,7 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 	if (zeroHeight > TRACE_HEIGHT || zeroHeight < 0)
 	{
 		// if zero height outside of drawable range, make it center of trace plot
-		traceView.zeroLine = TITLE_PADDINGTOP+CHAR_HEIGHT+TITLE_TRACE_SEP + TRACE_HEIGHT/2;
+		traceView.zeroLine = TITLE_PADDINGTOP + CHAR_HEIGHT + TITLE_TRACE_SEP + TRACE_HEIGHT / 2;
 	}
 	else
 	{
@@ -89,33 +92,37 @@ TraceView traceView(char *name, CircularBufferHandler* buffer, int zeroHeight, u
 	traceView.vertScale = vertScale;
 
 	ustrncpy(traceView.name, name, VIEW_NAME_SIZE);
-	
+
 	return traceView;
 }
 
-ListView listView(char *name, unsigned int numItems) {
+ListView listView(char *name, unsigned int numItems)
+{
 	ListView newListView;
 
-	newListView.numItems = numItems; 
+	newListView.numItems = numItems;
 	ustrncpy(newListView.name, name, VIEW_NAME_SIZE);
-	
+
 	return newListView;
 }
 
-Activity activity() {
+Activity activity()
+{
 	Activity newActivity;
 
 	newActivity.numPages = 0;
-	newActivity.pageContext = 0;   //set default value
-	newActivity.cursorContext= 0;  //set default value
+	newActivity.pageContext = 0; //set default value
+	newActivity.cursorContext = 0; //set default value
 
 	return newActivity;
 }
 
 
-int addView(Activity* activity, void* view, ViewType type) {
-	int success = 1;   //bad input flag by default
-	if(activity->numPages < LISTVIEW_MAX_ITEMS) {
+int addView(Activity *activity, void *view, ViewType type)
+{
+	int success = 1; //bad input flag by default
+	if (activity->numPages < LISTVIEW_MAX_ITEMS)
+	{
 		activity->menus[activity->numPages] = view;
 		activity->menuTypes[activity->numPages] = type;
 		activity->numPages = activity->numPages + 1;

@@ -106,14 +106,14 @@ static Options invokeWatchdogErrorOption;
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
-	whereas some older eval boards used 6MHz. */
+	   whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
 	controls = listView("Controls", 5);
 	statuses = listView("Status", 5);
 	statuses2 = listView("WUS Errors", 6);
-	invokeWusErrors = listView("InvokeErr",6);
+	invokeWusErrors = listView("InvokeErr", 6);
 
 	/*controls menu GUI*/
 	roadTypeOption = option(10, 33);
@@ -123,39 +123,39 @@ int main(void)
 	setRoadType(10);
 	rideTypeOption = option(0, 3);
 	rideTypeOption.skip = 1;
-	rideTypeOption.values[0]  = "SEDATE";
-	rideTypeOption.values[1]  = "NORMAL";
-	rideTypeOption.values[2]  = "SPORT";
-	rideTypeOption.values[3]  = "RALLY";
+	rideTypeOption.values[0] = "SEDATE";
+	rideTypeOption.values[1] = "NORMAL";
+	rideTypeOption.values[2] = "SPORT";
+	rideTypeOption.values[3] = "RALLY";
 	rideTypeItem = item("Ride", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, rideTypeOption, getDisplayRideMode);
 	rideTypeItem.setter = setRideMode;
-	throttleOption = option(-9,10);
+	throttleOption = option(-9, 10);
 	throttleOption.skip = 1;
 	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_MODIFIABLE, throttleOption, getThrottle);
 	throttleItem.setter = setThrottle;
-	resetOption = option(0,1);
+	resetOption = option(0, 1);
 	resetOption.skip = 1;
-	resetOption.values[0]  = "Off";
-	resetOption.values[1]  = "On";
+	resetOption.values[0] = "Off";
+	resetOption.values[1] = "On";
 	resetItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, resetOption, getResetState);
 	resetItem.setter = setResetState;
-	actControlOption = option(0,1);
+	actControlOption = option(0, 1);
 	actControlOption.skip = 1;
-	actControlOption.values[0]  = "Off";
-	actControlOption.values[1]  = "On";
+	actControlOption.values[0] = "Off";
+	actControlOption.values[1] = "On";
 	actControlItem = item("ActState", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, actControlOption, getAscOn);
 	actControlItem.setter = setAscOn;
 
 	/*Status Menu GUI*/
 	carSpeedOption = option(-999, 999);
 	carSpeedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, carSpeedOption, getDisplaySpeed);
-	actuatorForceOption = option(-999,999);
+	actuatorForceOption = option(-999, 999);
 	actuatorForceItem = item("CtrlForce", OPTIONTYPE_INT, OPTIONACCESS_READONLY, actuatorForceOption, getDisplayForce);
-	coilExtensionOption = option(-3000,3000);
+	coilExtensionOption = option(-3000, 3000);
 	coilExtensionItem = item("CoilEx", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
-	unsprungAccOption = option(-3000,3000);
+	unsprungAccOption = option(-3000, 3000);
 	unsprungAccItem = item("unsprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
-	sprungAccOption = option(-3000,3000);
+	sprungAccOption = option(-3000, 3000);
 	sprungAccItem = item("sprAc", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
 
 	/*Out of Range Errors Menu GUI*/
@@ -171,54 +171,54 @@ int main(void)
 	wusStatusUnsprungOption.values[0] = "Ok";
 	wusStatusUnsprungOption.values[1] = "Error";
 	wusStatusUnsprungItem = item("UnsprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusUnsprungOption, getUnsprungAccError);
-	speedExceededOption = option(0,1);
+	speedExceededOption = option(0, 1);
 	speedExceededOption.values[0] = "Ok";
 	speedExceededOption.values[1] = "Error";
 	speedExceededItem = item("SpeedEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedError);
-	watchdogFailureOption = option(0,1);
+	watchdogFailureOption = option(0, 1);
 	watchdogFailureOption.values[0] = "Ok";
 	watchdogFailureOption.values[1] = "Error";
 	watchdogFauilureItem = item("WatchdogEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogFailureOption, getWatchdogInvokedError);
-	powerFailureOption = option(0,1);
+	powerFailureOption = option(0, 1);
 	powerFailureOption.values[0] = "Ok";
 	powerFailureOption.values[1] = "Error";
 	powerFailureItem = item("PowerEx", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerError);
 
 	/*invoke errors GUI*/
-	invokeCoilErrorOption = option(0,1);
+	invokeCoilErrorOption = option(0, 1);
 	invokeCoilErrorOption.skip = 1;
-	invokeCoilErrorOption.values[0]  = "Off";
-	invokeCoilErrorOption.values[1]  = "On";
+	invokeCoilErrorOption.values[0] = "Off";
+	invokeCoilErrorOption.values[1] = "On";
 	invokeCoilErrorItem = item("CoilErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeCoilErrorOption, getCoilInvokedError);
 	invokeCoilErrorItem.setter = setCoilError;
-	invokeSprungErrorOption = option(0,1);
+	invokeSprungErrorOption = option(0, 1);
 	invokeSprungErrorOption.skip = 1;
-	invokeSprungErrorOption.values[0]  = "Off";
-	invokeSprungErrorOption.values[1]  = "On";
+	invokeSprungErrorOption.values[0] = "Off";
+	invokeSprungErrorOption.values[1] = "On";
 	invokeSprungErrorItem = item("SprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSprungErrorOption, getSprungInvokedError);
 	invokeSprungErrorItem.setter = setSprungError;
-	invokeUnsprungErrorOption = option(0,1);
+	invokeUnsprungErrorOption = option(0, 1);
 	invokeUnsprungErrorOption.skip = 1;
-	invokeUnsprungErrorOption.values[0]  = "Off";
-	invokeUnsprungErrorOption.values[1]  = "On";
+	invokeUnsprungErrorOption.values[0] = "Off";
+	invokeUnsprungErrorOption.values[1] = "On";
 	invokeUnsprungErrorItem = item("UnsprErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeUnsprungErrorOption, getUnsprungInvokedError);
 	invokeUnsprungErrorItem.setter = setUnsprungError;
-	invokeSpeedErrorOption = option(0,1);
+	invokeSpeedErrorOption = option(0, 1);
 	invokeSpeedErrorOption.skip = 1;
-	invokeSpeedErrorOption.values[0]  = "Off";
-	invokeSpeedErrorOption.values[1]  = "On";
+	invokeSpeedErrorOption.values[0] = "Off";
+	invokeSpeedErrorOption.values[1] = "On";
 	invokeSpeedErrorItem = item("SpeedErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeSpeedErrorOption, getSpeedInvokedError);
 	invokeSpeedErrorItem.setter = setSpeedError;
-	involePowerErrorOption = option(0,1);
+	involePowerErrorOption = option(0, 1);
 	involePowerErrorOption.skip = 1;
-	involePowerErrorOption.values[0]  = "Off";
-	involePowerErrorOption.values[1]  = "On";
+	involePowerErrorOption.values[0] = "Off";
+	involePowerErrorOption.values[1] = "On";
 	involePowerErrorItem = item("PowErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, involePowerErrorOption, getPowerInvokedError);
 	involePowerErrorItem.setter = setPowerError;
-	invokeWatchdogErrorOption = option(0,1);
+	invokeWatchdogErrorOption = option(0, 1);
 	invokeWatchdogErrorOption.skip = 1;
-	invokeWatchdogErrorOption.values[0]  = "Off";
-	invokeWatchdogErrorOption.values[1]  = "On";
+	invokeWatchdogErrorOption.values[0] = "Off";
+	invokeWatchdogErrorOption.values[1] = "On";
 	invokeWatchdogErrorItem = item("WatchdogErr", OPTIONTYPE_STRING, OPTIONACCESS_MODIFIABLE, invokeWatchdogErrorOption, getWatchdogInvokedError);
 	invokeWatchdogErrorItem.setter = setWatchdogError;
 
@@ -261,24 +261,24 @@ int main(void)
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
 	/*Continously determines the actuator force needed*/
-	xTaskCreate(vControlTask, "Control task", 240,(void*) placeholder , 4, NULL);
+	xTaskCreate(vControlTask, "Control task", 240, (void *)placeholder, 4, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	xTaskCreate(vUartTask, "UART task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vUartTask, "UART task", 240, (void *)placeholder, 3, NULL);
 
 	/*Inits button polling and checks for button pushes*/
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder , 2, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void *)placeholder, 2, NULL);
 
 	/* Refreshes GUI */
-    xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void *)placeholder, 1, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();	
-	
+	vTaskStartScheduler();
+
 	/* If all is well we will never reach here as the scheduler will now be
-	running.  If we do reach here then it is likely that there was insufficient
-	heap available for the idle task to be created. */
-	for(;;);
+	   running.  If we do reach here then it is likely that there was insufficient
+	   heap available for the idle task to be created. */
+	for (;;) ;
 }
 
 
@@ -286,18 +286,18 @@ int main(void)
 void vApplicationMallocFailedHook(void)
 {
 	/* This function will only be called if an API call to create a task, queue
-	or semaphore fails because there is too little heap RAM remaining. */
-	for(;;);
+	   or semaphore fails because there is too little heap RAM remaining. */
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
 void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed char *pcTaskName)
 {
 	/* This function will only be called if a task overflows its stack.  Note
-	that stack overflow checking does slow down the context switch
-	implementation. */
+	   that stack overflow checking does slow down the context switch
+	   implementation. */
 
-	for(;;);
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
@@ -311,5 +311,3 @@ void vApplicationTickHook(void)
 {
 	/* Tick hook */
 }
-
-
