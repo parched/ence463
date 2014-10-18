@@ -3,24 +3,24 @@
 // startup.c - Boot code for Stellaris.
 //
 // Copyright (c) 2005-2007 Luminary Micro, Inc.  All rights reserved.
-// 
+//
 // Software License Agreement
-// 
+//
 // Luminary Micro, Inc. (LMI) is supplying this software for use solely and
 // exclusively on LMI's microcontroller products.
-// 
+//
 // The software is owned by LMI and/or its suppliers, and is protected under
 // applicable copyright laws.  All rights are reserved.  Any use in violation
 // of the foregoing restrictions may subject the user to criminal sanctions
 // under applicable laws, as well as to civil liability for the breach of the
 // terms and conditions of this license.
-// 
+//
 // THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
 // OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
 // LMI SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
 // CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
+//
 // This is part of revision 1392 of the Stellaris Peripheral Driver Library.
 //
 //*****************************************************************************
@@ -48,16 +48,16 @@ extern void vPortSVCHandler( void );
 //extern void vT2InterruptHandler( void );
 //extern void vT3InterruptHandler( void );
 /* No ethernet chip on LM3S1968
- * 
- extern void vEMAC_ISR(void);
-*/
+ *
+   extern void vEMAC_ISR(void);
+ */
 //*****************************************************************************
 //
 // Reserve space for the system stack.
 //
 //*****************************************************************************
 #ifndef STACK_SIZE
-#define STACK_SIZE                              120
+#define STACK_SIZE                              256
 #endif
 static unsigned long pulStack[STACK_SIZE];
 
@@ -69,74 +69,74 @@ static unsigned long pulStack[STACK_SIZE];
 //
 //*****************************************************************************
 __attribute__ ((section(".isr_vector")))
-void (* const g_pfnVectors[])(void) =
+void (*const g_pfnVectors[]) (void) =
 {
-    (void (*)(void))((unsigned long)pulStack + sizeof(pulStack)),
-                                            // The initial stack pointer
-    ResetISR,                               // The reset handler
-    NmiSR,                                  // The NMI handler
-    FaultISR,                               // The hard fault handler
-    IntDefaultHandler,                      // The MPU fault handler
-    IntDefaultHandler,                      // The bus fault handler
-    IntDefaultHandler,                      // The usage fault handler
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    vPortSVCHandler,						// SVCall handler
-    IntDefaultHandler,                      // Debug monitor handler
-    0,                                      // Reserved
-    xPortPendSVHandler,                     // The PendSV handler
-    xPortSysTickHandler,                    // The SysTick handler
-    IntDefaultHandler,                      // GPIO Port A
-    IntDefaultHandler,                      // GPIO Port B
-    IntDefaultHandler,                      // GPIO Port C
-    IntDefaultHandler,                      // GPIO Port D
-    IntDefaultHandler,                      // GPIO Port E
-    IntDefaultHandler,                      // UART0 Rx and Tx
-    IntDefaultHandler,                      // UART1 Rx and Tx
-    IntDefaultHandler,                      // SSI Rx and Tx
-    IntDefaultHandler,                      // I2C Master and Slave
-    IntDefaultHandler,                      // PWM Fault
-    IntDefaultHandler,                      // PWM Generator 0
-    IntDefaultHandler,                      // PWM Generator 1
-    IntDefaultHandler,                      // PWM Generator 2
-    IntDefaultHandler,                      // Quadrature Encoder
-    IntDefaultHandler,                      // ADC Sequence 0
-    IntDefaultHandler,                      // ADC Sequence 1
-    IntDefaultHandler,                      // ADC Sequence 2
-    IntDefaultHandler,                      // ADC Sequence 3
-    IntDefaultHandler,                      // Watchdog timer
-    //Timer0IntHandler,                      // Timer 0 subtimer A
-    IntDefaultHandler,                      // Timer 0 subtimer A
-    IntDefaultHandler,                      // Timer 0 subtimer B
-    IntDefaultHandler,                      // Timer 1 subtimer A
-    IntDefaultHandler,                      // Timer 1 subtimer B
-    //vT2InterruptHandler,                      // Timer 2 subtimer A
-    IntDefaultHandler,                      // Timer 2 subtimer A
-    IntDefaultHandler,                      // Timer 2 subtimer B
-    IntDefaultHandler,                      // Analog Comparator 0
-    IntDefaultHandler,                      // Analog Comparator 1
-    IntDefaultHandler,                      // Analog Comparator 2
-    IntDefaultHandler,                      // System Control (PLL, OSC, BO)
-    IntDefaultHandler,                      // FLASH Control
-    IntDefaultHandler,                      // GPIO Port F
-    IntDefaultHandler,                      // GPIO Port G
-    IntDefaultHandler,                      // GPIO Port H
-    IntDefaultHandler,                      // UART2 Rx and Tx
-    IntDefaultHandler,                      // SSI1 Rx and Tx
-    //vT3InterruptHandler,                    // Timer 3 subtimer A
-    IntDefaultHandler,                    // Timer 3 subtimer A
-    IntDefaultHandler,                      // Timer 3 subtimer B
-    IntDefaultHandler,                      // I2C1 Master and Slave
-    IntDefaultHandler,                      // Quadrature Encoder 1
-    IntDefaultHandler,                      // CAN0
-    IntDefaultHandler,                      // CAN1
-    0,                                      // Reserved
+	(void (*)(void))((unsigned long)pulStack + sizeof(pulStack)),
+	// The initial stack pointer
+	ResetISR,                           // The reset handler
+	NmiSR,                              // The NMI handler
+	FaultISR,                           // The hard fault handler
+	IntDefaultHandler,                  // The MPU fault handler
+	IntDefaultHandler,                  // The bus fault handler
+	IntDefaultHandler,                  // The usage fault handler
+	0,                                  // Reserved
+	0,                                  // Reserved
+	0,                                  // Reserved
+	0,                                  // Reserved
+	vPortSVCHandler,                    // SVCall handler
+	IntDefaultHandler,                  // Debug monitor handler
+	0,                                  // Reserved
+	xPortPendSVHandler,                 // The PendSV handler
+	xPortSysTickHandler,                // The SysTick handler
+	IntDefaultHandler,                  // GPIO Port A
+	IntDefaultHandler,                  // GPIO Port B
+	IntDefaultHandler,                  // GPIO Port C
+	IntDefaultHandler,                  // GPIO Port D
+	IntDefaultHandler,                  // GPIO Port E
+	IntDefaultHandler,                  // UART0 Rx and Tx
+	IntDefaultHandler,                  // UART1 Rx and Tx
+	IntDefaultHandler,                  // SSI Rx and Tx
+	IntDefaultHandler,                  // I2C Master and Slave
+	IntDefaultHandler,                  // PWM Fault
+	IntDefaultHandler,                  // PWM Generator 0
+	IntDefaultHandler,                  // PWM Generator 1
+	IntDefaultHandler,                  // PWM Generator 2
+	IntDefaultHandler,                  // Quadrature Encoder
+	IntDefaultHandler,                  // ADC Sequence 0
+	IntDefaultHandler,                  // ADC Sequence 1
+	IntDefaultHandler,                  // ADC Sequence 2
+	IntDefaultHandler,                  // ADC Sequence 3
+	IntDefaultHandler,                  // Watchdog timer
+	//Timer0IntHandler,                      // Timer 0 subtimer A
+	IntDefaultHandler,                  // Timer 0 subtimer A
+	IntDefaultHandler,                  // Timer 0 subtimer B
+	IntDefaultHandler,                  // Timer 1 subtimer A
+	IntDefaultHandler,                  // Timer 1 subtimer B
+	//vT2InterruptHandler,                      // Timer 2 subtimer A
+	IntDefaultHandler,                  // Timer 2 subtimer A
+	IntDefaultHandler,                  // Timer 2 subtimer B
+	IntDefaultHandler,                  // Analog Comparator 0
+	IntDefaultHandler,                  // Analog Comparator 1
+	IntDefaultHandler,                  // Analog Comparator 2
+	IntDefaultHandler,                  // System Control (PLL, OSC, BO)
+	IntDefaultHandler,                  // FLASH Control
+	IntDefaultHandler,                  // GPIO Port F
+	IntDefaultHandler,                  // GPIO Port G
+	IntDefaultHandler,                  // GPIO Port H
+	IntDefaultHandler,                  // UART2 Rx and Tx
+	IntDefaultHandler,                  // SSI1 Rx and Tx
+	//vT3InterruptHandler,                    // Timer 3 subtimer A
+	IntDefaultHandler,                // Timer 3 subtimer A
+	IntDefaultHandler,                  // Timer 3 subtimer B
+	IntDefaultHandler,                  // I2C1 Master and Slave
+	IntDefaultHandler,                  // Quadrature Encoder 1
+	IntDefaultHandler,                  // CAN0
+	IntDefaultHandler,                  // CAN1
+	0,                                  // Reserved
 /*    vEMAC_ISR,                              // Ethernet
-*/
-    IntDefaultHandler,						//Ethernet - none on LM3S1968
-    IntDefaultHandler                       // Hibernate
+ */
+	IntDefaultHandler,                  //Ethernet - none on LM3S1968
+	IntDefaultHandler                   // Hibernate
 };
 
 //*****************************************************************************
@@ -165,29 +165,29 @@ extern unsigned long _ebss;
 void
 ResetISR(void)
 {
-    unsigned long *pulSrc, *pulDest;
+	unsigned long *pulSrc, *pulDest;
 
-    //
-    // Copy the data segment initializers from flash to SRAM.
-    //
-    pulSrc = &_etext;
-    for(pulDest = &_data; pulDest < &_edata; )
-    {
-        *pulDest++ = *pulSrc++;
-    }
+	//
+	// Copy the data segment initializers from flash to SRAM.
+	//
+	pulSrc = &_etext;
+	for (pulDest = &_data; pulDest < &_edata;)
+	{
+		*pulDest++ = *pulSrc++;
+	}
 
-    //
-    // Zero fill the bss segment.
-    //
-    for(pulDest = &_bss; pulDest < &_ebss; )
-    {
-        *pulDest++ = 0;
-    }
+	//
+	// Zero fill the bss segment.
+	//
+	for (pulDest = &_bss; pulDest < &_ebss;)
+	{
+		*pulDest++ = 0;
+	}
 
-    //
-    // Call the application's entry point.
-    //
-    main();
+	//
+	// Call the application's entry point.
+	//
+	main();
 }
 
 //*****************************************************************************
@@ -200,12 +200,12 @@ ResetISR(void)
 static void
 NmiSR(void)
 {
-    //
-    // Enter an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Enter an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
 
 //*****************************************************************************
@@ -218,12 +218,12 @@ NmiSR(void)
 static void
 FaultISR(void)
 {
-    //
-    // Enter an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Enter an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
 
 //*****************************************************************************
@@ -236,12 +236,12 @@ FaultISR(void)
 static void
 IntDefaultHandler(void)
 {
-    //
-    // Go into an infinite loop.
-    //
-    while(1)
-    {
-    }
+	//
+	// Go into an infinite loop.
+	//
+	while (1)
+	{
+	}
 }
 
 //*****************************************************************************
@@ -253,6 +253,5 @@ IntDefaultHandler(void)
 int
 uipprintf(const char *fmt, ...)
 {
-    return(0);
+	return(0);
 }
-

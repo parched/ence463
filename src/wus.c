@@ -40,40 +40,137 @@
 #include "shared_guidraw_task.h"
 #include "shared_uart_task.h"
 #include "shared_button_task.h"
+#include "shared_tracenode.h"
 
-const char *placeholder = "test";
+#define NUM_ROAD_NODES 200
+
+static const char *placeholder = "test";
+
+static Activity mainActivity;
+
+static TraceView roadSurface;
+static TraceNode roadNodes[NUM_ROAD_NODES];
+static CircularBufferHandler roadHandler;
+
+static ListView telemetry;
+static Options speedOption;
+static Item speedItem;
+static Options sprungAccOption;
+static Item sprungAccItem;
+static Options unsprungAccOption;
+static Item unsprungAccItem;
+static Options coilExtensionOption;
+static Item coilExtensionItem;
+
+static ListView wusMessages;
+//static Options startOption;
+//static Item startItem;
+static Options roadTypeOption;
+static Item roadTypeItem;
+static Options throttleOption;
+static Item throttleItem;
+
+static ListView wusStatusEcho;
+static Item wusStatusCoilItem;
+static Options wusStatusCoilOption;
+static Item wusStatusSprungItem;
+static Options wusStatusSprungOption;
+static Item wusStatusUnsprungItem;
+static Options wusStatusUnsprungOption;
+static Item speedExceededItem;
+static Options speedExceededOption;
+static Item powerFailureItem;
+static Options powerFailureOption;
+static Item watchdogErrorItem;
+static Options watchdogErrorOption;
+
 
 /*-----------------------------------------------------------*/
 
 int main(void)
 {
 	/* Set the clocking to run from the PLL at 50 MHz.  Assumes 8MHz XTAL,
-	whereas some older eval boards used 6MHz. */
+	   whereas some older eval boards used 6MHz. */
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
 	/* Marking up GUI */
-	TraceView roadSurface = traceView("Surface", NULL);
-	//TODO: Road surface stuff
+	roadHandler = createCircularBuffer(roadNodes, NUM_ROAD_NODES, BUFFERFULLMODE_OVERWRITE);
+	setRoadBuffer(&roadHandler); // pass it to the sim task
+	roadSurface = traceView("Surface", &roadHandler, TRACE_ZERO_DYNAMIC, 30, 30, 8);
 
-	ListView telemetry = listView("Telemetry", 4);
-	Options speedOption = option(-999, 999);
-	Item speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
-	Options sprungAccOption = option(-9999, 9999);
-	Item sprungAccItem = item("Sp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
-	Options unsprungAccOption = option(-9999, 9999);
-	Item unsprungAccItem = item("Unsp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
-	Options coilExtensionOption = option(-9999, 9999);
-	Item coilExtensionItem = item("Coil Ext.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
+	/*telemetry GUI*/
+	telemetry = listView("Telemetry", 4);
+	speedOption = option(-999, 999);
+	speedItem = item("Speed", OPTIONTYPE_INT, OPTIONACCESS_READONLY, speedOption, getDisplaySpeed);
+	sprungAccOption = option(-9999, 9999);
+	sprungAccItem = item("Sp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, sprungAccOption, getDisplaySprungAcc);
+	unsprungAccOption = option(-9999, 9999);
+	unsprungAccItem = item("Unsp Acc.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, unsprungAccOption, getDisplayUnsprungAcc);
+	coilExtensionOption = option(-9999, 9999);
+	coilExtensionItem = item("Coil Ext.", OPTIONTYPE_INT, OPTIONACCESS_READONLY, coilExtensionOption, getDisplayCoilExtension);
 	telemetry.items[0] = speedItem;
 	telemetry.items[1] = sprungAccItem;
 	telemetry.items[2] = unsprungAccItem;
 	telemetry.items[3] = coilExtensionItem;
 
-	Activity mainActivity = activity(2);
-	mainActivity.menus[0] = &telemetry;
-	mainActivity.menuTypes[0] = VIEWTYPE_LIST;
-	mainActivity.menus[1] = &roadSurface;
-	mainActivity.menuTypes[1] = VIEWTYPE_TRACE;
+	/*ASC messages GUI*/
+	wusMessages = listView("ASC STAT", 2);
+	/*
+	   startOption = option(0,1);
+	   startOption.skip = 1;
+	   startOption.values[0]  = "Off";
+	   startOption.values[1]  = "On";
+	   startItem = item("Reset", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, startOption, getStartStatusDisplay);
+	 */
+	roadTypeOption = option(0, 33);
+	roadTypeOption.skip = 1;
+	roadTypeItem = item("Road Type", OPTIONTYPE_INT, OPTIONACCESS_READONLY, roadTypeOption, getRoadTypeStatusDisplay);
+	throttleOption = option(-10, 10);
+	throttleOption.skip = 1;
+	throttleItem = item("Throttle", OPTIONTYPE_INT, OPTIONACCESS_READONLY, throttleOption, getThrottleStatusDisplay);
+	wusMessages.items[0] = roadTypeItem;
+	wusMessages.items[1] = throttleItem;
+	//wusMessages.items[2] = startItem;
+
+	/*Invoked errors GUI*/
+	wusStatusEcho = listView("ErrInvoked", 6);
+	wusStatusCoilOption = option(0, 1);
+	wusStatusCoilOption.values[0] = "Ok";
+	wusStatusCoilOption.values[1] = "Error";
+	wusStatusCoilItem = item("Coil", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusCoilOption, getCoilExErrorInvoked);
+	wusStatusSprungOption = option(0, 1);
+	wusStatusSprungOption.values[0] = "Ok";
+	wusStatusSprungOption.values[1] = "Error";
+	wusStatusSprungItem = item("SprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusSprungOption, getSprungAccErrorInvoked);
+	wusStatusUnsprungOption = option(0, 1);
+	wusStatusUnsprungOption.values[0] = "Ok";
+	wusStatusUnsprungOption.values[1] = "Error";
+	wusStatusUnsprungItem = item("UnsprAcc", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, wusStatusUnsprungOption, getUnsprungAccErrorInvoked);
+	speedExceededOption = option(0, 1);
+	speedExceededOption.values[0] = "Ok";
+	speedExceededOption.values[1] = "Error";
+	speedExceededItem = item("Speed", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, speedExceededOption, getCarSpeedErrorInvoked);
+	powerFailureOption = option(0, 1);
+	powerFailureOption.values[0] = "Ok";
+	powerFailureOption.values[1] = "Error";
+	powerFailureItem = item("Power", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, powerFailureOption, getPowerFailureInvoked);
+	watchdogErrorOption = option(0, 1);
+	watchdogErrorOption.values[0] = "Ok";
+	watchdogErrorOption.values[1] = "Error";
+	watchdogErrorItem = item("Watchdog", OPTIONTYPE_STRING, OPTIONACCESS_READONLY, watchdogErrorOption, getWatchdogTimerFailureInvoked);
+	wusStatusEcho.items[0] = wusStatusCoilItem;
+	wusStatusEcho.items[1] = wusStatusSprungItem;
+	wusStatusEcho.items[2] = wusStatusUnsprungItem;
+	wusStatusEcho.items[3] = speedExceededItem;
+	wusStatusEcho.items[4] = powerFailureItem;
+	wusStatusEcho.items[5] = watchdogErrorItem;
+
+	/*attach views to activity*/
+	mainActivity = activity();
+	addView(&mainActivity, &telemetry, VIEWTYPE_LIST);
+	addView(&mainActivity, &roadSurface, VIEWTYPE_TRACE);
+	addView(&mainActivity, &wusMessages, VIEWTYPE_LIST);
+	addView(&mainActivity, &wusStatusEcho, VIEWTYPE_LIST);
 	attachActivity(&mainActivity);
 
 	/* Configure buttons */
@@ -83,24 +180,24 @@ int main(void)
 	configureButtonEvent(BUTTON_RIGHT, BUTTON_EVENT_RISING_EDGE);
 
 	/* Simulates the road height position, acceration of the unsprung and sprung spring and the coil extension */
-	//xTaskCreate(vSimulateTask, "Simulate task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vSimulateTask, "Simulate task", 240, (void *)placeholder, 4, NULL);
 
 	/*Inits UART, continously reads and writes UART messages*/
-	//xTaskCreate(vUartTask, "Uart Task", 240,(void*) placeholder , 3, NULL);
+	xTaskCreate(vUartTask, "Uart Task", 240, (void *)placeholder, 3, NULL);
 
 	/* Refreshes GUI */
-	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void*) placeholder, 1, NULL);
+	xTaskCreate(vGuiRefreshTask, "Gui refresh task", 240, (void *)placeholder, 1, NULL);
 
 	/* Polls buttons */
-	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void*) placeholder, 2, NULL);
+	xTaskCreate(vButtonPollingTask, "Button polling task", 240, (void *)placeholder, 2, NULL);
 
 	/* Start the scheduler so our tasks start executing. */
-	vTaskStartScheduler();	
-	
+	vTaskStartScheduler();
+
 	/* If all is well we will never reach here as the scheduler will now be
-	running.  If we do reach here then it is likely that there was insufficient
-	heap available for the idle task to be created. */
-	for(;;);
+	   running.  If we do reach here then it is likely that there was insufficient
+	   heap available for the idle task to be created. */
+	for (;;) ;
 }
 
 
@@ -108,17 +205,17 @@ int main(void)
 void vApplicationMallocFailedHook(void)
 {
 	/* This function will only be called if an API call to create a task, queue
-	or semaphore fails because there is too little heap RAM remaining. */
-	for(;;);
+	   or semaphore fails because there is too little heap RAM remaining. */
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
 void vApplicationStackOverflowHook(TaskHandle_t *pxTask, signed char *pcTaskName)
 {
 	/* This function will only be called if a task overflows its stack.  Note
-	that stack overflow checking does slow down the context switch
-	implementation. */
-	for(;;);
+	   that stack overflow checking does slow down the context switch
+	   implementation. */
+	for (;;) ;
 }
 /*-----------------------------------------------------------*/
 
@@ -132,5 +229,3 @@ void vApplicationTickHook(void)
 {
 	/* Tick hook */
 }
-
-

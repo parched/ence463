@@ -25,118 +25,121 @@
  */
 
 #include "shared_adc.h"
+#include "shared_parameters.h"
 
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
+#include "inc/hw_timer.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
 #include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
 
-#define BIT(x) (1 << x)
+#define BIT(x)          (1 << x)
+#define ADC_FREQ_HZ     10000
+#define ADC_DATA_MASK   0x3FF
+#define ADC_SEQ         0
+#define ADC_PRIORITY    0
+#define ADC_TO_IQ(x) ((x) << (QG - 10)) /** This will need to be changed if QG < 10 */
 
-typedef struct adcVars
-{
-	unsigned long channel0;
-	unsigned long channel1;
-	unsigned long channel2;
-} adcVars;
-
-adcVars ADCout;
+static volatile unsigned long ADCout[8];
 
 void adcISR (void);
 
+static void initAdcTimer (void)
+{
+	// Enable and Configure Timer 1 Peripheral
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+	SysCtlDelay(SysCtlClockGet() / 3000);
+
+	TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+
+	// Set Timer 1 Load to 50kHz (Required ADC Sample Rate)
+	TimerLoadSet(TIMER1_BASE, TIMER_A, SysCtlClockGet() / ADC_FREQ_HZ);
+
+	// Enable Timer Stalling (Timer stops during debug)
+	TimerControlStall(TIMER1_BASE, TIMER_A, true);
+
+	// Enable Timer ADC Trigger
+	TimerControlTrigger(TIMER1_BASE, TIMER_A, true);
+}
 
 void initAdcModule(char adcs)
 {
-	// Determine Number of Enabled ADC Pins
-	int maxSteps = 0;
-	if (adcs == 0x01 || adcs == 0x02 || adcs == 0x04)
-		maxSteps = 1;
-	else if (adcs == 0x03 || adcs == 0x05 || adcs == 0x06)
-		maxSteps = 2;
-	else if (adcs == 0x07)
-		maxSteps = 3;
+	unsigned long ulDummy[8];
+
+	// Set ADC Speed to 500ksps Max
+	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
 
 	// Enable ADC Peripheral
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
 	SysCtlDelay(SysCtlClockGet() / 3000);
 
-	// Set ADC Speed to 500ksps Max
-	SysCtlADCSpeedSet(SYSCTL_ADCSPEED_500KSPS);
+	// Enable Timer Trigger
+	initAdcTimer();
 
-	// Disable Sequence 0-2 before Configuration
-	ADCSequenceDisable(ADC_BASE, 0);
-	ADCSequenceDisable(ADC_BASE, 1);
-	ADCSequenceDisable(ADC_BASE, 2);
+	// Disable Sequence 0 before Configuration
+	ADCSequenceDisable(ADC_BASE, ADC_SEQ);
 
-	// Configure ADC Processors
-	int sequence = 0;
-	int step;
-	for (step = 0; step < 3; step ++)
-	{
-		// Check if ADC pin is required
-		if (BIT(step) & adcs)
-		{
-			// Create ADC Config Flags.
-			// Only one step per sequence so Sequence End flag set by default.
-			int adcConfig = ADC_CTL_END;
+	// Configure ADC processor and 8x Oversampling
+	ADCSequenceConfigure(ADC_BASE, ADC_SEQ, ADC_TRIGGER_TIMER, ADC_PRIORITY);
+	ADCHardwareOversampleConfigure(ADC_BASE, 8);
 
-			// Configure next ADC processor for a Processor Trigger and 4x Oversampling
-			ADCSequenceConfigure(ADC_BASE, sequence, ADC_TRIGGER_PROCESSOR, sequence);
-			ADCSoftwareOversampleConfigure(ADC_BASE, sequence, 4);
+	// Configure ADC Processor Steps
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 0, ADC_CTL_CH0);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 1, ADC_CTL_CH1);
+	ADCSequenceStepConfigure(ADC_BASE, ADC_SEQ, 2, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
 
-			// Select ADC Input
-			switch (step)
-			{
-				case 0:
-					adcConfig |= ADC_CTL_CH0; break;
-				case 1:
-					adcConfig |= ADC_CTL_CH1; break;
-				case 2:
-					adcConfig |= ADC_CTL_CH2; break;
-			}
+	ADCIntDisable(ADC_BASE, ADC_SEQ);
 
-			// Check if an interrupt should be configured
-			if (step == maxSteps - 1)
-			{
-				adcConfig |= ADC_CTL_IE;
+	// Purge ADC Sequence
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, ulDummy);
 
-				// Configure, Register and Clear Interrupt
-				ADCIntEnable 	(ADC_BASE, sequence);
-				IntRegister 	(INT_ADC0 + sequence, adcISR);
-				IntEnable 		(INT_ADC0 + sequence);
-				ADCIntClear 	(ADC_BASE, sequence);
-			}
+	// Configure, Register and Clear Interrupt
+	ADCIntClear     (ADC_BASE, ADC_SEQ);
+	IntRegister     (INT_ADC0SS0, adcISR);
+	IntPrioritySet  (INT_ADC0SS0, 0);
+	IntEnable       (INT_ADC0SS0);
+	ADCIntEnable    (ADC_BASE, ADC_SEQ);
 
-			// Configure ADC Sample Step
-			ADCSoftwareOversampleStepConfigure(ADC_BASE, sequence, 0, adcConfig);
+	// Enable ADC Sequence
+	ADCSequenceEnable(ADC_BASE, ADC_SEQ);
 
-			// Enable ADC Sequence
-			ADCSequenceEnable(ADC_BASE, sequence);
-
-			sequence ++;
-		}
-	}
+	// Enable Timer
+	TimerEnable     (TIMER1_BASE, TIMER_A);
 }
 
 
-int getSmoothAdc(char adc)
+_iq getSmoothAdc(char adc, _iq minValue, _iq maxValue)
 {
-	//TODO: Trigger ADC???
+	unsigned long adcOutput;
 
-	return 0;
+	switch (adc)
+	{
+	case 0x01:
+		adcOutput = ADCout[0] & ADC_DATA_MASK; break;
+	case 0x02:
+		adcOutput = ADCout[1] & ADC_DATA_MASK; break;
+	case 0x04:
+		adcOutput = ADCout[2] & ADC_DATA_MASK; break;
+	default:
+		return -1ul;
+	}
+
+	return minValue + _IQmpy((maxValue - minValue), ADC_TO_IQ(adcOutput));
 }
+
 
 void adcISR (void)
 {
-	// Clear ADC Interrupts (All of them, because all lead to this ISR)
-	ADCIntClear(ADC_BASE, 0);
-	ADCIntClear(ADC_BASE, 1);
-	ADCIntClear(ADC_BASE, 2);
+	// Clear ADC Interrupt
+	ADCIntClear(ADC_BASE, ADC_SEQ);
 
 	// Get Data from the ADC
-	ADCSoftwareOversampleDataGet(ADC_BASE, 0, &ADCout.channel0, 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 1, &ADCout.channel1, 4);
-	ADCSoftwareOversampleDataGet(ADC_BASE, 2, &ADCout.channel2, 4);
+	ADCSequenceDataGet(ADC_BASE, ADC_SEQ, (unsigned long *)ADCout);
+
+	// Clear FIFO Under/Overflow Flags
+	ADCSequenceOverflowClear(ADC_BASE, ADC_SEQ);
+	ADCSequenceUnderflowClear(ADC_BASE, ADC_SEQ);
 }
