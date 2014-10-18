@@ -189,8 +189,8 @@ void vSimulateTask(void *params)
 	attachOnReceiveCallback(readMessage);
 
 	// initialize FreeRTOS sleep parameters
-	portTickType pxPreviousWakeTime;
-	const portTickType xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
+	TickType_t pxPreviousWakeTime;
+	const TickType_t xTimeIncrement = configTICK_RATE_HZ / SIMULATE_TASK_RATE_HZ;
 	pxPreviousWakeTime = xTaskGetTickCount();
 
 	int distanceTravelled = 0;

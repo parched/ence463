@@ -49,7 +49,7 @@ typedef struct
 	ButtonEvent event;
 } InputEvent;
 
-static xQueueHandle inputEventQueue;
+static QueueHandle_t inputEventQueue;
 static Activity *unitActivity;
 
 static char CLEAR_ROW[PX_HORZ] = "                      ";
@@ -198,8 +198,8 @@ void vGuiRefreshTask(void *pvParameters)
 	inputEventQueue = xQueueCreate(INPUTEVENT_QUEUE_SIZE, sizeof(InputEvent));
 
 	// initialize FreeRTOS sleep parameters
-	portTickType xLastWakeTime;
-	const portTickType xTimeIncrement = configTICK_RATE_HZ / GUI_TASK_RATE_HZ;
+	TickType_t xLastWakeTime;
+	const TickType_t xTimeIncrement = configTICK_RATE_HZ / GUI_TASK_RATE_HZ;
 	xLastWakeTime = xTaskGetTickCount();
 
 	// initialize screen

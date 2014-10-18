@@ -147,8 +147,8 @@ void vControlTask(void *params)
 
 	attachOnReceiveCallback(readMessage);
 	// Initialise FreeRTOS Sleep Parameters
-	portTickType pxPreviousWakeTime;
-	const portTickType xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
+	TickType_t pxPreviousWakeTime;
+	const TickType_t xTimeIncrement = configTICK_RATE_HZ / CONTROL_TASK_RATE_HZ;
 	pxPreviousWakeTime = xTaskGetTickCount();
 
 	for (;;)

@@ -86,10 +86,10 @@ void vButtonPollingTask(void *pvParameters)
 	int switchStates = 0x00;    // Port G Switch Values
 	int tmpTotal = 0;           // Temporary Switch Total
 
-	portTickType xLastWakeTime;
+	TickType_t xLastWakeTime;
 
 	// Set to 10kHz operation
-	const portTickType xTickIncrement = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
+	const TickType_t xTickIncrement = configTICK_RATE_HZ / BUTTON_TASK_RATE_HZ;
 
 	xLastWakeTime = xTaskGetTickCount();
 

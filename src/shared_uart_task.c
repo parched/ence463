@@ -70,8 +70,8 @@ void vUartTask(void *pvParameters)
 	uartSendQueue = xQueueCreate(SENDMESSAGE_QUEUE_SIZE, sizeof(UartFrame));
 
 	// initialize FreeRTOS sleep parameters
-	portTickType xLastWakeTime;
-	const portTickType xTimeIncrement = configTICK_RATE_HZ / UART_TASK_RATE_HZ;
+	TickType_t xLastWakeTime;
+	const TickType_t xTimeIncrement = configTICK_RATE_HZ / UART_TASK_RATE_HZ;
 	xLastWakeTime = xTaskGetTickCount();
 
 	// message decoding variables
