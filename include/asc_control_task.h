@@ -32,84 +32,84 @@ typedef enum {SEDATE, NORMAL, SPORT, RALLY} rideType;
 /**
  * \brief The active suspension control task.
  *
- * \param void * Unused parameters.
+ * \param params Unused parameters.
  */
 void vControlTask(void *params);
 
 /**
  * \brief Sets the car ride type.
  *
- * \param int Ride Type.
+ * \param rideModeIn Ride Type.
  */
 void setRideMode(int rideModeIn);
 
 /**
  * \brief Sets active suspension on or off.
  *
- * \param int Ride Type.
+ * \param isOn Ride Type.
  */
 void setAscOn(int isOn);
 
 /**
  * \brief Sets rideType.
  *
- * \param int Ride Type.
+ * \param  roadTypeInput Ride Type.
  */
 void setRoadType(int roadTypeInput);
 
 /**
  * \brief Sets throttle.
  *
- * \param int throttleInput.
+ * \param throttleInput the current throttle.
  */
 void setThrottle(int throttleInput);
 
 /**
  * \brief Sets the reset state.
  *
- * \param int reset state input.
+ * \param resetStateInput reset state input.
  */
 void setResetState(int resetStateInput);
 
 /**
  * \brief Sets the invoked coil error state.
  *
- * \param int errorInput.
+ * \param errorInput errorInput.
  */
 void setCoilError(int errorInput);
 
 /**
  * \brief Sets the sprung error state.
  *
- * \param int errorInput.
+ * \param errorInput error input.
  */
 void setSprungError(int errorInput);
 
 /**
  * \brief Sets the unsprung error state.
  *
- * \param int errorInput.
+ * \param errorInput error input.
  */
 void setUnsprungError(int errorInput);
 
 /**
  * \brief Sets the speed error state.
  *
- * \param int errorInput.
+ * \param errorInput error input.
  */
 void setSpeedError(int errorInput);
 
 /**
  * \brief Sets the power error state.
  *
- * \param int errorInput.
+ * \param errorInput error input.
  */
 void setPowerError(int errorInput);
 
 /**
  * \brief Sets the watchdog error state.
  *
- * \param int errorInput.
+ * \param errorInput error input.
  */
 void setWatchdogError(int errorInput);
 
