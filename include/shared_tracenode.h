@@ -59,7 +59,7 @@ typedef struct
 	unsigned int size;            /**<number of nodes in this buffer */
 	BufferFullMode fullMode;      /**<determines if unread nodes block incoming data or get overwritten upon overflow */
 	SemaphoreHandle_t readAccess; /**<mutex to add thread safety to buffer during read operation */
-	SemaphoreHandle_t writeAccess;/**<mutex to add thread safety to buffer during write operation
+	SemaphoreHandle_t writeAccess;/**<mutex to add thread safety to buffer during write operation */
 } CircularBufferHandler;
 
 /**
