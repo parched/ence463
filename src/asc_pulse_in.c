@@ -46,6 +46,13 @@
 static volatile TickType_t lastPulseTick;
 static volatile TickType_t lastTickDuration;
 
+
+/**
+ * \brief ISR Triggered on detection of PortF pin change
+ *
+ * The encoder input pin is connected through Port F.
+ * Each trigger, the time since the last interrupt is calculated and the car speed determined from this value.
+ */
 void isrPortF(void);
 
 void initPulseIn()

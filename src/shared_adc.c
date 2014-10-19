@@ -45,8 +45,19 @@
 
 static volatile unsigned long ADCout[8];
 
+
+/**
+ * \brief ISR triggered on completion of ADC processing.
+ *
+ * adcISR is triggered by the ADC processor on completion of an ADC sample.
+ * The ISR stores the resulting values in ADCout, and clears the interrupt and any error flags.
+ */
 void adcISR (void);
 
+
+/**
+ * \brief Initialises timer to trigger ADC samples.
+ */
 static void initAdcTimer (void)
 {
 	// Enable and Configure Timer 1 Peripheral
