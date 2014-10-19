@@ -52,15 +52,19 @@
 
 static volatile int psuedoSpeed = 0; /**< The internally stored speed. */
 static volatile unsigned char isPulseHigh = 0;
-/**
- * \brief The pulse output task.
- *
- * \param pvParams Unused.
- */
-//static void vPulseOutTask(void *pvParams);
 
+/**
+ * \brief ISR triggered on Timer 0 completion.
+ *
+ * Timer0 ISR is used to toggle the encoder output pin at regular intervals,
+ * depending on the speed of the car.
+ */
 static void isrTimer0 (void);
 
+
+/**
+ * \brief Configure Timer0 for pulse train generation.
+ */
 static void initPulseTimer(void)
 {
 	// Enable and Configure Timer Peripheral
@@ -87,16 +91,22 @@ static void initPulseTimer(void)
 
 void isrTimer0 (void)
 {
+	// Clear Timer Interrupt
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+	// Check for zero speed. No pulse is needed in this case, but the timer must still trigger to check for a new speed update.
 	if (psuedoSpeed == 0)
 	{
+		// Set Timer Interval to the Fallback Rate
 		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TIMER_FALLBACK_RATE_HZ);
 	}
 	else
 	{
+		// Toggle Encoder Output Pin
 		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 		isPulseHigh = ~isPulseHigh;
 
+		// Update Timer Interval
 		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / psuedoSpeed / PULSES_PER_REV);
 	}
 }
@@ -120,24 +130,4 @@ void setPulseSpeed(_iq speed)
 {
 	psuedoSpeed = _IQint(speed);
 }
-/*
-   void vPulseOutTask(void *pvParams) {
-    unsigned char isPulseHigh = 0;
 
-    // initialise FreeRTOS sleep parameters
-    portTickType pxPreviousWakeTime;
-    pxPreviousWakeTime = xTaskGetTickCount();
-
-    for (;;) {
-        if (psuedoSpeed == 0) {
-            vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ / PULSE_OUT_TASK_MIN_RATE_HZ);
-        } else {
-            GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
-
-            isPulseHigh = ~isPulseHigh;
-
-            vTaskDelayUntil( &pxPreviousWakeTime, configTICK_RATE_HZ * WHEEL_CIRCUMFERENCE_M / psuedoSpeed);
-        }
-    }
-   }
- */
