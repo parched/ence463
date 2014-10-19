@@ -142,6 +142,7 @@ typedef struct
 
 /**
  * \brief Constructs an Option with compulsory values as set and context initialized
+ * \public \memberof Options
  *
  * \param minIndex Minimum value this option can be set to
  * \param maxIndex Maximum value this option can be set to
@@ -150,6 +151,7 @@ Options option(int minIndex, int maxIndex);
 
 /**
  * \brief Constructs an Item with compulsory values as set and context initialized
+ * \public \memberof Item
  *
  * \param name Label of the item
  * \param optionType Sets whether options scroll through number or string
@@ -161,6 +163,7 @@ Item item(char *name, OptionType optionType, OptionAccess accessType, Options op
 
 /**
  * \brief Initailises a ListView and sets the items to a known initial values. Sets numItems =0 if fails to complete
+ * \public \memberof ListView
  *
  * \param name Label of the view
  * \param numItems The number of Items that this ListView will have
@@ -181,17 +184,19 @@ TraceView traceView(char *name, CircularBufferHandler *buffer, int zeroHeight, u
 
 /**
  * \brief Constructs an Activity with compulsory values set set and context initialized
+ * \public \memberof Activity
  *
  */
 Activity activity();
 
 /**
  * \brief Assigns a view to an Activity forcing the user to correctry init a view to an activity.
- * \returns 0 for sucess, 1 for index out of bound
+ * \public \memberof Activity
  *
- * \param activity The Activity to attach the view to
  * \param view The View that will be attached to the Activity
  * \param type The type of view
+ *
+ * \returns 0 for sucess, 1 for index out of bound
  */
 int addView(Activity *activity, void *view, ViewType type);
 
