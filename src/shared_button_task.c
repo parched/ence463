@@ -42,7 +42,7 @@
 #define TOTAL_MIN 0
 
 /**
- * \brief ButtonSwitch structure contains info on each switch.
+ * \struct ButtonSwitch structure contains info on each switch.
  */
 typedef struct ButtonSwitch
 {
