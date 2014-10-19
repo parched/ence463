@@ -50,6 +50,8 @@
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
 
+#define EDGES_PER_M 40
+
 static volatile int psuedoSpeed = 0; /**< The internally stored speed. */
 static volatile unsigned char isPulseHigh = 0;
 
@@ -107,7 +109,7 @@ void isrTimer0 (void)
 		isPulseHigh = ~isPulseHigh;
 
 		// Update Timer Interval
-		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / psuedoSpeed / PULSES_PER_REV);
+		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / psuedoSpeed / EDGES_PER_M);
 	}
 }
 
