@@ -60,14 +60,14 @@ void setRoadType(int roadTypeInput);
 /**
  * \brief Sets throttle.
  *
- * \param int roadType.
+ * \param int throttleInput.
  */
 void setThrottle(int throttleInput);
 
 /**
  * \brief Sets the reset state.
  *
- * \param int throttleInput.
+ * \param int reset state input.
  */
 void setResetState(int resetStateInput);
 
