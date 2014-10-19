@@ -32,28 +32,28 @@ typedef enum {SEDATE, NORMAL, SPORT, RALLY} rideType;
 /**
  * \brief The active suspension control task.
  *
- * \param params Unused parameters.
+ * \param void * Unused parameters.
  */
 void vControlTask(void *params);
 
 /**
  * \brief Sets the car ride type.
  *
- * \param rideType Ride Type.
+ * \param int Ride Type.
  */
 void setRideMode(int rideModeIn);
 
 /**
  * \brief Sets active suspension on or off.
  *
- * \param rideType Ride Type.
+ * \param int Ride Type.
  */
 void setAscOn(int isOn);
 
 /**
  * \brief Sets rideType.
  *
- * \param rideType Ride Type.
+ * \param int Ride Type.
  */
 void setRoadType(int roadTypeInput);
 
@@ -116,7 +116,7 @@ void setWatchdogError(int errorInput);
 /**
  * \brief Gets active suspension on or off.
  *
- * \param rideType Ride Type.
+ * \return  rideType.
  */
 int getDisplayRideMode();
 
