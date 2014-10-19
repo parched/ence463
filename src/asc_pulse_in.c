@@ -30,7 +30,7 @@
 #define PULSE_PIN BIT(7)
 
 #include "asc_pulse_in.h"
-#include "shared_pulse.h"
+#include "shared_parameters.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -71,7 +71,8 @@ void initPulseIn()
 
 _iq getPulseSpeed()
 {
-	return (((((long)configTICK_RATE_HZ) * WHEEL_CIRCUMFERENCE_M) << 10) / ((long)lastTickDuration * PULSES_PER_REV)) << (QG - 10);
+	//Bit shift for extra precision, but not all the way to our fixed point to avoid overflow
+	return ((((long)configTICK_RATE_HZ) << 10) / ((long)lastTickDuration * PULSE_EDGES_PER_M)) << (QG - 10);
 }
 
 void isrPortF(void)
