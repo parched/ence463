@@ -55,4 +55,6 @@
 #define STIFFNESS_TYRE 100                  /**< The stiffness of the tyre (N/mm). */
 #define DAMPING_TYRE 50000                  /**< The damping coefficient of the tyre (N.s/m). */
 
+#define PULSE_EDGES_PER_M  40               /**< The damping coefficient of the tyre (N.s/m). */
+
 #endif /* SHARED_PARAMETERS_H */
