@@ -123,7 +123,6 @@ void initPulseOut()
 	GPIOPinTypeGPIOOutput(PULSE_OUT_PORT, PULSE_OUT_PIN);
 
 	initPulseTimer();
-	//xTaskCreate(vPulseOutTask, "Pulse Out", PULSE_OUT_TASK_STACK_DEPTH, NULL, PULSE_OUT_TASK_PROIRITY, NULL);
 }
 
 void setPulseSpeed(_iq speed)
