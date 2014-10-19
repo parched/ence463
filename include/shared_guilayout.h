@@ -1,5 +1,5 @@
 /**
- * \file shared_gui_layout.h
+ * \file shared_guilayout.h
  * \brief Common module which declares types used to markup menu layout and hierachy.
  * \author Hugh Bisset
  * \version 1.0

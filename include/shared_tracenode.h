@@ -41,10 +41,10 @@ typedef struct TraceNode TraceNode;
  */
 struct TraceNode
 {
-	int x;
-	int y;
-	TraceNode *next;
-	TraceNode *prev;
+	int x;                        /**<x value of the vector to store */
+	int y;                        /**<y value of the vector to store */
+	TraceNode *next;              /**<pointer to next node */
+	TraceNode *prev;              /**<pointer to previous node */
 };
 
 /**
@@ -54,12 +54,12 @@ struct TraceNode
  */
 typedef struct
 {
-	TraceNode *lastRead;
-	TraceNode *lastWritten;
-	unsigned int size;
-	BufferFullMode fullMode;
-	SemaphoreHandle_t readAccess;
-	SemaphoreHandle_t writeAccess;
+	TraceNode *lastRead;          /**<node that was last read from the buffer */
+	TraceNode *lastWritten;       /**<node that was last written from the buffer */
+	unsigned int size;            /**<number of nodes in this buffer */
+	BufferFullMode fullMode;      /**<determines if unread nodes block incoming data or get overwritten upon overflow */
+	SemaphoreHandle_t readAccess; /**<mutex to add thread safety to buffer during read operation */
+	SemaphoreHandle_t writeAccess;/**<mutex to add thread safety to buffer during write operation
 } CircularBufferHandler;
 
 /**

@@ -1,5 +1,5 @@
 /**
- * \file shared_displayformat128x64.h
+ * \file shared_displayformat128x96.h
  * \brief Defines the margins and padding for display
  * \author George Xian
  * \version 1.0
