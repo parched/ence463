@@ -98,7 +98,7 @@ static _iq getDampingCoefficient();
 /**
  * \brief Calculates the required actuator force.
  *
- * \param dTime The time in ticks since the last calculation.
+ * \param int The time in ticks since the last calculation.
  *
  * \return The actuator force.
  */
