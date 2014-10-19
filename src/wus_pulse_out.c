@@ -37,7 +37,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "shared_pulse.h"
 #include "shared_parameters.h"
 
 #define PULSE_OUT_TASK_STACK_DEPTH 100
@@ -50,9 +49,7 @@
 #define PULSE_OUT_PORT GPIO_PORTB_BASE
 #define PULSE_OUT_PIN GPIO_PIN_0
 
-#define EDGES_PER_M 40
-
-static volatile int psuedoSpeed = 0; /**< The internally stored speed. */
+static volatile _iq speed = 0; /**< The internally stored speed. */
 static volatile unsigned char isPulseHigh = 0;
 
 /**
@@ -97,7 +94,7 @@ void isrTimer0 (void)
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
 	// Check for zero speed. No pulse is needed in this case, but the timer must still trigger to check for a new speed update.
-	if (psuedoSpeed == 0)
+	if (speed <= 0)
 	{
 		// Set Timer Interval to the Fallback Rate
 		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TIMER_FALLBACK_RATE_HZ);
@@ -108,8 +105,8 @@ void isrTimer0 (void)
 		GPIOPinWrite(PULSE_OUT_PORT, PULSE_OUT_PIN, isPulseHigh);
 		isPulseHigh = ~isPulseHigh;
 
-		// Update Timer Interval
-		TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / psuedoSpeed / EDGES_PER_M);
+		// Update Timer Interval. Bit shift to increase precision (approx 1 mm/s)
+		TimerLoadSet(TIMER0_BASE, TIMER_A, (SysCtlClockGet() << 10) / (((long)speed >> (QG - 10)) * PULSE_EDGES_PER_M));
 	}
 }
 
@@ -127,8 +124,8 @@ void initPulseOut()
 	initPulseTimer();
 }
 
-void setPulseSpeed(_iq speed)
+void setPulseSpeed(_iq newSpeed)
 {
-	psuedoSpeed = _IQint(speed);
+	speed = newSpeed;
 }
 
