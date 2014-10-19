@@ -64,6 +64,7 @@ typedef struct
 
 /**
  * \brief Creates a circular buffer from array of TraceNodes
+ * \public \memberof CircularBufferHandler
  *
  * \param head Pointer to the first item in the array
  * \param size Size of the circular buffer desired
@@ -74,8 +75,8 @@ CircularBufferHandler createCircularBuffer(TraceNode *head, unsigned int size, B
 
 /**
  * \brief Writes x and y values to chosen circular buffer
+ * \public \memberof CircularBufferHandler
  *
- * \param buffer Pointer to the handler for the buffer to modify
  * \param x value to write
  * \param y value to write
  * \return 0 for success, -1 for buffer full
@@ -84,16 +85,16 @@ int circularBufferWrite(CircularBufferHandler *buffer, int x, int y);
 
 /**
  * \brief Returns the node of the circular buffer that was last written
+ * \public \memberof CircularBufferHandler
  *
- * \param buffer Pointer to the handler for the buffer to modify
  * \return The last written node of the buffer
  */
 TraceNode *getLatestNode(CircularBufferHandler *buffer);
 
 /**
  * \brief Read data from the circular buffer
+ * \public \memberof CircularBufferHandler
  *
- * \param buffer Pointer to the handler for the buffer to read
  * \return The oldest unread node
  */
 TraceNode *circularBufferRead(CircularBufferHandler *buffer);
