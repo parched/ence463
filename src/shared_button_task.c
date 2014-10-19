@@ -41,7 +41,9 @@
 #define TOTAL_MAX (BUTTON_TASK_RATE_HZ / 50)
 #define TOTAL_MIN 0
 
-// ButtonSwitch structure contains info on each switch.
+/**
+ * \brief ButtonSwitch structure contains info on each switch.
+ */
 typedef struct ButtonSwitch
 {
 	tBoolean enabled;   // Switch is only polled if enabled.
@@ -52,7 +54,9 @@ typedef struct ButtonSwitch
 static ButtonSwitch ButtonSet[5];
 
 
-// Configures GPIO Port for Onboard Switches (and LED)
+/**
+ * \brief Configures GPIO Port for Onboard Switches (and LED)
+ */
 static void buttonGPIOInit(unsigned long mcu_clock)
 {
 	// Enable PortG Peripheral
@@ -66,7 +70,7 @@ static void buttonGPIOInit(unsigned long mcu_clock)
 }
 
 
-// Sets Button Event Parameters
+
 void configureButtonEvent(Button button, ButtonEvent eventType)
 {
 	ButtonSet[button].enabled = true;
