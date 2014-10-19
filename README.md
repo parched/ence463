@@ -31,6 +31,9 @@ OpenOCD
 1. Run
 ```
 cmake -DCMAKE_TOOLCHAIN_FILE=linux/arm-none-eabi_toolchain.cmake .
+```
+then
+```
 make
 ```
 2. To load on code add the udev rules linux/55-ence463.rules (or run as root)
