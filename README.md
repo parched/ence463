@@ -1,9 +1,14 @@
 README
 =========
-The Active Suspension Program has support for both Code Composer Studio(CCS) and GCC
-How to Setup Project on CCS
+This is a project four of us worked on during an embedded software course in 2014.
+The goal of the project was to create an active suspension controller (ASC) along with a simulator (WUS) on a Stellaris evaluation kit (EK-LM3S1968).
+The repo contains our code along with FreeRTOS and StellarisWare that we made use of.
 
-You MUST use CCS6 or above.
+The code probably isn't much use to anyone but may serve as an example of using CMake with FreeRTOS and StellarisWare/TivaWare.
+
+The project has support for both Code Composer Studio (CCS) and GCC.
+
+How to Setup Project on CCS (You MUST use CCS6 or above)
 ----
 1. Open CCS and click File>Import
 2. The import menu will appear, you need to select Code Composer Studio>CCS Projects as your import source then click next
