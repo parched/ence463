@@ -3,7 +3,6 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Tstandalone.ld -nostartfi
 
 include_directories(
 	${AS_SOURCE_DIR}/include
-	${AS_SOURCE_DIR}/FreeRTOS/Source/
 	${AS_SOURCE_DIR}/FreeRTOS/Source/include
 	${AS_SOURCE_DIR}/StellarisWare
 	${AS_SOURCE_DIR}/StellarisWare/utils
